@@ -1,3 +1,4 @@
+import atexit
 from threading import Thread, Lock
 from structlog import BoundLogger
 
@@ -56,7 +57,12 @@ class Store:
     logger: _Logger = _Logger()
 
     def __new__(cls) -> Self:
+        def delete():
+            cls.logger.info("store.delete.end_program",name=Store().logger.name,function=atexit.register.__name__)
+            del cls._instance
+                
         if cls._instance is None:
+            atexit.register(delete)
             cls._instance = super().__new__(cls)
             cls._instance._data = {}
             cls._instance._keys = []
@@ -204,3 +210,5 @@ class Store:
         if key not in self._keys:
             self.logger.critical("store.key_not_found", key=key, store=self.logger.name)
             raise KeyNotFound(f"The {key} key is non exist or expired")
+
+
