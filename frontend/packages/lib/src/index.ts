@@ -1,4 +1,3 @@
+import { Logger} from './logger.ts';
 
-export function Log(msg: string) {
-  console.log(msg);
-}
+export { Logger };
