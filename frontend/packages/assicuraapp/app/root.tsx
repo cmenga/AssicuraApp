@@ -24,16 +24,28 @@ export const links: Route.LinksFunction = () => [
   },
 ];
 
-export function Layout({ children }: { children: React.ReactNode }) {
+import favicon_ico from './assets/seo/favicon.ico';
+import favicon_svg from './assets/seo/favicon.svg';
+import favicon_96 from './assets/seo/favicon-96x96.png';
+import apple_touch_icon from "./assets/seo/apple-touch-icon.png";
+import manifest from "./assets/seo/site.webmanifest";
+
+export function Layout({ children }: { children: React.ReactNode; }) {
   return (
     <html lang="en">
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="icon" type="image/png" href={favicon_96} sizes="96x96" />
+        <link rel="icon" type="image/svg+xml" href={favicon_svg} />
+        <link rel="shortcut icon" href={favicon_ico} />
+        <link rel="apple-touch-icon" sizes="180x180" href={apple_touch_icon} />
+        <link rel="manifest" href={manifest} />
         <Meta />
         <Links />
       </head>
       <body>
+        <img src="favicon.ico" alt="" />
         {children}
         <ScrollRestoration />
         <Scripts />
