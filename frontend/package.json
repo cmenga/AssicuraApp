@@ -1,7 +1,0 @@
-{
-    "name": "site-builder",
-    "private": true,
-    "workspaces": [
-        "packages/*"
-    ]
-}
