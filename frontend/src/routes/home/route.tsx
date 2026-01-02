@@ -1,6 +1,7 @@
+import { Footer } from '@/features/footer/Footer';
 import { Benefits } from '@/features/home/Benefits';
 import { CoveragePlans } from '@/features/home/CoveragePlans';
-import { CTAButtons } from '@/features/home/CTAbuttons';
+import { CTAButtons } from '@/features/home/CTAButtons';
 import { HeroSectionWithQuoteForm } from '@/features/home/HeroSectionWithQuoteForm';
 import { StatsSection } from '@/features/home/StatsSection';
 import { MainNavigation } from '@/features/main-navigation/MainNavigation';
@@ -18,5 +19,6 @@ function RouteComponent() {
     <Benefits />
     <CoveragePlans />
     <CTAButtons />
+    <Footer />
   </div>
 }
