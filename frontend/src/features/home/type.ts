@@ -4,4 +4,12 @@ export type CoverageType = {
   price: string;
   features: string[];
   popular?: boolean;
-}
+};
+
+
+export type ReviewType = {
+  name: string;
+  rating: number;
+  text: string;
+  vehicle: string;
+};
