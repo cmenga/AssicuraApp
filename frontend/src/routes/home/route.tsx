@@ -1,4 +1,5 @@
 import { Benefits } from '@/features/home/Benefits';
+import { CoveragePlans } from '@/features/home/CoveragePlans';
 import { HeroSectionWithQuoteForm } from '@/features/home/HeroSectionWithQuoteForm';
 import { StatsSection } from '@/features/home/StatsSection';
 import { MainNavigation } from '@/features/main-navigation/MainNavigation';
@@ -14,5 +15,6 @@ function RouteComponent() {
     <HeroSectionWithQuoteForm />
     <StatsSection />
     <Benefits />
+    <CoveragePlans />
   </div>
 }
