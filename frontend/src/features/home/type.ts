@@ -1,4 +1,4 @@
-export type CoverageType = {
+export type CoverageModel = {
   title: string;
   description: string;
   price: string;
@@ -7,7 +7,7 @@ export type CoverageType = {
 };
 
 
-export type ReviewType = {
+export type ReviewModel = {
   name: string;
   rating: number;
   text: string;

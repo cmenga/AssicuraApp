@@ -1,8 +1,8 @@
 import { CoveragePlan } from "./CoveragePlan";
-import type { CoverageType } from "./type";
+import type { CoverageModel } from "./type";
 
 
-const coverages: CoverageType[] = [
+const coverages: CoverageModel[] = [
     {
         title: "RC Auto",
         description: "La responsabilità civile obbligatoria per legge",

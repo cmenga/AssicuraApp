@@ -1,7 +1,7 @@
 import { ReviewCard } from "./ReviewCard";
-import type { ReviewType } from "./type";
+import type { ReviewModel } from "./type";
 
-const reviews: ReviewType[] = [
+const reviews: ReviewModel[] = [
     {
         name: "Marco R.",
         rating: 5,

@@ -1,7 +1,7 @@
 import { Star } from "lucide-react";
-import type { ReviewType } from "./type";
+import type { ReviewModel } from "./type";
 
-export function ReviewCard(props: ReviewType) {
+export function ReviewCard(props: ReviewModel) {
     const { name, rating, text, vehicle } = props;
 
     return (<div className="bg-white p-6 rounded-2xl shadow-md border border-gray-100">

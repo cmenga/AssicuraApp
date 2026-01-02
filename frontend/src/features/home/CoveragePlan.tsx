@@ -1,8 +1,8 @@
 import { CheckCircle } from "lucide-react";
-import type { CoverageType } from "./type";
+import type { CoverageModel } from "./type";
 
 
-export function CoveragePlan(props: CoverageType) {
+export function CoveragePlan(props: CoverageModel) {
     const { popular, description, features, price, title } = props;
 
     return (<div
