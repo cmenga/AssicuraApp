@@ -1,19 +1,21 @@
-import { Eye, EyeOff, Lock, Mail } from "lucide-react";
-import { useState } from "react";
+import { Email } from "@/shared/components/input/Email";
+import { Password } from "@/shared/components/input/Password";
+import { useState, type FormEvent } from "react";
+import { RememberMe } from "./RememberMe";
 
 
 export function LoginForm() {
-    const [showPassword, setShowPassword] = useState(false);
     const [formData, setFormData] = useState({
         email: '',
         password: '',
         rememberMe: false
     });
 
-    const handleSubmit = (e: any) => {
+    const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         console.log('Login:', formData);
     };
+
     return (
         <div className="bg-white rounded-3xl shadow-2xl p-8 md:p-10">
             <div className="mb-8">
@@ -22,57 +24,10 @@ export function LoginForm() {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Email
-                    </label>
-                    <div className="relative">
-                        <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                        <input
-                            type="email"
-                            required
-                            value={formData.email}
-                            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                            placeholder="tu@email.com"
-                            className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
-                        />
-                    </div>
-                </div>
-
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Password
-                    </label>
-                    <div className="relative">
-                        <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                        <input
-                            type={showPassword ? "text" : "password"}
-                            required
-                            value={formData.password}
-                            onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                            placeholder="••••••••"
-                            className="w-full pl-12 pr-12 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
-                        />
-                        <button
-                            type="button"
-                            onClick={() => setShowPassword(!showPassword)}
-                            className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                        >
-                            {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                        </button>
-                    </div>
-                </div>
-
+                <Email onFormData={(e) => setFormData({ ...formData, email: e.target.value })} previous={formData.email} />
+                <Password onFormData={(e) => setFormData({ ...formData, password: e.target.value })} previous={formData.password} />
                 <div className="flex items-center justify-between">
-                    <label className="flex items-center gap-2 cursor-pointer">
-                        <input
-                            type="checkbox"
-                            checked={formData.rememberMe}
-                            onChange={(e) => setFormData({ ...formData, rememberMe: e.target.checked })}
-                            className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                        />
-                        <span className="text-sm text-gray-700">Ricordami</span>
-                    </label>
+                    <RememberMe onFormData={(e) => e.target.checked} previous={formData.rememberMe} />
                     <a href="#" className="text-sm text-blue-600 hover:text-blue-700 font-medium">
                         Password dimenticata?
                     </a>
@@ -85,7 +40,7 @@ export function LoginForm() {
                     Accedi
                 </button>
             </form>
-
+            {/* TODO: aggiungere Link di Tanstack per la navigazione */}
             <div className="mt-8 text-center">
                 <p className="text-gray-600">
                     Non hai un account?{' '}
