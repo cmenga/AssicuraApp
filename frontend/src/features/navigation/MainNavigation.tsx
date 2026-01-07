@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { MobileMenuButton, MobileNavigation } from "./MobileNavigation";
+import { MobileMenuButton, MobileNavigation } from "./MobileMainNavigation";
 import { Link } from "@tanstack/react-router";
 
 export function MainNavigation() {
@@ -14,7 +14,7 @@ export function MainNavigation() {
             <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between items-center h-16">
                     <div className="shrink-0">
-                        <h1 className="text-2xl font-bold bg-linear-to-r from-blue-600 to-cyan-500 bg-clip-text text-transparent">
+                        <h1 className="text-2xl font-bold bg-linear-to-r from-blue-600 to-cyan-500 bg-clip-text text-transparent cursor-default">
                             AssicuraFacile
                         </h1>
                     </div>

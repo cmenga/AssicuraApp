@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router";
 import { Menu, X } from "lucide-react";
 
 export function MobileNavigation() {
@@ -12,9 +13,9 @@ export function MobileNavigation() {
             <a href="#contatti" className="block text-gray-700 hover:text-blue-600 font-medium">
                 Contatti
             </a>
-            <button className="w-full bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-700 transition font-medium">
+            <Link to="/auth/login" className="w-full bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-700 transition font-medium">
                 Area Clienti
-            </button>
+            </Link>
         </div>
     );
 }
