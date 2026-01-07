@@ -7,6 +7,7 @@ export function MainNavigation() {
     function toggleMenuOpen() {
         setMobileMenuOpen(!mobileMenuOpen);
     }
+
     return (
         <header className="fixed top-0 w-full bg-white shadow-sm z-50">
             <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -20,9 +21,6 @@ export function MainNavigation() {
                     <div className="hidden md:flex items-center space-x-8">
                         <a href="#prodotti" className="text-gray-700 hover:text-blue-600 font-medium transition">
                             Prodotti
-                        </a>
-                        <a href="#come-funziona" className="text-gray-700 hover:text-blue-600 font-medium transition">
-                            Come Funziona
                         </a>
                         <a href="#recensioni" className="text-gray-700 hover:text-blue-600 font-medium transition">
                             Recensioni

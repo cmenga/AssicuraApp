@@ -3,6 +3,7 @@ import { Benefits } from '@/features/home/Benefits';
 import { CoveragePlans } from '@/features/home/CoveragePlans';
 import { CTAButtons } from '@/features/home/CTAButtons';
 import { HeroSectionWithQuoteForm } from '@/features/home/HeroSectionWithQuoteForm';
+import { Reviews } from '@/features/home/Reviews';
 import { StatsSection } from '@/features/home/StatsSection';
 import { MainNavigation } from '@/features/main-navigation/MainNavigation';
 import { createFileRoute } from '@tanstack/react-router'
@@ -18,6 +19,7 @@ function RouteComponent() {
     <StatsSection />
     <Benefits />
     <CoveragePlans />
+    <Reviews />
     <CTAButtons />
     <Footer />
   </div>

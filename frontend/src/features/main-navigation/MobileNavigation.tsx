@@ -6,9 +6,6 @@ export function MobileNavigation() {
             <a href="#prodotti" className="block text-gray-700 hover:text-blue-600 font-medium">
                 Prodotti
             </a>
-            <a href="#come-funziona" className="block text-gray-700 hover:text-blue-600 font-medium">
-                Come Funziona
-            </a>
             <a href="#recensioni" className="block text-gray-700 hover:text-blue-600 font-medium">
                 Recensioni
             </a>
