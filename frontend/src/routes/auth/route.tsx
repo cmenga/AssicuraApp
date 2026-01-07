@@ -1,5 +1,5 @@
 import { AuthNavigation } from '@/features/navigation/AuthNavigation';
-import { createFileRoute, Outlet, redirect } from '@tanstack/react-router';
+import { createFileRoute, Outlet, redirect} from '@tanstack/react-router';
 
 export const Route = createFileRoute('/auth')({
   component: RouteComponent,
