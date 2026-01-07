@@ -1,4 +1,4 @@
-import { MainNavigation } from '@/features/main-navigation/MainNavigation';
+import { AuthNavigation } from '@/features/navigation/AuthNavigation';
 import { createFileRoute, Outlet, redirect } from '@tanstack/react-router';
 
 export const Route = createFileRoute('/auth')({
@@ -10,10 +10,10 @@ export const Route = createFileRoute('/auth')({
   }
 });
 
-//TODO: la main navigation non e' ottimale per la auth, bisogna creare la AuthNavigation per migliorare il servizio e non avere dei disservizi lato UI/UX
+
 function RouteComponent() {
   return <div className="min-h-screen bg-linear-to-br from-blue-50 to-cyan-50 flex items-center justify-center px-4 py-12">
-    <MainNavigation />
+    <AuthNavigation />
     <Outlet />
   </div>;
 }
