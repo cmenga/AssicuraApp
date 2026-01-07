@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { MobileMenuButton, MobileNavigation } from "./MobileNavigation";
+import { Link } from "@tanstack/react-router";
 
 export function MainNavigation() {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -28,9 +29,9 @@ export function MainNavigation() {
                         <a href="#contatti" className="text-gray-700 hover:text-blue-600 font-medium transition">
                             Contatti
                         </a>
-                        <button className="bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-700 transition font-medium shadow-md hover:shadow-lg">
+                        <Link to="/auth/login" className="bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-700 transition font-medium shadow-md hover:shadow-lg">
                             Area Clienti
-                        </button>
+                        </Link>
                     </div>
 
                     <MobileMenuButton isOpen={mobileMenuOpen } onOpen={toggleMenuOpen} />
