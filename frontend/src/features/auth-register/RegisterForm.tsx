@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { CheckCircle, ChevronLeft, ChevronRight, FileText, Home, MapPin, User } from "lucide-react";
 
-import { FormInputText } from "./components/FormInputText";
-import { FormInputDate } from "./components/FormInputDate";
-import { FormInputGender } from "./components/FormInputGender";
+import { FormInputText } from "../../shared/components/form/FormInputText";
+import { FormInputDate } from "../../shared/components/form/FormInputDate";
+import { FormInputGender } from "../../shared/components/form/FormInputGender";
 import type { RegisterFormModel } from "./type";
-import { FormInputPhoneNumber } from "./components/FormInputPhoneNumber";
+import { FormInputPhoneNumber } from "../../shared/components/form/FormInputPhoneNumber";
 import { FormInputEmail } from "@/shared/components/form/FormInputEmail";
-import { FormInputDropdown, type DropdownOptions } from "./components/FormInputDropdown";
+import { FormInputDropdown, type DropdownOptions } from "../../shared/components/form/FormInputDropdown";
 import { FormInputPassword } from "@/shared/components/form/FormInputPassword";
 import { FormInputCheckbox } from "@/shared/components/form/FormInputCheckbox";
 
