@@ -17,7 +17,10 @@ function RouteComponent() {
       <RegisterProgressStep current={currentStep} />
       {/* Bisogna aggiungere il form */}
       <div className="bg-white rounded-3xl shadow-2xl p-8 md:p-10">
-        <RegisterForm />
+        <RegisterForm
+          currentStep={currentStep}
+          onCurrentStep={setCurrentStep}
+        />
         <div className="mt-8 text-center pt-6 border-t border-gray-200">
           <p className="text-gray-600">
             Hai già un account?{' '}
