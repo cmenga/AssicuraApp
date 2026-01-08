@@ -23,16 +23,14 @@ export function HomeFooter() {
 
     return (
         <Footer>
-            <div className="grid md:grid-cols-4 gap-8 mb-8">
-                <div>
-                    <FooterList {...products} />
-                </div>
-                <div>
-                    <FooterList {...enterprise} />
-                </div>
-                <div>
-                    <FooterList {...support} />
-                </div>
+            <div>
+                <FooterList {...products} />
+            </div>
+            <div>
+                <FooterList {...enterprise} />
+            </div>
+            <div>
+                <FooterList {...support} />
             </div>
         </Footer>
     );
