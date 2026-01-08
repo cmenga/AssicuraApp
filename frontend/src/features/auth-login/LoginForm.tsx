@@ -1,7 +1,8 @@
 import { FormInputEmail } from "@/shared/components/form/FormInputEmail";
-import { Password } from "@/shared/components/form/Password";
+
 import { useState, type FormEvent } from "react";
 import { RememberMe } from "./components/RememberMe";
+import { FormInputPassword } from "@/shared/components/form/FormInputPassword";
 
 
 export function LoginForm() {
@@ -24,8 +25,16 @@ export function LoginForm() {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
-                <FormInputEmail onFormData={(e) => setFormData({ ...formData, email: e.target.value })} previous={formData.email} />
-                <Password onFormData={(e) => setFormData({ ...formData, password: e.target.value })} previous={formData.password} />
+                <FormInputEmail
+                    onFormData={(e) => setFormData({ ...formData, email: e.target.value })}
+                    previous={formData.email}
+                />
+                <FormInputPassword
+                    onFormData={(e) => setFormData({ ...formData, password: e.target.value })}
+                    previous={formData.password}
+                    label="Password"
+                    placeholder="••••••••"
+                />
                 <div className="flex items-center justify-between">
                     <RememberMe onFormData={(e) => e.target.checked} previous={formData.rememberMe} />
                     <a href="#" className="text-sm text-blue-600 hover:text-blue-700 font-medium">

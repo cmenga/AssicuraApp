@@ -7,6 +7,9 @@ import { FormInputGender } from "./components/FormInputGender";
 import type { RegisterFormModel } from "./type";
 import { FormInputPhoneNumber } from "./components/FormInputPhoneNumber";
 import { FormInputEmail } from "@/shared/components/form/FormInputEmail";
+import { FormInputDropdown, type DropdownOptions } from "./components/FormInputDropdown";
+import { FormInputPassword } from "@/shared/components/form/FormInputPassword";
+import { FormInputCheckbox } from "@/shared/components/form/FormInputCheckbox";
 
 
 
@@ -40,6 +43,11 @@ const FORM_STATE_INIT: RegisterFormModel = {
     subscribeToNewsletter: false
 };
 
+const LICENSE_OPTIONS: DropdownOptions[] = [
+    { value: "A", name: "A - Moto" },
+    { value: "B", name: "B - Auto" },
+    { value: "C", name: "C - Veicoli commerciali" }
+];
 
 export function RegisterForm() {
 
@@ -223,123 +231,51 @@ export function RegisterForm() {
                         placeholder="U1ABC1234567"
                     />
 
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Categoria Patente <span className="text-red-500">*</span>
-                        </label>
-                        <select
-                            required
-                            value={formData.licenseCategory}
-                            onChange={(e) => handleChange('categoriaPatente', e.target.value)}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
-                        >
-                            <option value="A">A - Moto</option>
-                            <option value="B">B - Auto</option>
-                            <option value="C">C - Veicoli commerciali</option>
-                            <option value="D">D - Autobus</option>
-                        </select>
-                    </div>
+                    <FormInputDropdown
+                        label="Categoria Patente"
+                        onFormData={(e) => setFormData({ ...formData, licenseCategory: e.target.value })}
+                        previous={formData.licenseCategory}
+                        options={LICENSE_OPTIONS}
+                    />
 
                     <div className="grid md:grid-cols-2 gap-6">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                Data Rilascio <span className="text-red-500">*</span>
-                            </label>
-                            <div className="relative">
-                                <Calendar className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                                <input
-                                    type="date"
-                                    required
-                                    value={formData.licenseIssueDate}
-                                    onChange={(e) => handleChange('dataRilascioPatente', e.target.value)}
-                                    max={new Date().toISOString().split('T')[0]}
-                                    className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
-                                />
-                            </div>
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                Data Scadenza <span className="text-red-500">*</span>
-                            </label>
-                            <div className="relative">
-                                <Calendar className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                                <input
-                                    type="date"
-                                    required
-                                    value={formData.licenseExpiryDate}
-                                    onChange={(e) => handleChange('dataScadenzaPatente', e.target.value)}
-                                    min={new Date().toISOString().split('T')[0]}
-                                    className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
-                                />
-                            </div>
-                        </div>
+                        <FormInputDate
+                            label="Data Rialscio"
+                            onFormData={(e) => setFormData({ ...formData, licenseIssueDate: e.target.value })}
+                            previous={formData.licenseIssueDate}
+                        />
+                        <FormInputDate
+                            label="Date Scadenza"
+                            onFormData={(e) => setFormData({ ...formData, licenseExpiryDate: e.target.value })}
+                            previous={formData.licenseExpiryDate}
+                        />
                     </div>
 
                     <div className="border-t border-gray-200 pt-6 mt-6">
                         <h3 className="text-lg font-semibold text-gray-900 mb-4">Crea la tua Password</h3>
-
-                        <div className="mb-4">
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                Password <span className="text-red-500">*</span>
-                            </label>
-                            <div className="relative">
-                                <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                                <input
-                                    type={showPassword ? "text" : "password"}
-                                    required
-                                    minLength={8}
-                                    value={formData.password}
-                                    onChange={(e) => handleChange('password', e.target.value)}
-                                    placeholder="Minimo 8 caratteri"
-                                    className="w-full pl-12 pr-12 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
-                                />
-                                <button
-                                    type="button"
-                                    onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition"
-                                >
-                                    {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                                </button>
-                            </div>
-                            <p className="text-xs text-gray-500 mt-1">Usa almeno 8 caratteri con lettere e numeri</p>
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                Conferma Password <span className="text-red-500">*</span>
-                            </label>
-                            <div className="relative">
-                                <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                                <input
-                                    type={showConfirmPassword ? "text" : "password"}
-                                    required
-                                    minLength={8}
-                                    value={formData.confirmPassword}
-                                    onChange={(e) => handleChange('confermaPassword', e.target.value)}
-                                    placeholder="Ripeti la password"
-                                    className="w-full pl-12 pr-12 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
-                                />
-                                <button
-                                    type="button"
-                                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                    className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition"
-                                >
-                                    {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                                </button>
-                            </div>
-                        </div>
+                        <FormInputPassword
+                            label="Password"
+                            onFormData={(e) => setFormData({ ...formData, password: e.target.value })}
+                            previous={formData.password}
+                            isRequired
+                            placeholder="••••••••"
+                            minLenght={8}
+                        />
+                        <FormInputPassword
+                            label="Conferma Password"
+                            onFormData={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                            previous={formData.confirmPassword}
+                            isRequired
+                            placeholder="Ripeti la password"
+                            minLenght={8}
+                        />
                     </div>
 
                     <div className="space-y-4 pt-6 border-t border-gray-200">
-                        <label className="flex items-start gap-3 cursor-pointer group">
-                            <input
-                                type="checkbox"
-                                required
-                                checked={formData.acceptTerms}
-                                onChange={(e) => handleChange('accettaTermini', e.target.checked)}
-                                className="mt-1 w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500 cursor-pointer"
-                            />
+                        <FormInputCheckbox
+                            onFormData={(e) => setFormData({ ...formData, acceptPrivacyPolicy: e.target.checked })}
+                            previous={formData.acceptTerms}
+                        >
                             <span className="text-sm text-gray-700 group-hover:text-gray-900">
                                 Accetto i{' '}
                                 <a href="#" className="text-blue-600 hover:underline font-medium">
@@ -347,16 +283,12 @@ export function RegisterForm() {
                                 </a>{' '}
                                 <span className="text-red-500">*</span>
                             </span>
-                        </label>
+                        </FormInputCheckbox>
 
-                        <label className="flex items-start gap-3 cursor-pointer group">
-                            <input
-                                type="checkbox"
-                                required
-                                checked={formData.acceptPrivacyPolicy}
-                                onChange={(e) => handleChange('accettaPrivacy', e.target.checked)}
-                                className="mt-1 w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500 cursor-pointer"
-                            />
+                        <FormInputCheckbox
+                            onFormData={(e) => setFormData({ ...formData, acceptPrivacyPolicy: e.target.checked })}
+                            previous={formData.acceptPrivacyPolicy}
+                        >
                             <span className="text-sm text-gray-700 group-hover:text-gray-900">
                                 Ho letto e accetto l'{' '}
                                 <a href="#" className="text-blue-600 hover:underline font-medium">
@@ -364,19 +296,16 @@ export function RegisterForm() {
                                 </a>{' '}
                                 <span className="text-red-500">*</span>
                             </span>
-                        </label>
+                        </FormInputCheckbox>
 
-                        <label className="flex items-start gap-3 cursor-pointer group">
-                            <input
-                                type="checkbox"
-                                checked={formData.subscribeToNewsletter}
-                                onChange={(e) => handleChange('newsletter', e.target.checked)}
-                                className="mt-1 w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500 cursor-pointer"
-                            />
+                        <FormInputCheckbox
+                            onFormData={(e) => setFormData({ ...formData, subscribeToNewsletter: e.target.checked })}
+                            previous={formData.subscribeToNewsletter}
+                        >
                             <span className="text-sm text-gray-700 group-hover:text-gray-900">
                                 Desidero ricevere offerte esclusive e aggiornamenti via email
                             </span>
-                        </label>
+                        </FormInputCheckbox>
                     </div>
                 </div>
             )}
