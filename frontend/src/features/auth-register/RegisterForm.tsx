@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Calendar, CheckCircle, ChevronLeft, ChevronRight, Eye, EyeOff, FileText, Home, Lock, MapPin, User } from "lucide-react";
+import { CheckCircle, ChevronLeft, ChevronRight, FileText, Home, MapPin, User } from "lucide-react";
 
 import { FormInputText } from "./components/FormInputText";
 import { FormInputDate } from "./components/FormInputDate";
@@ -49,12 +49,13 @@ const LICENSE_OPTIONS: DropdownOptions[] = [
     { value: "C", name: "C - Veicoli commerciali" }
 ];
 
-export function RegisterForm() {
-
-    const [showPassword, setShowPassword] = useState(false);
-    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-    const [currentStep, setCurrentStep] = useState(1);
+type RegisterFormProps = {
+    currentStep: number;
+    onCurrentStep: (current: number) => void;
+};
+export function RegisterForm(props: RegisterFormProps) {
     const [formData, setFormData] = useState(FORM_STATE_INIT);
+    const {currentStep,onCurrentStep } = props;
 
     const handleChange = (field: any, value: any) => {
         setFormData({ ...formData, [field]: value });
@@ -63,7 +64,7 @@ export function RegisterForm() {
     const handleSubmit = (e: any) => {
         e.preventDefault();
         if (currentStep < 3) {
-            setCurrentStep(currentStep + 1);
+            onCurrentStep(currentStep + 1);
         } else {
             // Validazione password
             if (formData.password !== formData.confirmPassword) {
@@ -82,7 +83,7 @@ export function RegisterForm() {
 
     const goToPrevStep = () => {
         if (currentStep > 1) {
-            setCurrentStep(currentStep - 1);
+            onCurrentStep(currentStep - 1);
         }
     };
 
@@ -273,7 +274,7 @@ export function RegisterForm() {
 
                     <div className="space-y-4 pt-6 border-t border-gray-200">
                         <FormInputCheckbox
-                            onFormData={(e) => setFormData({ ...formData, acceptPrivacyPolicy: e.target.checked })}
+                            onFormData={(e) => setFormData({ ...formData, acceptTerms: e.target.checked })}
                             previous={formData.acceptTerms}
                         >
                             <span className="text-sm text-gray-700 group-hover:text-gray-900">
