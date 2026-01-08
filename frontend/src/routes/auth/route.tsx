@@ -1,5 +1,7 @@
+
+import { Footer } from '@/features/footer/Footer';
 import { AuthNavigation } from '@/features/navigation/AuthNavigation';
-import { createFileRoute, Outlet, redirect} from '@tanstack/react-router';
+import { createFileRoute, Outlet, redirect } from '@tanstack/react-router';
 
 export const Route = createFileRoute('/auth')({
   component: RouteComponent,
@@ -12,8 +14,13 @@ export const Route = createFileRoute('/auth')({
 
 
 function RouteComponent() {
-  return <div className="min-h-screen bg-linear-to-br from-blue-50 to-cyan-50 flex items-center justify-center px-4 py-12">
-    <AuthNavigation />
-    <Outlet />
-  </div>;
+  return (
+    <div className='min-h-screen bg-linear-to-br from-blue-50 to-cyan-50'>
+      <AuthNavigation />
+      <div className="min-h-screen flex items-center justify-center px-4 py-24">
+        <Outlet />
+      </div>
+      <Footer />
+    </div>
+  );
 }

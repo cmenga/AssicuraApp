@@ -1,4 +1,4 @@
-import { Footer } from '@/features/footer/Footer';
+import { HomeFooter } from '@/features/footer/HomeFooter';
 import { Benefits } from '@/features/home/Benefits';
 import { CoveragePlans } from '@/features/home/CoveragePlans';
 import { CTAButtons } from '@/features/home/CTAButtons';
@@ -21,6 +21,6 @@ function RouteComponent() {
     <CoveragePlans />
     <Reviews />
     <CTAButtons />
-    <Footer />
+    <HomeFooter />
   </div>
 }

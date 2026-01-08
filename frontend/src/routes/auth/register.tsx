@@ -12,10 +12,9 @@ function RouteComponent() {
   const [currentStep, setCurrentStep] = useState(1);
 
   return (
-    <div className="max-w-4xl mx-auto pt-12">
+    <div className="max-w-4xl mx-auto">
       <RegisterHeader />
       <RegisterProgressStep current={currentStep} />
-      {/* Bisogna aggiungere il form */}
       <div className="bg-white rounded-3xl shadow-2xl p-8 md:p-10">
         <RegisterForm
           currentStep={currentStep}
