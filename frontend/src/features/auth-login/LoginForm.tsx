@@ -3,6 +3,7 @@ import { FormInputEmail } from "@/shared/components/form/FormInputEmail";
 import { useState, type FormEvent } from "react";
 import { RememberMe } from "./components/RememberMe";
 import { FormInputPassword } from "@/shared/components/form/FormInputPassword";
+import { Link } from "@tanstack/react-router";
 
 
 export function LoginForm() {
@@ -51,11 +52,11 @@ export function LoginForm() {
             </form>
             {/* TODO: aggiungere Link di Tanstack per la navigazione */}
             <div className="mt-8 text-center">
-                <p className="text-gray-600">
+                <p className="text-gray-600 ">
                     Non hai un account?{' '}
-                    <a href="#" className="text-blue-600 hover:text-blue-700 font-semibold">
+                    <Link to="/auth/register" className="text-blue-600 hover:text-blue-700 font-semibold ">
                         Registrati ora
-                    </a>
+                    </Link>
                 </p>
             </div>
         </div>
