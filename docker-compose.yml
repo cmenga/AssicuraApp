@@ -1,0 +1,31 @@
+services:
+  assicurapp-core-service:
+    build: /backend/service/core
+    ports:
+      - '5001:5001'
+    environment:
+      - DATABASE_URL=postgresql://admin:L9fV2kQz@assicurapp-users-db:5432/assicura
+    networks:
+      - assicurapp
+    depends_on:
+      - assicurapp-users-db
+
+  assicurapp-users-db:
+    image: postgres:18.1-alpine3.23
+    container_name: core-postgresql-db
+    volumes:
+      - assicurapp-users-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=assicura
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=L9fV2kQz
+    networks:
+      - assicurapp
+
+networks:
+  assicurapp:
+    driver: bridge
+
+volumes:
+  assicurapp-users-data:
+    driver: local

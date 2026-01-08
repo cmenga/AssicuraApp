@@ -1,0 +1,14 @@
+FROM python:3.14.2-alpine3.23
+EXPOSE 5001
+WORKDIR /app
+
+COPY requirements.txt /tmp/requirements.txt
+RUN apk add --no-cache postgresql-client postgresql-dev musl-dev && \
+    pip install -r /tmp/requirements.txt 
+
+COPY . /app/
+RUN adduser -D -H fastapi-user
+
+USER fastapi-user
+
+CMD ["uvicorn","main:core_service","--host","0.0.0.0","--port","5001"]
