@@ -1,0 +1,32 @@
+from os import environ
+from lib.logger import Logger
+
+enviroment: str | None = environ.get("ENV")
+if enviroment == "production":
+    logger = Logger(name="app", to_prod=True).get_logger()
+elif enviroment == "development":
+    logger = Logger(name="app-dev", to_prod=False).get_logger()
+else:
+    logger = Logger(name="app-testing", to_prod=False).get_logger()
+
+
+def get_database_url() -> str:
+    if url := environ.get("DATABASE_URL"):
+        return url
+    raise ConnectionError("DATABASE_URL env var not set")
+
+
+def get_alembic_database_url():
+    try:
+        return get_database_url()
+    except:
+        # Alembic requires a reachable (online) database to run migrations.
+        # When Docker services are not running, an external/local connection string
+        # (e.g. localhost) must be provided instead of a Docker service name.
+        return "postgresql://admin:admin@localhost:5432/test_db"  # Example for postgres, use your local connection string
+
+
+ORIGINS = [
+    "http://localhost",
+    "http://localhost:8080",
+]

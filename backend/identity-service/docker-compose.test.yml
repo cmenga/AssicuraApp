@@ -1,0 +1,7 @@
+services:
+  template:
+    build:
+      context: .
+      target: test
+    image: template:test
+  

@@ -1,0 +1,52 @@
+FROM python:3.14.2-alpine3.23 AS base
+EXPOSE 5001
+WORKDIR /app
+RUN apk add --no-cache postgresql-client postgresql-dev musl-dev
+
+############
+# Stage test
+############
+FROM base AS test
+ENV ENV=testing
+
+COPY app /app/
+COPY requirements.dev.txt /tmp/requirements.dev.txt
+RUN pip install --no-cache-dir -r /tmp/requirements.dev.txt && \
+    rm /tmp/requirements.dev.txt
+
+CMD ["pytest","-v"]
+
+############
+# Stage dev
+############
+FROM base AS dev
+ENV ENV=development
+
+COPY --exclude=tests app /app/
+COPY requirements.dev.txt /tmp/requirements.dev.txt
+RUN pip install --no-cache-dir -r /tmp/requirements.dev.txt && \
+    rm /tmp/requirements.dev.txt && \
+    adduser -D -H fastapi-dev-user
+USER fastapi-dev-user
+
+CMD ["uvicorn","main:app","--host","0.0.0.0","--port","8001","--log-level","warning"]
+
+############
+# Stage prod
+############
+FROM base AS prod
+ENV ENV=production
+
+COPY --exclude=tests app /app/  
+COPY requirements.txt /tmp/requirements.txt
+RUN pip install --no-cache-dir -r /tmp/requirements.txt && \
+    adduser -D -H fastapi-user
+
+RUN mkdir -p /var/log/assicurapp \
+    && chown -R fastapi-user:fastapi-user /var/log/assicurapp \
+    && chmod 755 /var/log/assicurapp
+
+USER fastapi-user
+
+
+CMD ["gunicorn", "-k", "uvicorn.workers.UvicornWorker", "main:app", "--bind", "0.0.0.0:5001"]
