@@ -1,39 +1,35 @@
 services:
 
-  template-dev:
+  identity-dev:
     build:
       context: .
       target: dev
-    image: template:dev
+    image: identity:dev
     ports:
       - '8001:8001'
     environment:
-      - DATABASE_URL=postgresql://admin:admin@template-db-dev:5432/template_name_db
+      - DATABASE_URL=postgresql://admin:admin@identity-db-dev:5432/assicura_dev
     networks:
-      - template-network-dev
+      - identity-dev
     depends_on:
-      - template-db-dev
+      - identity-db-dev
 
-  template-db-dev:
+  identity-db-dev:
     image: postgres:18.1-alpine3.23
-    container_name: template-db-dev
+    container_name: identity-db-dev
     volumes:
-      - template-volume-data-dev:/var/lib/postgresql/data
+      - identity-data-dev:/var/lib/postgresql/data
     environment:
-      - POSTGRES_DB=template_name_db
+      - POSTGRES_DB=assicura_dev
       - POSTGRES_USER=admin
       - POSTGRES_PASSWORD=admin
     networks:
-      - template-network-dev
-    ports:
-      - "5432:5432"
+      - identity-dev
 
 networks:
-  template-network-dev:
-    name: template-network-dev
+  identity-dev:
     driver: bridge
 
 volumes:
-  template-volume-data-dev:
-    name: template-volume-data-dev
+  identity-data-dev:
     driver: local

@@ -28,5 +28,5 @@ def get_alembic_database_url():
 
 ORIGINS = [
     "http://localhost",
-    "http://localhost:8080",
+    "http://localhost:8001",
 ]
