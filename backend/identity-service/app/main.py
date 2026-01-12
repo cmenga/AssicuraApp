@@ -16,6 +16,12 @@ async def startup(app: FastAPI):
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail="The service is currently unreachable",
         )
+    # Run scripts internally instead of from the command line
+    from scripts.run_all import run_all
+    try:
+        run_all()
+    except Exception as ex:
+        logger.exception(ex)
 
     # Start subprocess for alembic migration
     from subprocess import run
