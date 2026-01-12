@@ -27,6 +27,8 @@ services:
       - POSTGRES_PASSWORD=admin
     networks:
       - identity-dev
+    ports:
+      - "5432:5432"
 
 networks:
   identity-dev:
