@@ -5,6 +5,7 @@ import re
 from database.models import GenderEnum
 from data.province import PROVINCE_OF_ITALY
 
+
 class UserRegistration(BaseModel):
     email: EmailStr = Field(max_length=150)
     first_name: str = Field(max_length=30, min_length=2)
@@ -23,7 +24,7 @@ class UserRegistration(BaseModel):
 
     accept_privacy_policy: bool
     accept_terms: bool
-    subscribe_to_news_letter: bool
+    subscribe_to_news_letter: bool = Field(default=False)
 
     model_config = {
         "json_schema_extra": {
@@ -69,8 +70,7 @@ class UserRegistration(BaseModel):
     def validate_place_of_birth(cls, value: str):
         value = value.upper()
         for element in PROVINCE_OF_ITALY:
-            _, _, cities = element
-
+            cities = element["cities"]
             if value in cities:
                 return value
 
@@ -81,17 +81,39 @@ class UserRegistration(BaseModel):
     def validate_province_of_birth(cls, value: str):
         value = value.upper()
         for element in PROVINCE_OF_ITALY:
-            sail, name, _ = element
+            sail = element["sail"]
+            name = element["name"]
 
             if value in [sail, name]:
                 return value
 
         raise ValueError("La proivincia non esiste")
 
+    @field_validator("fiscal_id")
+    @classmethod
+    def validate_fiscal_id(cls, value: str, info):
+        from codicefiscale import codicefiscale
+
+        value = value.upper()
+
+        fiscal_id = codicefiscale.encode(
+            lastname=info.data.get("last_name"),
+            firstname=info.data.get("first_name"),
+            gender=info.data.get("gender").value,
+            birthdate=info.data.get("date_of_birth").__str__(),
+            birthplace=info.data.get("place_of_birth"),
+        )
+
+        if value != fiscal_id:
+            raise ValueError("Il codice fiscale non è valido")
+
+        return value
 
     @model_validator(mode="after")
     def validate_first(self):
-        validate_province_city(province=self.province_of_birth, city=self.place_of_birth)
+        validate_province_city(
+            province=self.province_of_birth, city=self.place_of_birth
+        )
         return self
 
 
@@ -111,7 +133,7 @@ def validate_province_city(province: str, city: str):
     """
     is_place_of_birth: bool = False
     for element in PROVINCE_OF_ITALY:
-        sail, name, cities = element
+        sail, name, cities = element["sail"], element["name"], element["cities"]
 
         if city in cities and province in (sail, name):
             is_place_of_birth = True
