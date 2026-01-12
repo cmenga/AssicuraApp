@@ -16,6 +16,7 @@ class User(Base):
     fiscal_id = Column(String(16), nullable=False, unique=True)
     date_of_birth = Column(Date, nullable=False)
     place_of_birth = Column(String(150), nullable=False)
+    province_of_birth = Column(String(150),nullable=False)
     gender = Column(PostgresqlEnum(GenderEnum), nullable=False)
     email = Column(String(150), unique=True, nullable=False)
     phone_number = Column(String(15), nullable=False)

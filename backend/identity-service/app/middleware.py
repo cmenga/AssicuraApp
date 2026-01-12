@@ -21,7 +21,7 @@ class LoggerMiddleware(BaseHTTPMiddleware):
         )
         response = await call_next(request)
         # Log in base allo status code
-        if response.status_code < status.HTTP_300_MULTIPLE_CHOICES:
+        if status.HTTP_200_OK <= response.status_code < status.HTTP_300_MULTIPLE_CHOICES:
             self.logger.info(
                 "request_successful",
                 method=request.method,
@@ -29,7 +29,7 @@ class LoggerMiddleware(BaseHTTPMiddleware):
                 client=client_host,
                 status_code=response.status_code,
             )
-        elif status.HTTP_300_MULTIPLE_CHOICES >= response.status_code < status.HTTP_400_BAD_REQUEST:
+        elif status.HTTP_300_MULTIPLE_CHOICES <= response.status_code < status.HTTP_400_BAD_REQUEST:
             self.logger.info(
                 "request_redirect",
                 method=request.method,
@@ -37,7 +37,7 @@ class LoggerMiddleware(BaseHTTPMiddleware):
                 client=client_host,
                 status_code=response.status_code,
             )
-        elif status.HTTP_400_BAD_REQUEST >= response.status_code < status.HTTP_500_INTERNAL_SERVER_ERROR:
+        elif status.HTTP_400_BAD_REQUEST <= response.status_code < status.HTTP_500_INTERNAL_SERVER_ERROR:
             self.logger.warning(
                 "client_error",
                 method=request.method,
@@ -45,7 +45,7 @@ class LoggerMiddleware(BaseHTTPMiddleware):
                 client=client_host,
                 status_code=response.status_code,
             )
-        elif status.HTTP_500_INTERNAL_SERVER_ERROR >= response.status_code:
+        elif status.HTTP_500_INTERNAL_SERVER_ERROR <= response.status_code < 600:
             self.logger.error(
                 "server_error",
                 method=request.method,
@@ -67,5 +67,7 @@ class CheckOriginMiddleware(BaseHTTPMiddleware):
                 endpoint=request.url.path,
                 client_ip=request.client.host if request.client else None,
             )
-            return JSONResponse({"detail": "Origin not allowed"}, status_code=status.HTTP_403_FORBIDDEN)
+            return JSONResponse(
+                {"detail": "Origin not allowed"}, status_code=status.HTTP_403_FORBIDDEN
+            )
         return await call_next(request)

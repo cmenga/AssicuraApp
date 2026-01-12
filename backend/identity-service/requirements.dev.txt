@@ -1,5 +1,6 @@
 fastapi[standard]
 uvicorn[standard]
+email_validator>=2.2.0
 sqlalchemy>=2.0.41
 psycopg2>=2.9.10
 alembic>=1.16.4

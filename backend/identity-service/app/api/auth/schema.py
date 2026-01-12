@@ -1,22 +1,25 @@
-from pydantic import BaseModel, Field, EmailStr, field_validator
-from datetime import date
+from pydantic import BaseModel, Field, EmailStr, field_validator, model_validator
+from datetime import date, timedelta
 import re
 
 from database.models import GenderEnum
 
+
 class __StandardTemplate(BaseModel):
     pass
 
+
 class UserRegistration(BaseModel):
-    email: EmailStr
+    email: EmailStr = Field(max_length=150)
     first_name: str = Field(max_length=30, min_length=2)
     last_name: str = Field(max_length=30, min_length=2)
-    fiscal_id: str = Field(max_length=16, min_length=16)
+
     date_of_birth: date
     place_of_birth: str = Field(max_length=150, min_length=2)
+    province_of_birth: str = Field(max_length=150, min_length=2)
     gender: GenderEnum
+    fiscal_id: str = Field(max_length=16, min_length=16)
 
-    email: str = Field(max_length=150)
     phone_number: str = Field(max_length=10, min_length=10)
 
     password: str = Field(max_length=64)
@@ -26,16 +29,43 @@ class UserRegistration(BaseModel):
     accept_terms: bool
     subscribe_to_news_letter: bool
 
-    model_config={}
-    
-    @field_validator("first_name","last_name")
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "email": "user@example.com",
+                "first_name": "Name",
+                "last_name": "LastName",
+                "date_of_birth": str(date.today() - timedelta(days=365 * 18)),
+                "place_of_birth": "Milano",
+                "province_of_birth": "Milano",
+                "gender": GenderEnum.MALE.__str__(),
+                "fiscal_id": "MHGTPP05D123D12T",
+                "phone_number": "3330893245",
+                "password": "Ciao1234@",
+                "confirm_password": "Ciao1234@",
+                "accept_privacy_policy": True,
+                "accept_terms": True,
+                "subscribe_to_news_letter": False,
+            }
+        }
+    }
+
+    @field_validator("first_name", "last_name")
     @classmethod
-    def validate_first_name(cls, value: str):
+    def validate_name(cls, value: str):
         value = value.strip()
-        if is_valid_name:
+        if is_valid_name(value):
             raise ValueError(
                 "Il nome deve iniziare con una lettera e contenere solo lettere, spazi e apostrofi, senza numeri."
             )
+        return value
+
+    @field_validator("date_of_birth")
+    @classmethod
+    def validate_date_of_birth(cls, value: date):
+        under_18 = date.today() - timedelta(days=365 * 18) 
+        if value > under_18:
+            raise ValueError("The age is under 18 years")
         return value
 
 

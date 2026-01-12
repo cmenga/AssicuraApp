@@ -22,14 +22,13 @@ CMD ["pytest","-v"]
 FROM base AS dev
 ENV ENV=development
 
-COPY --exclude=tests app /app/
 COPY requirements.dev.txt /tmp/requirements.dev.txt
 RUN pip install --no-cache-dir -r /tmp/requirements.dev.txt && \
     rm /tmp/requirements.dev.txt && \
     adduser -D -H fastapi-dev-user
 USER fastapi-dev-user
 
-CMD ["uvicorn","main:app","--host","0.0.0.0","--port","8001","--log-level","warning"]
+CMD ["uvicorn","main:app","--host","0.0.0.0","--port","8001","--log-level","warning","--reload"]
 
 ############
 # Stage prod
