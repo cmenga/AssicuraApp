@@ -7,3 +7,4 @@ alembic>=1.16.4
 python-jose>=3.5.0
 structlog>=25.5.0
 python-codicefiscale>=0.10.3
+password-validator>=1.0
