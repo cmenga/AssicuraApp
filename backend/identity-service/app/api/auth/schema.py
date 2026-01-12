@@ -109,11 +109,22 @@ class UserRegistration(BaseModel):
 
         return value
 
+    @field_validator("phone_number")
+    @classmethod
+    def validate_phone_number(cls, value: str):
+        if not value.isdigit():
+            raise ValueError("Il numero di telefono inserito deve contenere solo numeri")
+        return value
+    
     @model_validator(mode="after")
     def validate_first(self):
         validate_province_city(
             province=self.province_of_birth, city=self.place_of_birth
         )
+        
+        if self.password != self.confirm_password:
+            raise ValueError("Le password non coincidono")
+    
         return self
 
 
@@ -141,3 +152,4 @@ def validate_province_city(province: str, city: str):
 
     if not is_place_of_birth:
         raise ValueError("Il luogo di nascita non combacia con la provincia")
+
