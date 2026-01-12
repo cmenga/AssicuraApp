@@ -4,8 +4,8 @@ from uuid import uuid4
 from database.session import Base
 from enum import Enum
 class GenderEnum(Enum):
-    MALE = "Maschio"
-    FEMALE = "Femmina"
+    MALE = "M"
+    FEMALE = "F"
     
 class User(Base):
     __tablename__ = "user"

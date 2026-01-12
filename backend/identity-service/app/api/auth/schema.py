@@ -3,11 +3,7 @@ from datetime import date, timedelta
 import re
 
 from database.models import GenderEnum
-
-
-class __StandardTemplate(BaseModel):
-    pass
-
+from data.province import PROVINCE_OF_ITALY
 
 class UserRegistration(BaseModel):
     email: EmailStr = Field(max_length=150)
@@ -63,13 +59,63 @@ class UserRegistration(BaseModel):
     @field_validator("date_of_birth")
     @classmethod
     def validate_date_of_birth(cls, value: date):
-        under_18 = date.today() - timedelta(days=365 * 18) 
+        under_18 = date.today() - timedelta(days=365 * 18)
         if value > under_18:
-            raise ValueError("The age is under 18 years")
+            raise ValueError("L'età è inferiore ai 18 anni")
         return value
 
+    @field_validator("place_of_birth")
+    @classmethod
+    def validate_place_of_birth(cls, value: str):
+        value = value.upper()
+        for element in PROVINCE_OF_ITALY:
+            _, _, cities = element
+
+            if value in cities:
+                return value
+
+        raise ValueError("La città non esiste")
+
+    @field_validator("province_of_birth")
+    @classmethod
+    def validate_province_of_birth(cls, value: str):
+        value = value.upper()
+        for element in PROVINCE_OF_ITALY:
+            sail, name, _ = element
+
+            if value in [sail, name]:
+                return value
+
+        raise ValueError("La proivincia non esiste")
+
+
+    @model_validator(mode="after")
+    def validate_first(self):
+        validate_province_city(province=self.province_of_birth, city=self.place_of_birth)
+        return self
 
 
 def is_valid_name(value: str) -> bool:
+    """
+    The function `is_valid_name` checks if a given string value is a valid name containing only letters,
+    spaces, and apostrophes.
+    """
     pattern = r"^[A-Za-zÀ-ÖØ-öø-ÿ][A-Za-zÀ-ÖØ-öø-ÿ\s']*$"
     return not re.match(pattern, value)
+
+
+def validate_province_city(province: str, city: str):
+    """
+    The function `validate_province_city` checks if a given city and province match in a list of
+    provinces and cities in Italy.
+    """
+    is_place_of_birth: bool = False
+    for element in PROVINCE_OF_ITALY:
+        sail, name, cities = element
+
+        if city in cities and province in (sail, name):
+            is_place_of_birth = True
+            break
+
+    if not is_place_of_birth:
+        raise ValueError("Il luogo di nascita non combacia con la provincia")

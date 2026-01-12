@@ -26,7 +26,7 @@ def get_alembic_database_url():
         # Alembic requires a reachable (online) database to run migrations.
         # When Docker services are not running, an external/local connection string
         # (e.g. localhost) must be provided instead of a Docker service name.
-        return "postgresql://admin:admin@localhost:5432/test_db"  # Example for postgres, use your local connection string
+        return "postgresql://admin:admin@localhost:8432/test_db"  # Example for postgres, use your local connection string
 
 
 ORIGINS = [
