@@ -49,5 +49,7 @@ app.add_middleware(LoggerMiddleware, logger)
 
 # All routers are added here
 from api.health.router import health_router
+from api.auth.router import auth_router
 
 app.include_router(health_router)
+app.include_router(auth_router)
