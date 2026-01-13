@@ -67,14 +67,6 @@ async def create_new_account(
     except IntegrityError as ex:
         logger.exception(ex)
         db.rollback()
-
-        detail = ex.orig
-        if detail == "uq_user_address_type":
-            logger.warning("User attempted to insert duplicate address type",email=user.email,address_type=address.type)
-            raise HTTPException(
-                detail="L'utente ha entrambi gli indirizzi salvati",
-                status_code=status.HTTP_409_CONFLICT,
-            )
         raise HTTPException(
             detail="C'è stato un problema con il salvataggio dei dati",
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

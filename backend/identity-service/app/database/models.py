@@ -56,6 +56,7 @@ class Address(Base):
         )
     )
 
+#TODO: Questi dati non c'entrano con il servizo dell'indentità di una persona, inserirli nel license-service 
 # // Patente
 # licenseNumber: '',
 # licenseIssueDate: '',

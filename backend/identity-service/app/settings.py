@@ -19,7 +19,7 @@ def get_database_url() -> str:
     raise ConnectionError("DATABASE_URL env var not set")
 
 
-def get_alembic_database_url():
+def get_local_database_url():
     try:
         return get_database_url()
     except:
@@ -27,7 +27,6 @@ def get_alembic_database_url():
         # When Docker services are not running, an external/local connection string
         # (e.g. localhost) must be provided instead of a Docker service name.
         return "postgresql://admin:admin@localhost:8432/test_db"  # Example for postgres, use your local connection string
-
 
 ORIGINS = [
     "http://localhost",

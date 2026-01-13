@@ -4,19 +4,6 @@ WORKDIR /app
 RUN apk add --no-cache postgresql-client postgresql-dev musl-dev
 
 ############
-# Stage test
-############
-FROM base AS test
-ENV ENV=testing
-
-COPY app /app/
-COPY requirements.dev.txt /tmp/requirements.dev.txt
-RUN pip install --no-cache-dir -r /tmp/requirements.dev.txt && \
-    rm /tmp/requirements.dev.txt
-
-CMD ["pytest","-v"]
-
-############
 # Stage dev
 ############
 FROM base AS dev

@@ -12,7 +12,6 @@ import re
 
 from data.cities import ITALY_CITIES
 
-
 class UserRegistration(BaseModel):
     email: EmailStr = Field(max_length=150)
     first_name: str = Field(max_length=30, min_length=2)
@@ -84,26 +83,6 @@ class UserRegistration(BaseModel):
         value = validate_province(value)
         return value
 
-    @field_validator("fiscal_id")
-    @classmethod
-    def validate_fiscal_id(cls, value: str, info: ValidationInfo):
-        from codicefiscale import codicefiscale
-
-        value = value.upper()
-
-        fiscal_id = codicefiscale.encode(
-            lastname=info.data["last_name"],
-            firstname=info.data["first_name"],
-            gender="M" if info.data["gender"] == "male" else "F",
-            birthdate=info.data["date_of_birth"].__str__(),
-            birthplace=info.data["place_of_birth"],
-        )
-
-        if value != fiscal_id:
-            raise ValueError("Il codice fiscale non è valido")
-
-        return value
-
     @field_validator("phone_number")
     @classmethod
     def validate_phone_number(cls, value: str):
@@ -135,11 +114,45 @@ class UserRegistration(BaseModel):
         validate_province_city(
             province=self.province_of_birth, city=self.place_of_birth
         )
-
+        validate_fiscal_id(
+            self.fiscal_id,
+            last_name=self.last_name,
+            firstname=self.first_name,
+            gender="M" if self.gender == "male" else "F",
+            birthdate=self.date_of_birth.__str__(),
+            birthplace=self.place_of_birth,
+        )
         if self.password != self.confirm_password:
             raise ValueError("Le password non coincidono")
 
         return self
+
+
+
+def validate_fiscal_id(
+    value: str,
+    last_name: str,
+    firstname: str,
+    gender: Literal["M", "F"],
+    birthdate: str,
+    birthplace: str,
+):
+    from codicefiscale import codicefiscale
+
+    value = value.upper()
+
+    fiscal_id = codicefiscale.encode(
+        lastname=last_name,
+        firstname=firstname,
+        gender=gender,
+        birthdate=birthdate,
+        birthplace=birthplace,
+    )
+
+    if value != fiscal_id:
+        raise ValueError("Il codice fiscale non è valido")
+
+    return value
 
 
 class AddressRegistration(BaseModel):
@@ -184,14 +197,12 @@ class AddressRegistration(BaseModel):
     def validate_cap(cls, value: str, info: ValidationInfo):
         if not value.isdigit():
             raise ValueError("Il cap non risulta valido")
-
-        validate_cap(city=info.data["city"], province=info.data["province"], cap=value)
-
         return value
 
     @model_validator(mode="after")
     def validate_model(self):
         validate_province_city(self.province, self.city)
+        validate_cap(city=self.city, province=self.province, cap=self.cap)
         return self
 
 
