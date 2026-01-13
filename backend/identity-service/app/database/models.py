@@ -16,7 +16,7 @@ class User(Base):
     place_of_birth: Mapped[str] = mapped_column(String(150), nullable=False)
     province_of_birth: Mapped[str] = mapped_column(String(150),nullable=False) 
     gender: Mapped[str] = mapped_column(String(8),nullable=False)
-    email: Mapped[str] = mapped_column(String(150), unique=True, nullable=False) 
+    email: Mapped[str] = mapped_column(String(150), nullable=False) 
     phone_number: Mapped[str] = mapped_column(String(15), nullable=False) 
     hashed_password: Mapped[str] = mapped_column(String,nullable=False) 
     accept_privacy_policy: Mapped[bool] = mapped_column(Boolean, nullable=False) 
