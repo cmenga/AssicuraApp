@@ -9,17 +9,20 @@ sys.path.insert(0, str(root_path))
 
 # Engine e sessione per test in-memory
 from database.session import get_session
-from database.models import User
+
 from settings import get_local_database_url
 TestingSessionLocal = get_session(get_local_database_url())
 
 # Clean data for testing
-db = TestingSessionLocal()
+def clean_data():
+    from database.models import User
+    db = TestingSessionLocal()
 
-db.execute(delete(User))
-db.commit()
+    db.execute(delete(User))
+    db.commit()
 
-db.close()
+    db.close()
+clean_data()
 # App FastAPI
 from main import app
 
