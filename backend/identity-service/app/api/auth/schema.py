@@ -124,7 +124,9 @@ class UserRegistration(BaseModel):
         from password_validator import PasswordValidator
 
         schema = PasswordValidator()
-        schema.min(8).max(64).has().uppercase().has().lowercase().has().digits().has().no().spaces()
+        schema.min(8).max(
+            64
+        ).has().uppercase().has().lowercase().has().digits().has().no().spaces()
 
         if not schema.validate(value):
             raise ValueError("La password non è valida")
