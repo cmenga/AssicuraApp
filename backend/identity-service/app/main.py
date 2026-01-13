@@ -61,7 +61,7 @@ app.include_router(health_router)
 app.include_router(auth_router)
 
 
-# Change response http exception
+# Change validation error
 from fastapi.requests import Request
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
