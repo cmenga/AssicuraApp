@@ -68,26 +68,14 @@ class UserRegistration(BaseModel):
     @field_validator("place_of_birth")
     @classmethod
     def validate_place_of_birth(cls, value: str):
-        value = value.upper()
-        for element in PROVINCE_OF_ITALY:
-            cities = element["cities"]
-            if value in cities:
-                return value
-
-        raise ValueError("La città non esiste")
+        value = validate_city(value)
+        return value
 
     @field_validator("province_of_birth")
     @classmethod
     def validate_province_of_birth(cls, value: str):
-        value = value.upper()
-        for element in PROVINCE_OF_ITALY:
-            sail = element["sail"]
-            name = element["name"]
-
-            if value in [sail, name]:
-                return value
-
-        raise ValueError("La proivincia non esiste")
+        value = validate_province(value)
+        return value
 
     @field_validator("fiscal_id")
     @classmethod
@@ -99,7 +87,7 @@ class UserRegistration(BaseModel):
         fiscal_id = codicefiscale.encode(
             lastname=info.data.get("last_name"),
             firstname=info.data.get("first_name"),
-            gender=info.data.get("gender").value,
+            gender="M" if info.data.get("gender") == "male" else "F",
             birthdate=info.data.get("date_of_birth").__str__(),
             birthplace=info.data.get("place_of_birth"),
         )
@@ -147,6 +135,57 @@ class UserRegistration(BaseModel):
         return self
 
 
+class AddressRegistration(BaseModel):
+    street: str = Field(max_length=150, min_length=2)
+    civic_number: str = Field(max_length=8)
+    cap: str = Field(max_length=5, min_length=5)
+    city: str = Field(max_length=150, min_length=2)
+    province: str = Field(max_length=150, min_length=2)
+    type: Literal["domicile", "residence"]
+
+    @field_validator("street")
+    @classmethod
+    def validate_street(cls, value: str):
+        pattern = r"^[A-Za-zÀ-ÖØ-öø-ÿ0-9\s\.'\-\/]+$"
+        if not re.match(pattern, value):
+            raise ValueError("La via contiene caratteri sbagliati")
+        return value
+
+    @field_validator("civic_number")
+    @classmethod
+    def validate_civic_number(cls, value: str):
+        pattern = r"^[0-9]+[A-Z]?([/-][0-9A-Z]+)?$"
+        if not re.match(pattern, value):
+            raise ValueError("Il civico non è valido")
+
+        return value
+
+    @field_validator("cap")
+    @classmethod
+    def validate_cap(cls, value: str):
+        if not value.isdigit():
+            raise ValueError("Il cap non risulta valido")
+
+        return value
+
+    @field_validator("province")
+    @classmethod
+    def validate_province(cls, value: str):
+        value = validate_province(value)
+        return value
+    
+    @field_validator("city")
+    @classmethod
+    def validate_city(cls, value:str):
+        value = validate_city(value)
+        return value
+
+    @model_validator(mode="after")
+    def validate_model(self):
+        validate_province_city(self.province, self.city)
+        return self
+
+
 def is_valid_name(value: str) -> bool:
     """
     The function `is_valid_name` checks if a given string value is a valid name containing only letters,
@@ -171,3 +210,32 @@ def validate_province_city(province: str, city: str):
 
     if not is_place_of_birth:
         raise ValueError("Il luogo di nascita non combacia con la provincia")
+
+
+def validate_province(province: str):
+    """
+    The function `validate_province` checks if a given province name is valid in Italy.
+    """
+    value = province.upper()
+    for element in PROVINCE_OF_ITALY:
+        sail = element["sail"]
+        name = element["name"]
+
+        if value not in [sail, name]:
+            return value
+
+    raise ValueError("La proivincia non esiste")
+
+
+def validate_city(city: str):
+    """
+    The function `validate_city` checks if a given city is in the list of cities in the provinces of
+    Italy and returns the city if found, otherwise raises a ValueError.
+    """
+    value = city.upper()
+    for element in PROVINCE_OF_ITALY:
+        cities = element["cities"]
+        if value in cities:
+            return value
+
+    raise ValueError("La città non esiste")
