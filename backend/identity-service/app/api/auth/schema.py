@@ -1,8 +1,8 @@
 from pydantic import BaseModel, Field, EmailStr, field_validator, model_validator
 from datetime import date, timedelta
+from typing import Literal
 import re
 
-from database.models import GenderEnum
 from data.province import PROVINCE_OF_ITALY
 
 
@@ -14,7 +14,7 @@ class UserRegistration(BaseModel):
     date_of_birth: date
     place_of_birth: str = Field(max_length=150, min_length=2)
     province_of_birth: str = Field(max_length=150, min_length=2)
-    gender: GenderEnum
+    gender: Literal["male", "female"]
     fiscal_id: str = Field(max_length=16, min_length=16)
 
     phone_number: str = Field(max_length=10, min_length=10)
@@ -35,7 +35,7 @@ class UserRegistration(BaseModel):
                 "date_of_birth": str(date.today() - timedelta(days=365 * 18)),
                 "place_of_birth": "Milano",
                 "province_of_birth": "Milano",
-                "gender": GenderEnum.MALE.__str__(),
+                "gender": "male",
                 "fiscal_id": "MHGTPP05D123D12T",
                 "phone_number": "3330893245",
                 "password": "Ciao1234@",
