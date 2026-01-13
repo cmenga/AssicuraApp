@@ -1,7 +1,5 @@
-from tests.conftest import client
-from tests.conftest import override_get_db
+from tests.conftest import app,override_get_db
 from database.session import get_db 
-from main import app
 from fastapi import status
 from scripts.run_all import run_all
 
@@ -35,8 +33,11 @@ VALID_ADDRESS = {
 }
 
 
-def test_signup_success(client):
-    
+def test_signup_success(client):    
+    """
+    The function `test_signup_success` sends a POST request to the "/auth/sign-up" endpoint with valid
+    user and address data and asserts that the response status code is 204.
+    """
     response = client.post(
         "/auth/sign-up",
         json={
@@ -47,23 +48,29 @@ def test_signup_success(client):
     assert response.status_code == status.HTTP_204_NO_CONTENT
 
 
-# def test_signup_user_already_exists(client):
-#     response = client.post(
-#         "/auth/sign-up",
-#         json={"user": VALID_USER, "address": VALID_ADDRESS},
-#     )
+def test_signup_user_already_exists(client):
+    """
+    The function tests signing up a user who already exists in the system.
+    """
+    response = client.post(
+        "/auth/sign-up",
+        json={"user": VALID_USER, "address": VALID_ADDRESS},
+    )
 
-#     assert response.status_code == status.HTTP_409_CONFLICT
+    assert response.status_code == status.HTTP_409_CONFLICT
 
 
 
-# def test_signup_password_mismatch(client):
-#     bad_user = VALID_USER.copy()
-#     bad_user["confirm_password"] = "WrongPassword1!"
+def test_signup_password_mismatch(client):
+    """
+    The function `test_signup_password_mismatch` tests signing up with mismatched passwords.
+    """
+    bad_user = VALID_USER.copy()
+    bad_user["confirm_password"] = "WrongPassword1!"
 
-#     response = client.post(
-#         "/auth/sign-up",
-#         json={"user": bad_user, "address": VALID_ADDRESS},
-#     )
+    response = client.post(
+        "/auth/sign-up",
+        json={"user": bad_user, "address": VALID_ADDRESS},
+    )
 
-#     assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
