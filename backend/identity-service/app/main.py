@@ -1,5 +1,4 @@
 from fastapi import FastAPI, HTTPException, status
-from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 
 from settings import logger, ORIGINS
@@ -41,6 +40,7 @@ app: FastAPI = FastAPI(title="Core", version="0.0.1", lifespan=startup)
 
 # Middleware
 from middleware import LoggerMiddleware, CheckOriginMiddleware
+from fastapi.middleware.cors import CORSMiddleware
 
 app.add_middleware(CheckOriginMiddleware)
 app.add_middleware(
@@ -59,3 +59,28 @@ from api.auth.router import auth_router
 
 app.include_router(health_router)
 app.include_router(auth_router)
+
+
+# Change response http exception
+from fastapi.requests import Request
+from fastapi.responses import JSONResponse
+from fastapi.exceptions import RequestValidationError
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(
+    request: Request,
+    exc: RequestValidationError,
+):
+    return JSONResponse(
+        status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+        content={
+            "message": "Dati di input non validi",
+            "errors": [
+                {
+                    "field": err["loc"][-1],
+                    "message": err["msg"],
+                }
+                for err in exc.errors()
+            ],
+        },
+    )
