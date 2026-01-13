@@ -16,10 +16,10 @@ def load_from_json(script: str | None = None):
         # print(dumps(values, indent=3))
         for element in values:
             temp = {
-                "sail": element["sigla"],
-                "name": element["nome"],
-                "region": element["regione"]["nome"],
-                "province": element["provincia"]["nome"],
+                "sail": element["sigla"].upper(),
+                "name": element["nome"].upper(),
+                "region": element["regione"]["nome"].upper(),
+                "province": element["provincia"]["nome"].upper(),
                 "cap": element["cap"],
             }
             ITALY_CITIES.append(temp)
