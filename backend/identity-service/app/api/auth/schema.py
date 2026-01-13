@@ -1,9 +1,16 @@
-from pydantic import BaseModel, Field, EmailStr, field_validator, model_validator
+from pydantic import (
+    BaseModel,
+    Field,
+    EmailStr,
+    field_validator,
+    model_validator,
+    ValidationInfo,
+)
 from datetime import date, timedelta
 from typing import Literal
 import re
 
-from data.province import PROVINCE_OF_ITALY
+from data.cities import ITALY_CITIES
 
 
 class UserRegistration(BaseModel):
@@ -79,17 +86,17 @@ class UserRegistration(BaseModel):
 
     @field_validator("fiscal_id")
     @classmethod
-    def validate_fiscal_id(cls, value: str, info):
+    def validate_fiscal_id(cls, value: str, info: ValidationInfo):
         from codicefiscale import codicefiscale
 
         value = value.upper()
 
         fiscal_id = codicefiscale.encode(
-            lastname=info.data.get("last_name"),
-            firstname=info.data.get("first_name"),
-            gender="M" if info.data.get("gender") == "male" else "F",
-            birthdate=info.data.get("date_of_birth").__str__(),
-            birthplace=info.data.get("place_of_birth"),
+            lastname=info.data["last_name"],
+            firstname=info.data["first_name"],
+            gender="M" if info.data["gender"] == "male" else "F",
+            birthdate=info.data["date_of_birth"].__str__(),
+            birthplace=info.data["place_of_birth"],
         )
 
         if value != fiscal_id:
@@ -138,9 +145,9 @@ class UserRegistration(BaseModel):
 class AddressRegistration(BaseModel):
     street: str = Field(max_length=150, min_length=2)
     civic_number: str = Field(max_length=8)
-    cap: str = Field(max_length=5, min_length=5)
     city: str = Field(max_length=150, min_length=2)
     province: str = Field(max_length=150, min_length=2)
+    cap: str = Field(max_length=5, min_length=5)
     type: Literal["domicile", "residence"]
 
     @field_validator("street")
@@ -160,24 +167,26 @@ class AddressRegistration(BaseModel):
 
         return value
 
-    @field_validator("cap")
-    @classmethod
-    def validate_cap(cls, value: str):
-        if not value.isdigit():
-            raise ValueError("Il cap non risulta valido")
-
-        return value
-
     @field_validator("province")
     @classmethod
     def validate_province(cls, value: str):
         value = validate_province(value)
         return value
-    
+
     @field_validator("city")
     @classmethod
-    def validate_city(cls, value:str):
+    def validate_city(cls, value: str):
         value = validate_city(value)
+        return value
+
+    @field_validator("cap")
+    @classmethod
+    def validate_cap(cls, value: str, info: ValidationInfo):
+        if not value.isdigit():
+            raise ValueError("Il cap non risulta valido")
+
+        validate_cap(city=info.data["city"], province=info.data["province"], cap=value)
+
         return value
 
     @model_validator(mode="after")
@@ -201,10 +210,9 @@ def validate_province_city(province: str, city: str):
     provinces and cities in Italy.
     """
     is_place_of_birth: bool = False
-    for element in PROVINCE_OF_ITALY:
-        sail, name, cities = element["sail"], element["name"], element["cities"]
-
-        if city in cities and province in (sail, name):
+    for element in ITALY_CITIES:
+        _sail, _name, _province = element["sail"], element["name"], element["province"]
+        if city in _name and province in (_sail, _province):
             is_place_of_birth = True
             break
 
@@ -217,11 +225,8 @@ def validate_province(province: str):
     The function `validate_province` checks if a given province name is valid in Italy.
     """
     value = province.upper()
-    for element in PROVINCE_OF_ITALY:
-        sail = element["sail"]
-        name = element["name"]
-
-        if value not in [sail, name]:
+    for element in ITALY_CITIES:
+        if value not in [element["sail"], element["province"]]:
             return value
 
     raise ValueError("La proivincia non esiste")
@@ -233,9 +238,30 @@ def validate_city(city: str):
     Italy and returns the city if found, otherwise raises a ValueError.
     """
     value = city.upper()
-    for element in PROVINCE_OF_ITALY:
-        cities = element["cities"]
-        if value in cities:
+    for element in ITALY_CITIES:
+        if value in element["name"]:
             return value
 
     raise ValueError("La città non esiste")
+
+
+def validate_cap(city: str, cap: str, province: str):
+    """
+    The function `validate_cap` checks if a given city, postal code (CAP), and province combination is
+    valid in Italy.
+    """
+    is_valid_cap = False
+
+    for element in ITALY_CITIES:
+        _sail, _province, _name, _cap = (
+            element["sail"],
+            element["province"],
+            element["name"],
+            element["cap"],
+        )
+        if city == _name and province in (_sail, _province) and cap in _cap:
+            is_valid_cap = True
+            break
+
+    if not is_valid_cap:
+        raise ValueError("Il cap inserito non è corretto")
