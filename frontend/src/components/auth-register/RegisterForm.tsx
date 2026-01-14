@@ -1,27 +1,22 @@
 import { CheckCircle, ChevronLeft, ChevronRight } from "lucide-react";
 
-import type { RegisterDTO } from "@/type/auth.register.type";
+import type { ActionResponse, UserRegisterForm } from "@/type/auth.register.type";
 import { RegisterStepOne } from "./register-form/RegisterStepOne";
 import { useState } from "react";
 import { RegisterStepTwo } from "./register-form/RegisterStepTwo";
 import { RegisterStepThree } from "./register-form/RegisterStepThree";
+import { registerUser } from "@/action/auth.register";
+import { useNavigate } from "@tanstack/react-router";
 
-
-
-const FORM_STATE_INIT: RegisterDTO = {
+const FORM_STATE_INIT: UserRegisterForm = {
     first_name: '',
     last_name: '',
     place_of_birth: '',
     date_of_birth: '',
     fiscal_id: '',
     gender: '',
-    cap: '',
-    city: '',
-    civic_number: '',
     email: '',
     phone_number: '',
-    province: '',
-    street: '',
     password: '',
     confirm_password: '',
     license_category: 'A',
@@ -30,10 +25,15 @@ const FORM_STATE_INIT: RegisterDTO = {
     license_number: '',
     accept_terms: true,
     accept_privacy_policy: true,
-    subscribe_to_newsletter: false
+    subscribe_to_newsletter: false,
+    cap: '',
+    city: '',
+    civic_number: '',
+    province: '',
+    street: '',
+    type: 'residence',
+
 };
-
-
 
 type RegisterFormProps = {
     currentStep: number;
@@ -42,24 +42,31 @@ type RegisterFormProps = {
 
 export function RegisterForm(props: RegisterFormProps) {
     const { currentStep, onCurrentStep } = props;
-    const [formData, setState] = useState<RegisterDTO>(FORM_STATE_INIT);
-    console.log(formData);
+    const navigate = useNavigate();
+    const [state, setState] = useState<UserRegisterForm>(FORM_STATE_INIT);
+    const [errors, setErrors] = useState<Record<string,string>>({})
+    
+    async function handleSubmit(event: any) {
+        event.preventDefault();
+        const formData = new FormData(event.currentTarget);
+        const data = Object.fromEntries(formData.entries());
 
-    function handleSubmit(e: any) {
-        e.preventDefault();
+        const mergedData = {...state,...data};
+        setState(mergedData);
+
         if (currentStep < 3) {
             onCurrentStep(currentStep + 1);
-            const newFormData = new FormData(e.currentTarget);
-            const data = Object.fromEntries(newFormData.entries());
-            setState(prev => ({ ...prev, ...data }));
-
-
-        } else {
-            const newFormData = new FormData(e.currentTarget);
-            const data = Object.fromEntries(newFormData.entries());
-            setState(prev => ({ ...prev, ...data }));
-            alert('Registrazione completata! (collegare al backend)');
+            return
         }
+        
+        const response: ActionResponse = await registerUser(mergedData);
+        if (response.success) {
+            navigate({ to: "/auth/login" });
+        }
+        onCurrentStep(1)
+        response.errors && setErrors(response.errors)
+        console.log(response);
+        
     };
 
     function goToPrevStep() {
@@ -69,36 +76,39 @@ export function RegisterForm(props: RegisterFormProps) {
     };
 
     return (
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit}> 
             {currentStep === 1 && <RegisterStepOne
-                firstName={formData.first_name}
-                lastName={formData.last_name}
-                placeOfBirth={formData.place_of_birth}
-                dateOfBirth={formData.date_of_birth}
-                fiscalId={formData.fiscal_id}
-                gender={formData.gender}
+                firstName={state.first_name}
+                lastName={state.last_name}
+                placeOfBirth={state.place_of_birth}
+                dateOfBirth={state.date_of_birth}
+                fiscalId={state.fiscal_id}
+                gender={state.gender}
+                errors={errors}
             />
             }
             {currentStep === 2 && <RegisterStepTwo
-                cap={formData.cap}
-                city={formData.city}
-                civicNumber={formData.civic_number}
-                email={formData.email}
-                phoneNumber={formData.phone_number}
-                province={formData.province}
-                street={formData.street}
+                cap={state.cap}
+                city={state.city}
+                civicNumber={state.civic_number}
+                email={state.email}
+                phoneNumber={state.phone_number}
+                province={state.province}
+                street={state.street}
+                errors={errors}
             />}
 
             {currentStep === 3 && <RegisterStepThree
-                acceptPrivacyPolicy={formData.accept_privacy_policy}
-                acceptTerms={formData.accept_terms}
-                confirmPassword={formData.confirm_password}
-                licenseCategory={formData.license_category}
-                licenseExpiryDate={formData.license_expiry_date}
-                licenseIssueDate={formData.license_issue_date}
-                licenseNumber={formData.license_number}
-                subscribeToNewsletter={formData.subscribe_to_newsletter}
-                password={formData.password}
+                acceptPrivacyPolicy={state.accept_privacy_policy}
+                acceptTerms={state.accept_terms}
+                confirmPassword={state.confirm_password}
+                licenseCategory={state.license_category}
+                licenseExpiryDate={state.license_expiry_date}
+                licenseIssueDate={state.license_issue_date}
+                licenseNumber={state.license_number}
+                subscribeToNewsletter={state.subscribe_to_newsletter}
+                password={state.password}
+                errors={errors}
             />}
 
             {/* Navigation Buttons */}

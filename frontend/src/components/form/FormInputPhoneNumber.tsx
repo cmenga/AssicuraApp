@@ -1,14 +1,15 @@
 import type { InputProps } from "@/type/form.type";
 import { Phone } from "lucide-react";
-import { useState, type InputHTMLAttributes } from "react";
+import { useState, type InputHTMLAttributes, type ReactNode } from "react";
 
 type FormInputPhoneNumber = {
-} & Omit<InputProps, "labelName"> & Omit<InputHTMLAttributes<HTMLInputElement>, "type" | "required" | "value" | "onChange" | "className"> ;
+    children?: ReactNode;
+} & Omit<InputProps, "labelName"> & Omit<InputHTMLAttributes<HTMLInputElement>, "type" | "required" | "value" | "onChange" | "className">;
 
 export function FormInputPhoneNumber(props: FormInputPhoneNumber) {
-    const { previous, ..._props } = props;
-    const [value, setValue] = useState<string|undefined>(previous)
-    
+    const { previous, children, ..._props } = props;
+    const [value, setValue] = useState<string | undefined>(previous);
+
     return (
         <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -20,11 +21,12 @@ export function FormInputPhoneNumber(props: FormInputPhoneNumber) {
                     type="tel"
                     required
                     value={value}
-                    onChange={(e)=> setValue(e.target.value)}
+                    onChange={(e) => setValue(e.target.value)}
                     className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
                     {..._props}
                 />
             </div>
+            {children}
         </div>
     );
 }

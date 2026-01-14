@@ -6,4 +6,4 @@ export const authApi = axios.create({
   headers: {
     'Content-Type': 'application/json'
   }
-})
+});

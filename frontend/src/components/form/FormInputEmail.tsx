@@ -1,15 +1,16 @@
 import type { InputProps } from "@/type/form.type";
 import { Mail } from "lucide-react";
-import { useState, type InputHTMLAttributes } from "react";
+import { useState, type InputHTMLAttributes, type ReactNode } from "react";
 
 
 type FormInputEmailProps = {
     isRequired?: boolean;
+    children: ReactNode;
 } & Omit<InputProps, "labelName"> & Omit<InputHTMLAttributes<HTMLInputElement>, "type" | "required" | "value" | "onChange" | "className">;
 
 export function FormInputEmail(props: FormInputEmailProps) {
-    const { previous, isRequired = false, ..._props } = props;    
-    const [value, setValue] = useState<string | undefined>(previous)
+    const { previous, isRequired = false, children, ..._props } = props;
+    const [value, setValue] = useState<string | undefined>(previous);
 
     return (
         <div>
@@ -27,6 +28,7 @@ export function FormInputEmail(props: FormInputEmailProps) {
                     {..._props}
                 />
             </div>
+            {children}
         </div>
     );
 }

@@ -1,13 +1,15 @@
 import type { InputProps } from "@/type/form.type";
 import { Calendar } from "lucide-react";
-import { useState, type InputHTMLAttributes } from "react";
+import { useState, type InputHTMLAttributes, type ReactNode } from "react";
 
 
-type DateProps = InputProps & Omit<InputHTMLAttributes<HTMLInputElement> , "type" |"required" | "className" | "value" | "onChange" >;
+type DateProps = {
+    children?: ReactNode;
+} & InputProps & Omit<InputHTMLAttributes<HTMLInputElement>, "type" | "required" | "className" | "value" | "onChange">;
 
 export function FormInputDate(props: DateProps) {
-    const { labelName, previous, ..._props} = props;
-    const [value, setValue] = useState<string | undefined>(previous)
+    const { labelName, previous, children, ..._props } = props;
+    const [value, setValue] = useState<string | undefined>(previous);
 
     return (
         <div>
@@ -25,6 +27,7 @@ export function FormInputDate(props: DateProps) {
                     {..._props}
                 />
             </div>
+            {children}
         </div>
     );
 }

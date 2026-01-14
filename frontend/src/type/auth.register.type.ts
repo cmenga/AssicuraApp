@@ -1,5 +1,18 @@
 
-export interface RegisterDTO {
+export interface UserRegisterDTO {
+  user: UserData;
+  address: UserAddress;
+}
+
+export interface ActionResponse {
+  success: boolean;
+  message: string;
+  errors?: Record<string, string>;
+  data?: any;
+}
+
+export type UserRegisterForm = UserData & UserLicense & UserAddress;
+export interface UserData {
   first_name: string;
   last_name: string;
   fiscal_id: string;
@@ -8,15 +21,6 @@ export interface RegisterDTO {
   gender: string;
   email: string;
   phone_number: string;
-  street: string;
-  civic_number: string;
-  cap: string;
-  city: string;
-  province: string;
-  license_number: string;
-  license_issue_date: string;
-  license_expiry_date: string;
-  license_category: string;
   password: string,
   confirm_password: string,
   accept_terms: boolean,
@@ -24,7 +28,21 @@ export interface RegisterDTO {
   subscribe_to_newsletter: boolean,
 }
 
+export interface UserLicense {
+  license_number: string;
+  license_issue_date: string;
+  license_expiry_date: string;
+  license_category: string;
+}
 
+export interface UserAddress {
+  street: string;
+  civic_number: string;
+  cap: string;
+  city: string;
+  province: string;
+  type: "domicile" | "residence";
+}
 export interface DropdownOptions {
   value: string;
   name: string;

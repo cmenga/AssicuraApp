@@ -7,13 +7,13 @@ import type { DropdownOptions } from "@/type/auth.register.type";
 import { FormInputDate } from "@/components/form/FormInputDate";
 import { FormInputPassword } from "@/components/form/FormInputPassword";
 import { FormInputCheckbox } from "@/components/form/FormInputCheckbox";
+import { ErrorMessage } from "./ErrorMessage";
 
 const LICENSE_OPTIONS: DropdownOptions[] = [
     { value: "A", name: "A - Moto" },
     { value: "B", name: "B - Auto" },
     { value: "C", name: "C - Veicoli commerciali" }
 ];
-
 
 type RegisterStepTrheeProps = {
     licenseNumber: string;
@@ -25,10 +25,11 @@ type RegisterStepTrheeProps = {
     acceptTerms: boolean;
     acceptPrivacyPolicy: boolean;
     subscribeToNewsletter: boolean;
+    errors?: Record<string, string>;
 };
 
 export function RegisterStepThree(props: RegisterStepTrheeProps) {
-    const { licenseCategory, licenseExpiryDate, licenseIssueDate, licenseNumber, password, confirmPassword, acceptPrivacyPolicy, acceptTerms, subscribeToNewsletter } = props;
+    const { licenseCategory, licenseExpiryDate, licenseIssueDate, licenseNumber, password, confirmPassword, acceptPrivacyPolicy, acceptTerms, subscribeToNewsletter, errors } = props;
 
     return (
         <div className="space-y-6">
@@ -48,26 +49,36 @@ export function RegisterStepThree(props: RegisterStepTrheeProps) {
                 placeholder="U1ABC1234567"
                 previous={licenseNumber}
                 name="license_number"
-            />
+                minLength={9}
+                maxLength={9}
+            >
+                {errors?.license_number && <ErrorMessage message={errors.license_number} />}
+            </FormInputText>
 
             <FormInputDropdown
                 labelName="Categoria Patente"
                 options={LICENSE_OPTIONS}
                 previous={licenseCategory}
                 name="license_category"
-            />
+            >
+                {errors?.license_category && <ErrorMessage message={errors.license_category} />}
+            </FormInputDropdown>
 
             <div className="grid md:grid-cols-2 gap-6">
                 <FormInputDate
                     labelName="Data Rialscio"
                     previous={licenseIssueDate}
                     name="license_issue_date"
-                />
+                >
+                    {errors?.license_issue_date && <ErrorMessage message={errors.license_issue_date} />}
+                </FormInputDate>
                 <FormInputDate
                     labelName="Date Scadenza"
                     previous={licenseExpiryDate}
                     name="license_expiry_date"
-                />
+                >
+                    {errors?.license_expiry_date && <ErrorMessage message={errors.license_expiry_date} />}
+                </FormInputDate>
             </div>
 
             <div className="border-t border-gray-200 pt-6 mt-6">
@@ -80,7 +91,9 @@ export function RegisterStepThree(props: RegisterStepTrheeProps) {
                     autoComplete="new-password"
                     previous={password}
                     name="password"
-                />
+                >
+                    {errors?.password && <ErrorMessage message={errors.password}/> }
+                </FormInputPassword>
                 <FormInputPassword
                     labelName="Conferma Password"
                     isRequired
@@ -88,7 +101,9 @@ export function RegisterStepThree(props: RegisterStepTrheeProps) {
                     minLength={8}
                     previous={confirmPassword}
                     name="confirm_password"
-                />
+                >
+                    {errors?.confirm_password && <ErrorMessage message={errors.confirm_password} />}
+                </FormInputPassword>
             </div>
 
             <div className="space-y-4 pt-6 border-t border-gray-200">
