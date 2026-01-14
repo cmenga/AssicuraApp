@@ -78,7 +78,7 @@ async def validation_exception_handler(
             "errors": [
                 {
                     "field": err["loc"][-1],
-                    "message": err["msg"],
+                    "message": err["msg"].replace("Value error, ",""),
                 }
                 for err in exc.errors()
             ],

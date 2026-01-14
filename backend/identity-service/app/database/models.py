@@ -14,7 +14,6 @@ class User(Base):
     fiscal_id: Mapped[str] = mapped_column(String(16), nullable=False, unique=True)
     date_of_birth: Mapped[date] = mapped_column(Date, nullable=False)
     place_of_birth: Mapped[str] = mapped_column(String(150), nullable=False)
-    province_of_birth: Mapped[str] = mapped_column(String(150),nullable=False) 
     gender: Mapped[str] = mapped_column(String(8),nullable=False)
     email: Mapped[str] = mapped_column(String(150), nullable=False) 
     phone_number: Mapped[str] = mapped_column(String(15), nullable=False) 

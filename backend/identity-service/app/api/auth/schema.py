@@ -3,8 +3,7 @@ from pydantic import (
     Field,
     EmailStr,
     field_validator,
-    model_validator,
-    ValidationInfo,
+    model_validator
 )
 from datetime import date, timedelta
 from typing import Literal
@@ -19,7 +18,6 @@ class UserRegistration(BaseModel):
 
     date_of_birth: date
     place_of_birth: str = Field(max_length=150, min_length=2)
-    province_of_birth: str = Field(max_length=150, min_length=2)
     gender: Literal["male", "female"]
     fiscal_id: str = Field(max_length=16, min_length=16)
 
@@ -40,7 +38,6 @@ class UserRegistration(BaseModel):
                 "last_name": "LastName",
                 "date_of_birth": str(date.today() - timedelta(days=365 * 18)),
                 "place_of_birth": "Milano",
-                "province_of_birth": "Milano",
                 "gender": "male",
                 "fiscal_id": "MHGTPP05D123D12T",
                 "phone_number": "3330893245",
@@ -77,12 +74,6 @@ class UserRegistration(BaseModel):
         value = validate_city(value)
         return value
 
-    @field_validator("province_of_birth")
-    @classmethod
-    def validate_province_of_birth(cls, value: str):
-        value = validate_province(value)
-        return value
-
     @field_validator("phone_number")
     @classmethod
     def validate_phone_number(cls, value: str):
@@ -111,9 +102,6 @@ class UserRegistration(BaseModel):
 
     @model_validator(mode="after")
     def validate_first(self):
-        validate_province_city(
-            province=self.province_of_birth, city=self.place_of_birth
-        )
         validate_fiscal_id(
             self.fiscal_id,
             last_name=self.last_name,
@@ -194,7 +182,7 @@ class AddressRegistration(BaseModel):
 
     @field_validator("cap")
     @classmethod
-    def validate_cap(cls, value: str, info: ValidationInfo):
+    def validate_cap(cls, value: str):
         if not value.isdigit():
             raise ValueError("Il cap non risulta valido")
         return value
@@ -228,7 +216,7 @@ def validate_province_city(province: str, city: str):
             break
 
     if not is_place_of_birth:
-        raise ValueError("Il luogo di nascita non combacia con la provincia")
+        raise ValueError("La città non combacia con la provincia inserita")
 
 
 def validate_province(province: str):
