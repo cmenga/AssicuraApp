@@ -1,5 +1,5 @@
 
-import { Footer } from '@/features/footer/Footer';
+import { Footer } from '@/components/footer/Footer';
 import { AuthNavigation } from '@/features/navigation/AuthNavigation';
 import { createFileRoute, Outlet, redirect } from '@tanstack/react-router';
 
