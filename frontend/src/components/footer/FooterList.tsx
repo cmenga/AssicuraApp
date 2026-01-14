@@ -1,4 +1,4 @@
-import type { FooterListModel } from "./type";
+import type { FooterListModel } from "@/type/footer.type";
 
 
 export function FooterList(props: FooterListModel) {
