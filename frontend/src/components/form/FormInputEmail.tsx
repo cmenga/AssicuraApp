@@ -1,13 +1,15 @@
-import type { InputProps } from "@/shared/type";
+import type { InputProps } from "@/type/app.type";
 import { Mail } from "lucide-react";
+import { useState, type InputHTMLAttributes } from "react";
 
 
 type FormInputEmailProps = {
     isRequired?: boolean;
-} & InputProps;
+} & Omit<InputProps, "labelName"> & Omit<InputHTMLAttributes<HTMLInputElement>, "type" | "required" | "value" | "onChange" | "className">;
 
 export function FormInputEmail(props: FormInputEmailProps) {
-    const { previous, isRequired = false, onFormData } = props;
+    const { previous, isRequired = false, ..._props } = props;    
+    const [value, setValue] = useState<string | undefined>(previous)
 
     return (
         <div>
@@ -19,10 +21,10 @@ export function FormInputEmail(props: FormInputEmailProps) {
                 <input
                     type="email"
                     required
-                    value={previous}
-                    onChange={onFormData}
-                    placeholder="mario.rossi@email.com"
+                    value={value}
+                    onChange={(e) => setValue(e.target.value)}
                     className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+                    {..._props}
                 />
             </div>
         </div>

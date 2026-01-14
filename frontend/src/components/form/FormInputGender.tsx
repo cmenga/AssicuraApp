@@ -1,23 +1,23 @@
-import type { InputProps } from "@/shared/type";
+import { useState } from "react";
+import type { InputProps } from "@/type/app.type";
 
 
-type FormInputGenderProps = {
-    onFormData: (field: string, value: string) => void;
-} & Omit<InputProps, "onFormData">;
+type FormInputGenderProps = {name?: string} & InputProps;
 
 export function FormInputGender(props: FormInputGenderProps) {
-    const { previous, onFormData } = props;
-    console.log(previous);
+    const { labelName, previous, name } = props;
+    const [value, setValue] = useState<string | undefined>(previous);
+    
     return (
         <div>
             <label className="block text-sm font-medium text-gray-700 mb-3">
-                Sesso <span className="text-red-500">*</span>
+                {labelName} <span className="text-red-500">*</span>
             </label>
             <div className="grid grid-cols-2 gap-4">
                 <button
                     type="button"
-                    onClick={() => onFormData("gender", "M")}
-                    className={`py-4 px-6 rounded-xl border-2 font-semibold transition-all ${previous === 'M'
+                    onClick={() => setValue("male")}
+                    className={`py-4 px-6 rounded-xl border-2 font-semibold transition-all ${value === 'male'
                         ? 'border-blue-600 bg-blue-50 text-blue-600 shadow-md'
                         : 'border-gray-300 text-gray-700 hover:border-blue-300 hover:bg-gray-50'
                         }`}
@@ -26,8 +26,8 @@ export function FormInputGender(props: FormInputGenderProps) {
                 </button>
                 <button
                     type="button"
-                    onClick={() => onFormData('gender', 'F')}
-                    className={`py-4 px-6 rounded-xl border-2 font-semibold transition-all ${previous === 'F'
+                    onClick={() => setValue('female')}
+                    className={`py-4 px-6 rounded-xl border-2 font-semibold transition-all ${value === 'female'
                         ? 'border-blue-600 bg-blue-50 text-blue-600 shadow-md'
                         : 'border-gray-300 text-gray-700 hover:border-blue-300 hover:bg-gray-50'
                         }`}
@@ -35,6 +35,7 @@ export function FormInputGender(props: FormInputGenderProps) {
                     Femmina
                 </button>
             </div>
+            <input type="text" value={value} className="hidden" name={name} onChange={(e) => {e}} />
         </div>
     );
 }

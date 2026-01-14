@@ -1,33 +1,31 @@
-import { useState } from "react";
+import { useState, type InputHTMLAttributes } from "react";
 import { Eye, EyeOff, Lock } from "lucide-react";
-import type { InputProps } from "@/shared/type";
+import type { InputProps } from "@/type/app.type";
 
 
 export type FormInputPasswordProps = {
-    label: string;
     isRequired?: boolean;
-    placeholder?: string;
-    minLenght?: number;
-} & InputProps;
+} & InputProps & Omit<InputHTMLAttributes<HTMLInputElement>, "type" | "required" | "value" | "onChange" | "className" >;
 
 export function FormInputPassword(props: FormInputPasswordProps) {
-    const {onFormData, previous, label, isRequired, placeholder, minLenght } = props;
+    const { labelName, previous, isRequired, ..._props } = props;
     const [showPassword, setShowPassword] = useState(false);
+    const [value, setValue] = useState<string | undefined>(previous)
+
     return (
         <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-                {label} {isRequired && <span className="text-red-500">*</span>}
+                {labelName} {isRequired && <span className="text-red-500">*</span>}
             </label>
             <div className="relative">
                 <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                 <input
                     type={showPassword ? "text" : "password"}
                     required
-                    value={previous}
-                    onChange={onFormData}
-                    placeholder={placeholder}
-                    minLength={minLenght}
+                    value={value}
+                    onChange={(e)=> setValue(e.target.value)}
                     className="w-full pl-12 pr-12 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+                    {..._props}
                 />
                 <button
                     type="button"

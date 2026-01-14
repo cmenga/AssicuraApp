@@ -1,36 +1,33 @@
-import type { InputProps } from "@/shared/type";
-import type { ComponentType, ReactNode } from "react";
+import { useState, type ComponentType, type InputHTMLAttributes, type ReactNode } from "react";
 
 
 type TextProps = {
     icon?: ComponentType<{ className?: string; }>;
-    placeholder?: string;
-    label: string;
+    labelName: string;
     children?: ReactNode;
-    pattern?: string;
-    maxLength?: number;
-} & InputProps;
+    previous?: string
+} & Omit<InputHTMLAttributes<HTMLInputElement>, "type" | "required" | "value" | "className" | "onChange">;
 
 export function FormInputText(props: TextProps) {
-    const { onFormData, previous, icon, placeholder, label, children, pattern, maxLength } = props;
+    const { icon, children, labelName,previous, ..._props } = props;
     const IconComponent = icon;
+
+    const [value, setValue] = useState<string | undefined>(previous)
 
     return (
         <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-                {label} <span className="text-red-500">*</span>
+                {labelName} <span className="text-red-500">*</span>
             </label>
             <div className="relative">
                 {IconComponent && <IconComponent className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />}
                 <input
                     type="text"
                     required
-                    value={previous}
-                    onChange={onFormData}
-                    placeholder={placeholder}
-                    pattern={pattern}
-                    maxLength={maxLength}
+                    value={value}
+                    onChange={(e) => setValue(e.target.value)}
                     className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+                    {..._props}
                 />
             </div>
             {children}
