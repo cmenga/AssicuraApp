@@ -1,8 +1,8 @@
-import { FormInputEmail } from "@/shared/components/form/FormInputEmail";
+import { FormInputEmail } from "@/components/form/FormInputEmail";
 
 import { useState, type FormEvent } from "react";
 import { RememberMe } from "./components/RememberMe";
-import { FormInputPassword } from "@/shared/components/form/FormInputPassword";
+import { FormInputPassword } from "@/components/form/FormInputPassword";
 import { Link } from "@tanstack/react-router";
 
 
@@ -15,7 +15,6 @@ export function LoginForm() {
 
     const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        console.log('Login:', formData);
     };
 
     return (
