@@ -1,8 +1,9 @@
-import type { InputProps } from "@/shared/type";
+import type { ChangeEvent } from "react";
 
 type RememberMeProps = {
     previous: boolean
-} & Omit<InputProps, "previous">;
+    onFormData: (e: ChangeEvent<HTMLInputElement>) => void
+};
 
 export function RememberMe(props: RememberMeProps) {
     const { onFormData, previous } = props;

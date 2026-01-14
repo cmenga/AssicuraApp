@@ -1,9 +1,10 @@
-import { FormInputEmail } from "@/components/form/FormInputEmail";
 
-import { useState, type FormEvent } from "react";
-import { RememberMe } from "./components/RememberMe";
-import { FormInputPassword } from "@/components/form/FormInputPassword";
+import { useState,type FormEvent } from "react";
 import { Link } from "@tanstack/react-router";
+
+import { FormInputEmail } from "@/components/form/FormInputEmail";
+import { FormInputPassword } from "@/components/form/FormInputPassword";
+import { RememberMe } from "./RememberMe";
 
 
 export function LoginForm() {
@@ -26,17 +27,18 @@ export function LoginForm() {
 
             <form onSubmit={handleSubmit} className="space-y-6">
                 <FormInputEmail
-                    onFormData={(e) => setFormData({ ...formData, email: e.target.value })}
                     previous={formData.email}
+                    placeholder="mario.rossi@example.com"
+                    autoComplete="username"
                 />
                 <FormInputPassword
-                    onFormData={(e) => setFormData({ ...formData, password: e.target.value })}
                     previous={formData.password}
-                    label="Password"
+                    labelName="Password"
                     placeholder="••••••••"
+                    autoComplete="current-password"
                 />
                 <div className="flex items-center justify-between">
-                    <RememberMe onFormData={(e) => e.target.checked} previous={formData.rememberMe} />
+                    <RememberMe onFormData={(e) =>setFormData({...formData, rememberMe: e.target.checked})} previous={formData.rememberMe} />
                     <a href="#" className="text-sm text-blue-600 hover:text-blue-700 font-medium">
                         Password dimenticata?
                     </a>
