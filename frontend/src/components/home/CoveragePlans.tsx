@@ -1,5 +1,5 @@
 import { CoveragePlan } from "./CoveragePlan";
-import type { CoverageModel } from "./type";
+import type { CoverageModel } from "@/type/home.type";
 
 
 const coverages: CoverageModel[] = [

@@ -1,5 +1,5 @@
 import { Star } from "lucide-react";
-import type { ReviewModel } from "./type";
+import type { ReviewModel } from "@/type/home.type";
 
 export function ReviewCard(props: ReviewModel) {
     const { name, rating, text, vehicle } = props;

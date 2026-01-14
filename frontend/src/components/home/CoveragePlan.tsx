@@ -1,5 +1,5 @@
 import { CheckCircle } from "lucide-react";
-import type { CoverageModel } from "./type";
+import type { CoverageModel } from "@/type/home.type";
 
 
 export function CoveragePlan(props: CoverageModel) {

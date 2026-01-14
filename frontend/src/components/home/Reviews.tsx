@@ -1,5 +1,5 @@
 import { ReviewCard } from "./ReviewCard";
-import type { ReviewModel } from "./type";
+import type { ReviewModel } from "@/type/home.type";
 
 const reviews: ReviewModel[] = [
     {
