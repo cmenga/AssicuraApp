@@ -5,7 +5,7 @@ import { CTAButtons } from '@/components/home/CTAButtons';
 import { HeroSectionWithQuoteForm } from '@/components/home/HeroSectionWithQuoteForm';
 import { Reviews } from '@/components/home/Reviews';
 import { StatsSection } from '@/components/home/StatsSection';
-import { MainNavigation } from '@/features/navigation/MainNavigation';
+import { MainNavigation } from '@/components/navigation/MainNavigation';
 import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/home')({
