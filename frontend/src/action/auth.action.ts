@@ -1,5 +1,5 @@
 import { authApi } from "@/api/auth-service";
-import type { UserRegisterDTO, UserAddress, UserData, UserLicense, ActionResponse } from "@/type/auth.register.type";
+import type { UserRegisterDTO, UserAddress, UserData, UserLicense, UserLoginDTO,ActionResponse } from "@/type/auth.type";
 
 
 /**
@@ -137,3 +137,38 @@ async function conflictResponse(data: any): Promise<ActionResponse> {
   return { message: "409", success: false, errors:{existing_user: data.detail} };
 }
 
+
+
+
+
+/**
+ * The function `submitUserLogin` handles user login authentication and stores tokens in local storage
+ * or session storage based on user preference.
+ * @param {UserLoginDTO} data - The `data` parameter in the `submitUserLogin` function is of type
+ * `UserLoginDTO`, which likely contains the user login information such as username and password
+ * needed for authentication.
+ * @param {boolean} isRemember - The `isRemember` parameter in the `submitUserLogin` function is a
+ * boolean value that indicates whether the user has chosen to remember their login credentials. If
+ * `isRemember` is `true`, the function will store the refresh token in the local storage for future
+ * use. If `isRemember`
+ * @returns The `submitUserLogin` function returns a Promise that resolves to an `ActionResponse`
+ * object. The `ActionResponse` object contains a `message` property indicating the result of the login
+ * request, a `success` property indicating whether the request was successful, and an optional
+ * `errors` property containing any error details.
+ */
+export async function submitUserLogin(data: UserLoginDTO, isRemember: boolean): Promise<ActionResponse> {
+  const response = await authApi.post("/sign-in", data);
+
+  switch (response.status) {
+    case 404:
+      return { message: "User not found", errors:{user: response.data.detail}, success: false };
+    case 401:
+      return { message: "User not authorized", errors:{user: response.data.detail}, success: false};
+  }
+  const access_token = response.data.access_token;
+  const refresh_token = response.data.refresh_token;
+
+  isRemember && localStorage.setItem("jwt_refresh",JSON.stringify({refresh_token: refresh_token, type: response.data.type}))
+  sessionStorage.setItem("jwt_access",JSON.stringify({access_token: access_token, type: response.data.type}))
+  return {message: "Request Successfull", success: true}
+}

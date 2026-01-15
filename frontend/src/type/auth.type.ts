@@ -1,15 +1,23 @@
 
-export interface UserRegisterDTO {
-  user: UserData;
-  address: UserAddress;
-}
-
 export interface ActionResponse {
   success: boolean;
   message: string;
   errors?: Record<string, string>;
   data?: any;
 }
+
+export interface UserLoginDTO {
+  email: string;
+  password: string;
+}
+
+
+export interface UserRegisterDTO {
+  user: UserData;
+  address: UserAddress;
+}
+
+
 
 export type UserRegisterForm = UserData & UserLicense & UserAddress;
 export interface UserData {

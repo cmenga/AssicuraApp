@@ -3,7 +3,7 @@ import { FormInputEmail } from "@/components/form/FormInputEmail";
 import { FormInputPhoneNumber } from "@/components/form/FormInputPhoneNumber";
 import { FormInputText } from "@/components/form/FormInputText";
 import { Home } from "lucide-react";
-import { ErrorMessage } from "./ErrorMessage";
+import { ErrorMessage } from "../../form/ErrorMessage";
 import { handleCivicKeyPress, handleEmailKeyPress, handleNameKeyPress, handleNumberKeyPress, handleProvinceKeyPress, handleStreetKeyPress } from "@/utils/auth.register.utils";
 
 

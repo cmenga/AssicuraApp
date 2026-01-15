@@ -3,11 +3,11 @@ import { FileText } from "lucide-react";
 import { FormHeader } from "./FormHeader";
 import { FormInputText } from "@/components/form/FormInputText";
 import { FormInputDropdown } from "@/components/form/FormInputDropdown";
-import type { DropdownOptions } from "@/type/auth.register.type";
+import type { DropdownOptions } from "@/type/auth.type";
 import { FormInputDate } from "@/components/form/FormInputDate";
 import { FormInputPassword } from "@/components/form/FormInputPassword";
 import { FormInputCheckbox } from "@/components/form/FormInputCheckbox";
-import { ErrorMessage } from "./ErrorMessage";
+import { ErrorMessage } from "../../form/ErrorMessage";
 import { handleDrivingLicenseKeyPress, handlePasswordKeyPress } from "@/utils/auth.register.utils";
 
 const LICENSE_OPTIONS: DropdownOptions[] = [

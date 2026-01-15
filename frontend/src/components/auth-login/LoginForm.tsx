@@ -1,21 +1,39 @@
 
-import { useState,type FormEvent } from "react";
-import { Link } from "@tanstack/react-router";
+import { useState, type FormEvent } from "react";
+import { Link, useNavigate } from "@tanstack/react-router";
 
 import { FormInputEmail } from "@/components/form/FormInputEmail";
 import { FormInputPassword } from "@/components/form/FormInputPassword";
-import { RememberMe } from "./RememberMe";
+
+import { FormInputCheckbox } from "../form/FormInputCheckbox";
+import type { UserLoginDTO } from "@/type/auth.type";
+import { submitUserLogin } from "@/action/auth.action";
+import { ErrorMessage } from "../form/ErrorMessage";
 
 
 export function LoginForm() {
-    const [formData, setFormData] = useState({
-        email: '',
-        password: '',
-        rememberMe: false
-    });
+    const confirm_message: string | null = sessionStorage.getItem("sign-up");
+    const [error, setError] = useState<string | undefined>(undefined);
+    const navigate = useNavigate();
 
-    const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
+
+    async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+        event.preventDefault();
+
+        const formData = new FormData(event.currentTarget);
+        const data = Object.fromEntries(formData.entries()) as Record<string, FormDataEntryValue>;
+
+        const mergedData: UserLoginDTO = {
+            email: String(data["email"]),
+            password: String(data["password"]),
+        };
+        const isRemember = Boolean(data["rememberMe"])
+        const response = await submitUserLogin(mergedData,isRemember);
+        if (response.success) {
+            sessionStorage.removeItem("sign-up");
+            navigate({ to: "/home" });
+        }
+        response.errors && setError(response.errors.user);
     };
 
     return (
@@ -23,22 +41,28 @@ export function LoginForm() {
             <div className="mb-8">
                 <h2 className="text-3xl font-bold text-gray-900 mb-2">Accedi</h2>
                 <p className="text-gray-600">Inserisci le tue credenziali per continuare</p>
+                {confirm_message && (<p className="text-green-600 text-sm bg-green-50 border-sm rounded-sm p-2 mt-2">
+                    Registrazione avvenuta con successo, accedi per confermare la patente
+                </p>)}
+                {error && <ErrorMessage message={error} />}
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
                 <FormInputEmail
-                    previous={formData.email}
                     placeholder="mario.rossi@example.com"
                     autoComplete="username"
+                    name="email"
                 />
                 <FormInputPassword
-                    previous={formData.password}
                     labelName="Password"
                     placeholder="••••••••"
                     autoComplete="current-password"
+                    name="password"
                 />
                 <div className="flex items-center justify-between">
-                    <RememberMe onFormData={(e) =>setFormData({...formData, rememberMe: e.target.checked})} previous={formData.rememberMe} />
+                    <FormInputCheckbox name="rememberMe">
+                        <span className="text-sm text-gray-700">Ricordami</span>
+                    </FormInputCheckbox>
                     <a href="#" className="text-sm text-blue-600 hover:text-blue-700 font-medium">
                         Password dimenticata?
                     </a>
@@ -46,12 +70,11 @@ export function LoginForm() {
 
                 <button
                     type="submit"
-                    className="w-full bg-linear-to-r from-blue-600 to-cyan-500 text-white py-3 rounded-xl font-semibold text-lg hover:shadow-xl transition transform hover:-translate-y-0.5"
+                    className="cursor-pointer w-full bg-linear-to-r from-blue-600 to-cyan-500 text-white py-3 rounded-xl font-semibold text-lg hover:shadow-xl transition transform hover:-translate-y-0.5"
                 >
                     Accedi
                 </button>
             </form>
-            {/* TODO: aggiungere Link di Tanstack per la navigazione */}
             <div className="mt-8 text-center">
                 <p className="text-gray-600 ">
                     Non hai un account?{' '}

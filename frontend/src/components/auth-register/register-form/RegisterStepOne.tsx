@@ -5,7 +5,7 @@ import { FormInputGender } from "@/components/form/FormInputGender";
 import { FormHeader } from "./FormHeader";
 import { FileText, MapPin, User } from "lucide-react";
 import { getMaxRegisterDate, handleFiscalIdKeyPress, handleNameKeyPress } from "@/utils/auth.register.utils";
-import { ErrorMessage } from "./ErrorMessage";
+import { ErrorMessage } from "../../form/ErrorMessage";
 
 
 type RegisterSteOneProps = {

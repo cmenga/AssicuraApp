@@ -1,5 +1,5 @@
 import type { InputProps } from "@/type/form.type";
-import type { DropdownOptions } from "@/type/auth.register.type";
+import type { DropdownOptions } from "@/type/auth.type";
 import { useState, type InputHTMLAttributes } from "react";
 
 

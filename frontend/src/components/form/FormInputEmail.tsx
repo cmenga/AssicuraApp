@@ -5,7 +5,7 @@ import { useState, type InputHTMLAttributes, type ReactNode } from "react";
 
 type FormInputEmailProps = {
     isRequired?: boolean;
-    children: ReactNode;
+    children?: ReactNode;
 } & Omit<InputProps, "labelName"> & Omit<InputHTMLAttributes<HTMLInputElement>, "type" | "required" | "value" | "onChange" | "className">;
 
 export function FormInputEmail(props: FormInputEmailProps) {
