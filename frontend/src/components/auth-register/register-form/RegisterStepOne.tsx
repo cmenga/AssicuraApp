@@ -4,7 +4,7 @@ import { FormInputGender } from "@/components/form/FormInputGender";
 
 import { FormHeader } from "./FormHeader";
 import { FileText, MapPin, User } from "lucide-react";
-import { getMaxRegisterDate, handleNameKeyPress } from "@/utils/auth.register.utils";
+import { getMaxRegisterDate, handleFiscalIdKeyPress, handleNameKeyPress } from "@/utils/auth.register.utils";
 import { ErrorMessage } from "./ErrorMessage";
 
 
@@ -36,6 +36,7 @@ export function RegisterStepOne(props: RegisterSteOneProps) {
                     name="first_name"
                     previous={firstName}
                     onKeyDown={handleNameKeyPress}
+                    minLength={2}
                 >
                     {errors?.first_name && <ErrorMessage message={errors.first_name} />}
                 </FormInputText>
@@ -45,6 +46,8 @@ export function RegisterStepOne(props: RegisterSteOneProps) {
                     placeholder="Rossi"
                     name="last_name"
                     previous={lastName}
+                    onKeyDown={handleNameKeyPress}
+                    minLength={2}
                 >
                     {errors?.last_name && <ErrorMessage message={errors.last_name} />}
                 </FormInputText>
@@ -58,6 +61,8 @@ export function RegisterStepOne(props: RegisterSteOneProps) {
                 maxLength={16}
                 minLength={16}
                 previous={fiscalId}
+                onKeyDown={handleFiscalIdKeyPress}
+                style={{ textTransform: 'uppercase' }}
             >
                 {errors?.fiscal_id && <ErrorMessage message={errors.fiscal_id} />}
             </FormInputText>
@@ -78,6 +83,7 @@ export function RegisterStepOne(props: RegisterSteOneProps) {
                     placeholder="Roma"
                     name="place_of_birth"
                     previous={placeOfBirth}
+                    onKeyDown={handleNameKeyPress}
                 >
                     {errors?.place_of_birth && <ErrorMessage message={errors.place_of_birth} />}
                 </FormInputText>

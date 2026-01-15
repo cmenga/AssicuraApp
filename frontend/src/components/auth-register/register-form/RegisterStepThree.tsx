@@ -8,6 +8,7 @@ import { FormInputDate } from "@/components/form/FormInputDate";
 import { FormInputPassword } from "@/components/form/FormInputPassword";
 import { FormInputCheckbox } from "@/components/form/FormInputCheckbox";
 import { ErrorMessage } from "./ErrorMessage";
+import { handleDrivingLicenseKeyPress, handlePasswordKeyPress } from "@/utils/auth.register.utils";
 
 const LICENSE_OPTIONS: DropdownOptions[] = [
     { value: "A", name: "A - Moto" },
@@ -49,8 +50,10 @@ export function RegisterStepThree(props: RegisterStepTrheeProps) {
                 placeholder="U1ABC1234567"
                 previous={licenseNumber}
                 name="license_number"
-                minLength={9}
-                maxLength={9}
+                minLength={8}
+                maxLength={10}
+                onKeyDown={handleDrivingLicenseKeyPress}
+                style={{"textTransform": "uppercase"}}
             >
                 {errors?.license_number && <ErrorMessage message={errors.license_number} />}
             </FormInputText>
@@ -91,6 +94,7 @@ export function RegisterStepThree(props: RegisterStepTrheeProps) {
                     autoComplete="new-password"
                     previous={password}
                     name="password"
+                    onKeyDown={handlePasswordKeyPress}
                 >
                     {errors?.password && <ErrorMessage message={errors.password}/> }
                 </FormInputPassword>
@@ -101,6 +105,7 @@ export function RegisterStepThree(props: RegisterStepTrheeProps) {
                     minLength={8}
                     previous={confirmPassword}
                     name="confirm_password"
+                    onKeyDown={handlePasswordKeyPress}
                 >
                     {errors?.confirm_password && <ErrorMessage message={errors.confirm_password} />}
                 </FormInputPassword>

@@ -2,7 +2,7 @@ import { CheckCircle, ChevronLeft, ChevronRight } from "lucide-react";
 
 import type { ActionResponse, UserRegisterForm } from "@/type/auth.register.type";
 import { RegisterStepOne } from "./register-form/RegisterStepOne";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { RegisterStepTwo } from "./register-form/RegisterStepTwo";
 import { RegisterStepThree } from "./register-form/RegisterStepThree";
 import { registerUser } from "@/action/auth.register";
@@ -39,47 +39,54 @@ const FORM_STATE_INIT: UserRegisterForm = {
 type RegisterFormProps = {
     currentStep: number;
     onCurrentStep: (current: number) => void;
+    onPrevStep: () => void;
 };
 
 export function RegisterForm(props: RegisterFormProps) {
-    const { currentStep, onCurrentStep } = props;
+    const { currentStep, onCurrentStep, onPrevStep } = props;
     const navigate = useNavigate();
     const [state, setState] = useState<UserRegisterForm>(FORM_STATE_INIT);
-    const [errors, setErrors] = useState<Record<string,string>>({})
+    const [errors, setErrors] = useState<Record<string, string>>({});
+
+    const formRef = useRef<HTMLFormElement | null>(null);
 
     async function handleSubmit(event: any) {
         event.preventDefault();
         const formData = new FormData(event.currentTarget);
         const data = Object.fromEntries(formData.entries());
 
-        const mergedData = {...state,...data};
+        const mergedData = { ...state, ...data };
         setState(mergedData);
 
         if (currentStep < 3) {
             onCurrentStep(currentStep + 1);
-            return
+            return;
         }
-        
+
         const response: ActionResponse = await registerUser(mergedData);
         if (response.success) {
-            setErrors({})
+            setErrors({});
             navigate({ to: "/auth/login" });
         }
-        onCurrentStep(1)
-        response.errors && setErrors(response.errors)
+        onCurrentStep(1);
+        response.errors && setErrors(response.errors);
         console.log(response);
-        
+
     };
 
-    function goToPrevStep() {
-        if (currentStep > 1) {
-            onCurrentStep(currentStep - 1);
-        }
-    };
+
+    function saveData() {
+        if (!formRef.current) return;
+        const formData = new FormData(formRef.current);
+        const data = Object.fromEntries(formData.entries());
+
+        const mergedData = { ...state, ...data };
+        setState(mergedData);
+    }
 
     return (
-        <form onSubmit={handleSubmit}>
-            {errors?.existing_user && <ErrorMessage message={errors.existing_user} /> }
+        <form onSubmit={handleSubmit} ref={formRef}>
+            {errors?.existing_user && <ErrorMessage message={errors.existing_user} />}
             {currentStep === 1 && <RegisterStepOne
                 firstName={state.first_name}
                 lastName={state.last_name}
@@ -119,7 +126,7 @@ export function RegisterForm(props: RegisterFormProps) {
                 {currentStep > 1 && (
                     <button
                         type="button"
-                        onClick={goToPrevStep}
+                        onClick={() => { saveData(); onPrevStep(); }}
                         className="flex items-center justify-center gap-2 flex-1 bg-gray-100 text-gray-700 py-4 rounded-xl font-semibold hover:bg-gray-200 transition-all"
                     >
                         <ChevronLeft className="w-5 h-5" />

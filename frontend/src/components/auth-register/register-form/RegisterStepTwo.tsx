@@ -4,6 +4,7 @@ import { FormInputPhoneNumber } from "@/components/form/FormInputPhoneNumber";
 import { FormInputText } from "@/components/form/FormInputText";
 import { Home } from "lucide-react";
 import { ErrorMessage } from "./ErrorMessage";
+import { handleCivicKeyPress, handleEmailKeyPress, handleNameKeyPress, handleNumberKeyPress, handleProvinceKeyPress, handleStreetKeyPress } from "@/utils/auth.register.utils";
 
 
 type RegisterStepTwoProps = {
@@ -32,6 +33,7 @@ export function RegisterStepTwo(props: RegisterStepTwoProps) {
                 placeholder="mario.rossi@email.com"
                 name="email"
                 previous={email}
+                onKeyDown={handleEmailKeyPress}
             >
                 {errors?.email && <ErrorMessage message={errors.email} />}
             </FormInputEmail>
@@ -42,6 +44,7 @@ export function RegisterStepTwo(props: RegisterStepTwoProps) {
                 previous={phoneNumber}
                 maxLength={10}
                 minLength={10}
+                onKeyDown={handleNumberKeyPress}
             >
                 {errors?.phone_number && <ErrorMessage message={errors.phone_number} />}
             </FormInputPhoneNumber>
@@ -60,6 +63,7 @@ export function RegisterStepTwo(props: RegisterStepTwoProps) {
                         placeholder="Via Roma"
                         name="street"
                         previous={street}
+                        onKeyDown={handleStreetKeyPress}
                     >
                         {errors?.street && <ErrorMessage message={errors.street} />}
                     </FormInputText>
@@ -69,6 +73,8 @@ export function RegisterStepTwo(props: RegisterStepTwoProps) {
                         placeholder="123"
                         name="civic_number"
                         previous={civicNumber}
+                        onKeyDown={handleCivicKeyPress}
+                        maxLength={10}
                     >
                         {errors?.civic_number && <ErrorMessage message={errors.civic_number} />}
                     </FormInputText>
@@ -82,6 +88,7 @@ export function RegisterStepTwo(props: RegisterStepTwoProps) {
                         maxLength={5}
                         name="cap"
                         previous={cap}
+                        onKeyDown={handleNumberKeyPress}
                     >
                         {errors?.cap && <ErrorMessage message={errors.cap} />}
                     </FormInputText>
@@ -90,6 +97,7 @@ export function RegisterStepTwo(props: RegisterStepTwoProps) {
                         placeholder="Roma"
                         name="city"
                         previous={city}
+                        onKeyDown={handleNameKeyPress}
                     >
                         {errors?.city && <ErrorMessage message={errors.city} /> }
                     </FormInputText>
@@ -99,6 +107,8 @@ export function RegisterStepTwo(props: RegisterStepTwoProps) {
                         maxLength={2}
                         name="province"
                         previous={province}
+                        onKeyDown={handleProvinceKeyPress}
+                        style={{ textTransform: 'uppercase' }}
                     >
                         {errors?.province && <ErrorMessage message={errors.province} />}
                     </FormInputText>
