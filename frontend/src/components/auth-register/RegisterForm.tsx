@@ -7,6 +7,7 @@ import { RegisterStepTwo } from "./register-form/RegisterStepTwo";
 import { RegisterStepThree } from "./register-form/RegisterStepThree";
 import { registerUser } from "@/action/auth.register";
 import { useNavigate } from "@tanstack/react-router";
+import { ErrorMessage } from "./register-form/ErrorMessage";
 
 const FORM_STATE_INIT: UserRegisterForm = {
     first_name: '',
@@ -45,7 +46,7 @@ export function RegisterForm(props: RegisterFormProps) {
     const navigate = useNavigate();
     const [state, setState] = useState<UserRegisterForm>(FORM_STATE_INIT);
     const [errors, setErrors] = useState<Record<string,string>>({})
-    
+
     async function handleSubmit(event: any) {
         event.preventDefault();
         const formData = new FormData(event.currentTarget);
@@ -61,6 +62,7 @@ export function RegisterForm(props: RegisterFormProps) {
         
         const response: ActionResponse = await registerUser(mergedData);
         if (response.success) {
+            setErrors({})
             navigate({ to: "/auth/login" });
         }
         onCurrentStep(1)
@@ -76,7 +78,8 @@ export function RegisterForm(props: RegisterFormProps) {
     };
 
     return (
-        <form onSubmit={handleSubmit}> 
+        <form onSubmit={handleSubmit}>
+            {errors?.existing_user && <ErrorMessage message={errors.existing_user} /> }
             {currentStep === 1 && <RegisterStepOne
                 firstName={state.first_name}
                 lastName={state.last_name}

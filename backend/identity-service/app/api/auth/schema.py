@@ -3,25 +3,40 @@ from pydantic import (
     Field,
     EmailStr,
     field_validator,
-    model_validator
+    model_validator,
+    AfterValidator,
 )
 from datetime import date, timedelta
-from typing import Literal
+from typing import Literal, Annotated
 import re
 
 from data.cities import ITALY_CITIES
 
+
+def strip_string_value(value: str):
+    array = value.split(" ")
+    array = list(filter(lambda x: x != " ", array))
+
+    return " ".join(array)
+
+
+upper_value = lambda value: value.upper()
+strip_value = lambda value: strip_string_value(value)
+
+
 class UserRegistration(BaseModel):
     email: EmailStr = Field(max_length=150)
-    first_name: str = Field(max_length=30, min_length=2)
-    last_name: str = Field(max_length=30, min_length=2)
+    first_name: Annotated[str, AfterValidator(upper_value), AfterValidator(strip_value)]
+    last_name: Annotated[str, AfterValidator(upper_value), AfterValidator(strip_value)]
 
     date_of_birth: date
-    place_of_birth: str = Field(max_length=150, min_length=2)
+    place_of_birth: Annotated[
+        str, AfterValidator(upper_value), AfterValidator(strip_value)
+    ] = Field(max_length=150, min_length=2)
     gender: Literal["male", "female"]
-    fiscal_id: str = Field(max_length=16, min_length=16)
+    fiscal_id: Annotated[str, AfterValidator(upper_value), AfterValidator(strip_value)]
 
-    phone_number: str = Field(max_length=10, min_length=10)
+    phone_number: str
 
     password: str = Field(max_length=64)
     confirm_password: str = Field(max_length=64)
@@ -53,10 +68,10 @@ class UserRegistration(BaseModel):
     @field_validator("first_name", "last_name")
     @classmethod
     def validate_name(cls, value: str):
-        value = value.strip()
-        if is_valid_name(value):
+        pattern = r"^[A-Za-zÀ-ÖØ-öø-ÿ][A-Za-zÀ-ÖØ-öø-ÿ\s']*$"
+        if not re.match(pattern, value):
             raise ValueError(
-                "Il nome deve iniziare con una lettera e contenere solo lettere, spazi e apostrofi, senza numeri."
+                "Deve iniziare con una lettera e contenere solo lettere, spazi e apostrofi, senza numeri."
             )
         return value
 
@@ -72,7 +87,7 @@ class UserRegistration(BaseModel):
     @classmethod
     def validate_place_of_birth(cls, value: str):
         value = validate_city(value)
-        return value
+        return value.upper()
 
     @field_validator("phone_number")
     @classmethod
@@ -116,7 +131,6 @@ class UserRegistration(BaseModel):
         return self
 
 
-
 def validate_fiscal_id(
     value: str,
     last_name: str,
@@ -127,8 +141,6 @@ def validate_fiscal_id(
 ):
     from codicefiscale import codicefiscale
 
-    value = value.upper()
-
     fiscal_id = codicefiscale.encode(
         lastname=last_name,
         firstname=firstname,
@@ -138,19 +150,32 @@ def validate_fiscal_id(
     )
 
     if value != fiscal_id:
-        raise ValueError("Il codice fiscale non è valido")
-
-    return value
+        raise ValueError(
+            "Il codice fiscale non è valido, verifica anche tutte le informazioni come nome,cogome, data di nascita e luogo di nascita."
+        )
 
 
 class AddressRegistration(BaseModel):
-    street: str = Field(max_length=150, min_length=2)
+    street: Annotated[str, AfterValidator(upper_value), AfterValidator(strip_value)]
     civic_number: str = Field(max_length=8)
-    city: str = Field(max_length=150, min_length=2)
-    province: str = Field(max_length=150, min_length=2)
-    cap: str = Field(max_length=5, min_length=5)
+    city: Annotated[str, AfterValidator(upper_value), AfterValidator(strip_value)]
+    province: Annotated[str, AfterValidator(upper_value), AfterValidator(strip_value)]
+    cap: str
     type: Literal["domicile", "residence"]
 
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "street": "Via Montenapoleone",
+                "civic_number": "172",
+                "city": "Milano",
+                "province": "ML",
+                "cap": "20121",
+                "type": "residence"
+            }
+        }
+    }
+     
     @field_validator("street")
     @classmethod
     def validate_street(cls, value: str):
@@ -171,18 +196,20 @@ class AddressRegistration(BaseModel):
     @field_validator("province")
     @classmethod
     def validate_province(cls, value: str):
-        value = validate_province(value)
+        validate_province(value)
         return value
 
     @field_validator("city")
     @classmethod
     def validate_city(cls, value: str):
-        value = validate_city(value)
+        validate_city(value)
         return value
 
     @field_validator("cap")
     @classmethod
     def validate_cap(cls, value: str):
+        if len(value) != 5:
+            raise ValueError("Il cap  italaino è formato da 5 numeri")
         if not value.isdigit():
             raise ValueError("Il cap non risulta valido")
         return value
@@ -194,15 +221,6 @@ class AddressRegistration(BaseModel):
         return self
 
 
-def is_valid_name(value: str) -> bool:
-    """
-    The function `is_valid_name` checks if a given string value is a valid name containing only letters,
-    spaces, and apostrophes.
-    """
-    pattern = r"^[A-Za-zÀ-ÖØ-öø-ÿ][A-Za-zÀ-ÖØ-öø-ÿ\s']*$"
-    return not re.match(pattern, value)
-
-
 def validate_province_city(province: str, city: str):
     """
     The function `validate_province_city` checks if a given city and province match in a list of
@@ -211,7 +229,7 @@ def validate_province_city(province: str, city: str):
     is_place_of_birth: bool = False
     for element in ITALY_CITIES:
         _sail, _name, _province = element["sail"], element["name"], element["province"]
-        if city in _name and province in (_sail, _province):
+        if city in _name and (province == _sail or province == _province):
             is_place_of_birth = True
             break
 
@@ -223,10 +241,9 @@ def validate_province(province: str):
     """
     The function `validate_province` checks if a given province name is valid in Italy.
     """
-    value = province.upper()
     for element in ITALY_CITIES:
-        if value not in [element["sail"], element["province"]]:
-            return value
+        if province == element["sail"] or province == element["province"]:
+            return province
 
     raise ValueError("La proivincia non esiste")
 
@@ -236,10 +253,9 @@ def validate_city(city: str):
     The function `validate_city` checks if a given city is in the list of cities in the provinces of
     Italy and returns the city if found, otherwise raises a ValueError.
     """
-    value = city.upper()
     for element in ITALY_CITIES:
-        if value in element["name"]:
-            return value
+        if city == element["name"]:
+            return city
 
     raise ValueError("La città non esiste")
 
@@ -252,13 +268,14 @@ def validate_cap(city: str, cap: str, province: str):
     is_valid_cap = False
 
     for element in ITALY_CITIES:
-        _sail, _province, _name, _cap = (
-            element["sail"],
-            element["province"],
-            element["name"],
-            element["cap"],
-        )
-        if city == _name and province in (_sail, _province) and cap in _cap:
+        values = {
+            "sail": element["sail"],
+            "province": element["province"],
+            "name": element["name"],
+            "cap": element["cap"],
+        }
+        is_province = province == values["sail"] or province == values["province"]
+        if city == values["name"] and is_province and cap in values["cap"]:
             is_valid_cap = True
             break
 

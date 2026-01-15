@@ -70,12 +70,12 @@ async function submitUserBasics(user: UserData, address: UserAddress): Promise<A
     address: { ...address }
   };
   const response = await authApi.post('/sign-up', dto);
-
+  console.log(response.data)
   switch (response.status) {
     case 422:
       return validationErrorResponse(response.data);
     case 409:
-      return conflictResponse();
+      return conflictResponse(response.data);
   }
 
   sessionStorage.setItem("sign-up", "true");
@@ -133,7 +133,7 @@ async function validationErrorResponse(data: any): Promise<ActionResponse> {
  * @returns The function `conflictResponse` is returning a Promise that resolves to an object with a
  * `message` property set to "409" and a `success` property set to false.
  */
-async function conflictResponse(): Promise<ActionResponse> {
-  return { message: "409", success: false };
+async function conflictResponse(data: any): Promise<ActionResponse> {
+  return { message: "409", success: false, errors:{existing_user: data.detail} };
 }
 

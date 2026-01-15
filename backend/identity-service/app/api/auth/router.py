@@ -24,12 +24,7 @@ async def create_new_account(
     address: Annotated[AddressRegistration, Body()],
 ):
     logger.info("Sign-up request received", email=user.email, fiscal_id=user.fiscal_id)
-    existing_user = (
-        db.query(User)
-        .filter(User.email == user.email)
-        .filter(User.fiscal_id == user.fiscal_id)
-        .first()
-    )
+    existing_user = db.query(User).filter(User.fiscal_id == user.fiscal_id).first()
 
     if existing_user:
         logger.warning(
