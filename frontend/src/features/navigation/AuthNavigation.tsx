@@ -10,7 +10,7 @@ export function AuthNavigation() {
         <div className="flex justify-between items-center h-16">
           <div className="shrink-0">
             <Link
-              to="/home"
+              to="/"
               className="text-2xl font-bold bg-linear-to-r from-blue-600 to-cyan-500 bg-clip-text text-transparent"
             >
               AssicuraFacile
