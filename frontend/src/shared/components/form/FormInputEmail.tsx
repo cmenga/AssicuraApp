@@ -1,24 +1,26 @@
-import type { InputProps } from "@/type/form.type";
-import { Phone } from "lucide-react";
+import type { InputProps } from "@/shared/type/form.type";
+import { Mail } from "lucide-react";
 import { useState, type InputHTMLAttributes, type ReactNode } from "react";
 
-type FormInputPhoneNumber = {
+
+type FormInputEmailProps = {
+    isRequired?: boolean;
     children?: ReactNode;
 } & Omit<InputProps, "labelName"> & Omit<InputHTMLAttributes<HTMLInputElement>, "type" | "required" | "value" | "onChange" | "className">;
 
-export function FormInputPhoneNumber(props: FormInputPhoneNumber) {
-    const { previous, children, ..._props } = props;
+export function FormInputEmail(props: FormInputEmailProps) {
+    const { previous, isRequired = false, children, ..._props } = props;
     const [value, setValue] = useState<string | undefined>(previous);
 
     return (
         <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-                Telefono <span className="text-red-500">*</span>
+                Email {isRequired && <span className="text-red-500">*</span>}
             </label>
             <div className="relative">
-                <Phone className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                 <input
-                    type="tel"
+                    type="email"
                     required
                     value={value}
                     onChange={(e) => setValue(e.target.value)}

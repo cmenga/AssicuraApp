@@ -1,6 +1,6 @@
 
-import { Footer } from '@/components/footer/Footer';
-import { AuthNavigation } from '@/components/navigation/AuthNavigation';
+import { Footer } from '@/features/footer/Footer';
+import { AuthNavigation } from '@/features/navigation/AuthNavigation';
 import { createFileRoute, Outlet, redirect } from '@tanstack/react-router';
 
 export const Route = createFileRoute('/auth')({

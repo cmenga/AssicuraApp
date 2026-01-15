@@ -1,5 +1,5 @@
-import { authApi } from "@/api/auth-service";
-import type { UserRegisterDTO, UserAddress, UserData, UserLicense, UserLoginDTO,ActionResponse } from "@/type/auth.type";
+import { authApi } from "@/features/auth/api/auth";
+import type { UserRegisterDTO, UserAddress, UserData, UserLicense, UserLoginDTO,ActionResponse } from "./type";
 
 
 /**

@@ -1,14 +1,14 @@
+import { useRef, useState } from "react";
+import { useNavigate } from "@tanstack/react-router";
 import { CheckCircle, ChevronLeft, ChevronRight } from "lucide-react";
 
-import type { UserRegisterForm } from "@/type/auth.type";
-import { RegisterStepOne } from "./register-form/RegisterStepOne";
-import { useRef, useState } from "react";
-import { RegisterStepTwo } from "./register-form/RegisterStepTwo";
-import { RegisterStepThree } from "./register-form/RegisterStepThree";
-import { registerUser } from "@/action/auth.action";
-import { useNavigate } from "@tanstack/react-router";
-import { ErrorMessage } from "../form/ErrorMessage";
-import type { ActionResponse } from "@/type/auth.type";
+import { RegisterStepOne } from "./RegisterStepOne";
+import { RegisterStepTwo } from "./RegisterStepTwo";
+import { RegisterStepThree } from "./RegisterStepThree";
+import { ErrorMessage } from "@/shared/components/form/ErrorMessage";
+
+import type { UserRegisterForm, ActionResponse } from "../../type"; 
+import { registerUser } from "../../action"; 
 
 const FORM_STATE_INIT: UserRegisterForm = {
     first_name: '',

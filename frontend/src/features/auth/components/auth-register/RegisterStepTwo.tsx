@@ -1,10 +1,14 @@
-import { FormHeader } from "./FormHeader";
-import { FormInputEmail } from "@/components/form/FormInputEmail";
-import { FormInputPhoneNumber } from "@/components/form/FormInputPhoneNumber";
-import { FormInputText } from "@/components/form/FormInputText";
 import { Home } from "lucide-react";
-import { ErrorMessage } from "../../form/ErrorMessage";
-import { handleCivicKeyPress, handleEmailKeyPress, handleNameKeyPress, handleNumberKeyPress, handleProvinceKeyPress, handleStreetKeyPress } from "@/utils/auth.register.utils";
+
+import { FormHeader } from "./FormHeader";
+import { FormInputEmail } from "@/shared/components/form/FormInputEmail";
+import { FormInputPhoneNumber } from "@/shared/components/form/FormInputPhoneNumber";
+import { FormInputText } from "@/shared/components/form/FormInputText";
+import { ErrorMessage } from "@/shared/components/form/ErrorMessage";
+
+import {
+    handleCivicKeyPress, handleEmailKeyPress, handleNameKeyPress, handleNumberKeyPress, handleProvinceKeyPress, handleStreetKeyPress
+} from "../../utils";
 
 
 type RegisterStepTwoProps = {
@@ -99,7 +103,7 @@ export function RegisterStepTwo(props: RegisterStepTwoProps) {
                         previous={city}
                         onKeyDown={handleNameKeyPress}
                     >
-                        {errors?.city && <ErrorMessage message={errors.city} /> }
+                        {errors?.city && <ErrorMessage message={errors.city} />}
                     </FormInputText>
                     <FormInputText
                         labelName="Provincia"

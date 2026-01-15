@@ -1,6 +1,6 @@
 import { useState, type InputHTMLAttributes, type ReactNode } from "react";
 import { Eye, EyeOff, Lock } from "lucide-react";
-import type { InputProps } from "@/type/form.type";
+import type { InputProps } from "@/shared/type/form.type";
 
 
 export type FormInputPasswordProps = {

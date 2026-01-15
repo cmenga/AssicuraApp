@@ -1,14 +1,15 @@
 import { FileText } from "lucide-react";
 
 import { FormHeader } from "./FormHeader";
-import { FormInputText } from "@/components/form/FormInputText";
-import { FormInputDropdown } from "@/components/form/FormInputDropdown";
-import type { DropdownOptions } from "@/type/auth.type";
-import { FormInputDate } from "@/components/form/FormInputDate";
-import { FormInputPassword } from "@/components/form/FormInputPassword";
-import { FormInputCheckbox } from "@/components/form/FormInputCheckbox";
-import { ErrorMessage } from "../../form/ErrorMessage";
-import { handleDrivingLicenseKeyPress, handlePasswordKeyPress } from "@/utils/auth.register.utils";
+import { FormInputText } from "@/shared/components/form/FormInputText";
+import { FormInputDropdown } from "@/shared/components/form/FormInputDropdown";
+import { FormInputDate } from "@/shared/components/form/FormInputDate";
+import { FormInputPassword } from "@/shared/components/form/FormInputPassword";
+import { FormInputCheckbox } from "@/shared/components/form/FormInputCheckbox";
+import { ErrorMessage } from "@/shared/components/form//ErrorMessage";
+
+import type { DropdownOptions } from "../../type";
+import { handleDrivingLicenseKeyPress, handlePasswordKeyPress } from "../../utils";;
 
 const LICENSE_OPTIONS: DropdownOptions[] = [
     { value: "A", name: "A - Moto" },

@@ -1,5 +1,7 @@
-import type { FooterListModel } from "@/type/footer.type";
-
+export type FooterListModel = {
+  title: string,
+  links: string[]
+}
 
 export function FooterList(props: FooterListModel) {
     const { links, title } = props;

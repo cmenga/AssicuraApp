@@ -1,29 +1,28 @@
-import type { InputProps } from "@/type/form.type";
-import { Mail } from "lucide-react";
+import type { InputProps } from "@/shared/type/form.type";
+import { Calendar } from "lucide-react";
 import { useState, type InputHTMLAttributes, type ReactNode } from "react";
 
 
-type FormInputEmailProps = {
-    isRequired?: boolean;
+type DateProps = {
     children?: ReactNode;
-} & Omit<InputProps, "labelName"> & Omit<InputHTMLAttributes<HTMLInputElement>, "type" | "required" | "value" | "onChange" | "className">;
+} & InputProps & Omit<InputHTMLAttributes<HTMLInputElement>, "type" | "required" | "className" | "value" | "onChange">;
 
-export function FormInputEmail(props: FormInputEmailProps) {
-    const { previous, isRequired = false, children, ..._props } = props;
+export function FormInputDate(props: DateProps) {
+    const { labelName, previous, children, ..._props } = props;
     const [value, setValue] = useState<string | undefined>(previous);
 
     return (
         <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-                Email {isRequired && <span className="text-red-500">*</span>}
+                {labelName} <span className="text-red-500">*</span>
             </label>
             <div className="relative">
-                <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <Calendar className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                 <input
-                    type="email"
+                    type="date"
                     required
-                    value={value}
                     onChange={(e) => setValue(e.target.value)}
+                    value={value}
                     className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
                     {..._props}
                 />

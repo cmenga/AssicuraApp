@@ -1,11 +1,11 @@
-import { FormInputText } from "@/components/form/FormInputText";
-import { FormInputDate } from "@/components/form/FormInputDate";
-import { FormInputGender } from "@/components/form/FormInputGender";
+import { FormInputText } from "@/shared/components/form/FormInputText";
+import { FormInputDate } from "@/shared/components/form/FormInputDate";
+import { FormInputGender } from "@/shared/components/form/FormInputGender";
 
 import { FormHeader } from "./FormHeader";
 import { FileText, MapPin, User } from "lucide-react";
-import { getMaxRegisterDate, handleFiscalIdKeyPress, handleNameKeyPress } from "@/utils/auth.register.utils";
-import { ErrorMessage } from "../../form/ErrorMessage";
+import { getMaxRegisterDate, handleFiscalIdKeyPress, handleNameKeyPress } from "../../utils";
+import { ErrorMessage } from "@/shared/components/form/ErrorMessage"; 
 
 
 type RegisterSteOneProps = {

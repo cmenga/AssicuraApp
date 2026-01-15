@@ -1,6 +1,6 @@
 import { Footer } from "./Footer";
-import { FooterList } from "./FooterList";
-import type { FooterListModel } from "@/type/footer.type";
+import { FooterList, type FooterListModel } from "./FooterList";
+
 
 
 const products: FooterListModel = {
