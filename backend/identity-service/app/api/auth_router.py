@@ -3,7 +3,7 @@ from typing import Annotated
 from sqlalchemy.exc import IntegrityError
 
 from api.dependency import db_dependency, hasher_password_dependency,jwt_dependency
-from api.auth.schema import UserRegistration, AddressRegistration, LoginData, TokenData
+from api.auth_schema import UserRegistration, AddressRegistration, LoginData, TokenData
 from api.utils import get_current_user
 
 from database.models import User, Address
