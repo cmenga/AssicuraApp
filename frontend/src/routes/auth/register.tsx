@@ -1,11 +1,10 @@
+import { RegisterForm } from "@/features/auth/components/auth-register/RegisterForm";
+import { RegisterHeader } from "@/features/auth/components/auth-register/RegisterHeader";
+import { RegisterProgressStep } from "@/features/auth/components/auth-register/RegisterProgressStep";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState } from "react";
 
-import { RegisterForm } from '@/features/auth/components/auth-register/RegisterForm';
-import { RegisterHeader } from '@/features/auth/components/auth-register/RegisterHeader';
-import { RegisterProgressStep } from '@/features/auth/components/auth-register/RegisterProgressStep';
-import { createFileRoute, Link } from '@tanstack/react-router';
-import { useState } from 'react';
-
-export const Route = createFileRoute('/auth/register')({
+export const Route = createFileRoute("/auth/register")({
   component: RouteComponent,
 });
 
@@ -28,12 +27,14 @@ function RouteComponent() {
           onPrevStep={handlePrevStep}
         />
         <div className="mt-8 text-center pt-6 border-t border-gray-200">
-          <Link to="/auth/login" className="text-gray-600 hover:text-blue-700 font-semibold hover:underline">
+          <Link
+            to="/auth/login"
+            className="text-gray-600 hover:text-blue-700 font-semibold hover:underline"
+          >
             Hai già un account?
           </Link>
         </div>
       </div>
     </div>
-
   );
 }

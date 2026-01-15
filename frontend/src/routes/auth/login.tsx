@@ -1,10 +1,8 @@
+import { LoginDescription } from "@/features/auth/components/auth-login/LoginDescription";
+import { LoginForm } from "@/features/auth/components/auth-login/LoginForm";
+import { createFileRoute } from "@tanstack/react-router";
 
-
-import { LoginDescription } from '@/features/auth/components/auth-login/LoginDescription';
-import { LoginForm } from '@/features/auth/components/auth-login/LoginForm';
-import { createFileRoute } from '@tanstack/react-router';
-
-export const Route = createFileRoute('/auth/login')({
+export const Route = createFileRoute("/auth/login")({
   component: RouteComponent,
 });
 

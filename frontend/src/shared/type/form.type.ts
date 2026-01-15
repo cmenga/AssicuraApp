@@ -1,4 +1,4 @@
 export type InputProps = {
-  labelName: string
-  previous?: string,
+  labelName: string;
+  previous?: string;
 };

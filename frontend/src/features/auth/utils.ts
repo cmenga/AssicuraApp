@@ -9,16 +9,10 @@ export function getMaxRegisterDate() {
   const today = new Date();
   today.setFullYear(today.getFullYear() - 18);
 
-  return today.toISOString().split('T')[0];
+  return today.toISOString().split("T")[0];
 }
 
-const ALLOWED_KEYS = [
-  'Backspace',
-  'Delete',
-  'ArrowLeft',
-  'ArrowRight',
-  'Tab',
-];
+const ALLOWED_KEYS = ["Backspace", "Delete", "ArrowLeft", "ArrowRight", "Tab"];
 
 /**
  * The function `handleNameKeyPress` restricts input to only allow alphabetic characters, spaces, and
@@ -34,7 +28,6 @@ export function handleNameKeyPress(event: KeyboardEvent<HTMLInputElement>) {
     event.preventDefault();
   }
 }
-
 
 /**
  * The function `handleFiscalIdKeyPress` restricts input on a keyboard event to alphanumeric characters
@@ -66,7 +59,6 @@ export function handleEmailKeyPress(event: KeyboardEvent<HTMLInputElement>) {
   }
 }
 
-
 /**
  * The function `handlePhoneNumberKeyPress` restricts input to only allow numeric characters and
  * specific allowed keys.
@@ -81,16 +73,12 @@ export function handleNumberKeyPress(event: KeyboardEvent<HTMLInputElement>) {
   }
 }
 
-
-
 /**
  * The function `handleStreetKeyPress` restricts keyboard input to only allow certain characters for a
  * street address.
  * @param event - KeyboardEvent<HTMLInputElement>
  */
-export function handleStreetKeyPress(
-  event: KeyboardEvent<HTMLInputElement>
-) {
+export function handleStreetKeyPress(event: KeyboardEvent<HTMLInputElement>) {
   const key = event.key;
   const regex = /^[A-Za-zÀ-ÖØ-öø-ÿ0-9.'\-/, ]$/;
 
@@ -98,7 +86,6 @@ export function handleStreetKeyPress(
     event.preventDefault();
   }
 }
-
 
 /**
  * The function `handleCivicKeyPress` restricts keyboard input to alphanumeric characters and the
@@ -108,9 +95,7 @@ export function handleStreetKeyPress(
  * an HTMLInputElement, indicating that the event is related to a key press within an input element on
  * an HTML form
  */
-export function handleCivicKeyPress(
-  event: KeyboardEvent<HTMLInputElement>
-) {
+export function handleCivicKeyPress(event: KeyboardEvent<HTMLInputElement>) {
   const key = event.key;
   const regex = /^[0-9A-Za-z/]$/;
 
@@ -119,16 +104,12 @@ export function handleCivicKeyPress(
   }
 }
 
-
-
 /**
  * The function `handleProvinceKeyPress` prevents input of non-alphabetic characters and specific keys
  * in a province input field.
  * @param event - KeyboardEvent<HTMLInputElement>
  */
-export function handleProvinceKeyPress(
-  event: KeyboardEvent<HTMLInputElement>
-) {
+export function handleProvinceKeyPress(event: KeyboardEvent<HTMLInputElement>) {
   const key = event.key;
   const regex = /^[A-Za-z]$/;
 
@@ -137,8 +118,6 @@ export function handleProvinceKeyPress(
   }
 }
 
-
-
 /**
  * The function `handleDrivingLicenseKeyPress` restricts input on a text field to alphanumeric
  * characters and specific allowed keys.
@@ -146,7 +125,7 @@ export function handleProvinceKeyPress(
  * when a key is pressed while the input element is focused.
  */
 export function handleDrivingLicenseKeyPress(
-  event: KeyboardEvent<HTMLInputElement>
+  event: KeyboardEvent<HTMLInputElement>,
 ) {
   const key = event.key;
   const regex = /^[A-Za-z0-9]$/;
@@ -156,7 +135,6 @@ export function handleDrivingLicenseKeyPress(
   }
 }
 
-
 /**
  * The function `handlePasswordKeyPress` restricts input to only allow certain characters for a
  * password field.
@@ -164,9 +142,7 @@ export function handleDrivingLicenseKeyPress(
  * by a keyboard (usually related to a specific key being pressed). In this case, it specifically
  * refers to an event associated with an `<input>` element.
  */
-export function handlePasswordKeyPress(
-  event: KeyboardEvent<HTMLInputElement>
-) {
+export function handlePasswordKeyPress(event: KeyboardEvent<HTMLInputElement>) {
   const key = event.key;
   const regex = /^[A-Za-z0-9!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]$/;
 

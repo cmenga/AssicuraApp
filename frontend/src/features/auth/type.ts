@@ -1,4 +1,3 @@
-
 export interface ActionResponse {
   success: boolean;
   message: string;
@@ -11,13 +10,10 @@ export interface UserLoginDTO {
   password: string;
 }
 
-
 export interface UserRegisterDTO {
   user: UserData;
   address: UserAddress;
 }
-
-
 
 export type UserRegisterForm = UserData & UserLicense & UserAddress;
 export interface UserData {
@@ -29,11 +25,11 @@ export interface UserData {
   gender: string;
   email: string;
   phone_number: string;
-  password: string,
-  confirm_password: string,
-  accept_terms: boolean,
-  accept_privacy_policy: boolean,
-  subscribe_to_newsletter: boolean,
+  password: string;
+  confirm_password: string;
+  accept_terms: boolean;
+  accept_privacy_policy: boolean;
+  subscribe_to_newsletter: boolean;
 }
 
 export interface UserLicense {
@@ -54,7 +50,4 @@ export interface UserAddress {
 export interface DropdownOptions {
   value: string;
   name: string;
-};
-
-
-
+}

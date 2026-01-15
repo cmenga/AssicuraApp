@@ -1,6 +1,12 @@
 import { authApi } from "@/features/auth/api/auth";
-import type { UserRegisterDTO, UserAddress, UserData, UserLicense, UserLoginDTO,ActionResponse } from "./type";
-
+import type {
+  UserRegisterDTO,
+  UserAddress,
+  UserData,
+  UserLicense,
+  UserLoginDTO,
+  ActionResponse,
+} from "./type";
 
 /**
  * The function `registerUser` saves user data and license data in local storage and then submits user
@@ -12,13 +18,15 @@ import type { UserRegisterDTO, UserAddress, UserData, UserLicense, UserLoginDTO,
  * Then it extracts user data and user address data from the form data and calls the `submitUserBasics`
  * function with this data. The `submitUserBasics` function likely handles the submission of user
  */
-export async function registerUser(formData: UserData & UserAddress & UserLicense): Promise<ActionResponse> {
+export async function registerUser(
+  formData: UserData & UserAddress & UserLicense,
+): Promise<ActionResponse> {
   //Salvare i dati della patente nella localstorage per poi fargli salvare i dati dentro il service delle patenti
   const licenseData: UserLicense = {
     license_category: formData.license_category,
     license_expiry_date: formData.license_expiry_date,
     license_issue_date: formData.license_issue_date,
-    license_number: formData.license_number
+    license_number: formData.license_number,
   };
 
   localStorage.setItem("license_dto", JSON.stringify(licenseData));
@@ -36,7 +44,7 @@ export async function registerUser(formData: UserData & UserAddress & UserLicens
     password: formData.password,
     accept_terms: formData.accept_terms,
     accept_privacy_policy: formData.accept_privacy_policy,
-    subscribe_to_newsletter: formData.subscribe_to_newsletter
+    subscribe_to_newsletter: formData.subscribe_to_newsletter,
   };
   const userAddress: UserAddress = {
     cap: formData.cap,
@@ -44,12 +52,10 @@ export async function registerUser(formData: UserData & UserAddress & UserLicens
     civic_number: formData.civic_number,
     province: formData.province,
     street: formData.street,
-    type: formData.type
+    type: formData.type,
   };
   return await submitUserBasics(userData, userAddress);
 }
-
-
 
 /**
  * This TypeScript function submits user basic information and address details to an authentication API
@@ -64,13 +70,16 @@ export async function registerUser(formData: UserData & UserAddress & UserLicens
  * @returns The `submitUserBasics` function returns a Promise that resolves to an `ActionResponse`. The
  * possible return values are:
  */
-async function submitUserBasics(user: UserData, address: UserAddress): Promise<ActionResponse> {
+async function submitUserBasics(
+  user: UserData,
+  address: UserAddress,
+): Promise<ActionResponse> {
   const dto: UserRegisterDTO = {
     user: { ...user },
-    address: { ...address }
+    address: { ...address },
   };
-  const response = await authApi.post('/sign-up', dto);
-  console.log(response.data)
+  const response = await authApi.post("/sign-up", dto);
+  console.log(response.data);
   switch (response.status) {
     case 422:
       return validationErrorResponse(response.data);
@@ -95,34 +104,37 @@ async function submitUserBasics(user: UserData, address: UserAddress): Promise<A
  * is set to
  */
 async function validationErrorResponse(data: any): Promise<ActionResponse> {
-  const returnedValue: ActionResponse = { message: data["message"], errors: {}, success: false };
+  const returnedValue: ActionResponse = {
+    message: data["message"],
+    errors: {},
+    success: false,
+  };
   data.errors.forEach((err: any) => {
     const newForm: Record<string, string> = {
-      [err.field]: err.message
+      [err.field]: err.message,
     };
 
     if (newForm["address"]?.toLowerCase().includes("cap")) {
       returnedValue.errors = {
         ...returnedValue.errors,
-        cap: newForm["address"]
+        cap: newForm["address"],
       };
     } else if (newForm["address"]?.toLowerCase().includes("città")) {
       returnedValue.errors = {
         ...returnedValue.errors,
-        residence_province: newForm["address"]
+        residence_province: newForm["address"],
       };
     } else if (newForm["user"]?.toLowerCase().includes("codice fiscale")) {
       returnedValue.errors = {
         ...returnedValue.errors,
-        fiscal_id: newForm["user"]
+        fiscal_id: newForm["user"],
       };
     } else {
       returnedValue.errors = {
         ...returnedValue.errors,
-        ...newForm
+        ...newForm,
       };
     }
-
   });
   return returnedValue;
 }
@@ -134,12 +146,12 @@ async function validationErrorResponse(data: any): Promise<ActionResponse> {
  * `message` property set to "409" and a `success` property set to false.
  */
 async function conflictResponse(data: any): Promise<ActionResponse> {
-  return { message: "409", success: false, errors:{existing_user: data.detail} };
+  return {
+    message: "409",
+    success: false,
+    errors: { existing_user: data.detail },
+  };
 }
-
-
-
-
 
 /**
  * The function `submitUserLogin` handles user login authentication and stores tokens in local storage
@@ -156,19 +168,40 @@ async function conflictResponse(data: any): Promise<ActionResponse> {
  * request, a `success` property indicating whether the request was successful, and an optional
  * `errors` property containing any error details.
  */
-export async function submitUserLogin(data: UserLoginDTO, isRemember: boolean): Promise<ActionResponse> {
+export async function submitUserLogin(
+  data: UserLoginDTO,
+  isRemember: boolean,
+): Promise<ActionResponse> {
   const response = await authApi.post("/sign-in", data);
 
   switch (response.status) {
     case 404:
-      return { message: "User not found", errors:{user: response.data.detail}, success: false };
+      return {
+        message: "User not found",
+        errors: { user: response.data.detail },
+        success: false,
+      };
     case 401:
-      return { message: "User not authorized", errors:{user: response.data.detail}, success: false};
+      return {
+        message: "User not authorized",
+        errors: { user: response.data.detail },
+        success: false,
+      };
   }
   const access_token = response.data.access_token;
   const refresh_token = response.data.refresh_token;
 
-  isRemember && localStorage.setItem("jwt_refresh",JSON.stringify({refresh_token: refresh_token, type: response.data.type}))
-  sessionStorage.setItem("jwt_access",JSON.stringify({access_token: access_token, type: response.data.type}))
-  return {message: "Request Successfull", success: true}
+  isRemember &&
+    localStorage.setItem(
+      "jwt_refresh",
+      JSON.stringify({
+        refresh_token: refresh_token,
+        type: response.data.type,
+      }),
+    );
+  sessionStorage.setItem(
+    "jwt_access",
+    JSON.stringify({ access_token: access_token, type: response.data.type }),
+  );
+  return { message: "Request Successfull", success: true };
 }
