@@ -5,6 +5,7 @@ from settings import logger, ORIGINS
 from database.connection import await_database_ready
 
 
+
 @asynccontextmanager
 async def startup(app: FastAPI):
     try:

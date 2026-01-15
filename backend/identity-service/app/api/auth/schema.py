@@ -171,11 +171,11 @@ class AddressRegistration(BaseModel):
                 "city": "Milano",
                 "province": "ML",
                 "cap": "20121",
-                "type": "residence"
+                "type": "residence",
             }
         }
     }
-     
+
     @field_validator("street")
     @classmethod
     def validate_street(cls, value: str):
@@ -281,3 +281,18 @@ def validate_cap(city: str, cap: str, province: str):
 
     if not is_valid_cap:
         raise ValueError("Il cap inserito non è corretto")
+
+
+class LoginData(BaseModel):
+    email: EmailStr
+    password: str
+    model_config = {
+        "json_schema_extra": {
+            "example": {"email": "user@example.com", "passowrd": "Ciao1234@"}
+        }
+    }
+
+class TokenData(BaseModel):
+    access_token: str
+    refresh_token: str
+    type: Literal["Bearer"]

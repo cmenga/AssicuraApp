@@ -35,3 +35,5 @@ ORIGINS = [
 ]
 
 
+def get_secret_key():
+    return "6HM_WkvCsJ6CKJvk2OKvvkR51jU8UAaOZ-Znm4Kbpjkk0xDnI15zD9rM8SYV09KWJcUcI2ONduj5_XWpdbSkBA"
