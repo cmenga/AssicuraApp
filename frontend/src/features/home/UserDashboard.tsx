@@ -1,9 +1,8 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
     Car, Bike, Shield, FileText, AlertCircle, User, Settings, LogOut,
-    Bell, Download, Plus, ChevronRight, Calendar, Euro, CheckCircle,
-    Clock, XCircle, Search, Filter, CreditCard, Phone, Mail, MapPin,
-    Edit, Trash2, Eye, MoreVertical, TrendingUp, Activity, Home
+    Bell, Download, Plus, ChevronRight, Calendar, CheckCircle,
+    Search, Filter, Phone, Eye, MoreVertical, TrendingUp, Activity, Home
 } from 'lucide-react';
 
 export default function UserDashboard() {

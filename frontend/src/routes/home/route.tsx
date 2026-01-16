@@ -1,8 +1,12 @@
-import UserDashboard from "@/features/home/LoggedHome";
-import { createFileRoute, Outlet } from "@tanstack/react-router";
+import UserDashboard from "@/features/home/UserDashboard";
+import { createFileRoute, redirect} from "@tanstack/react-router";
 
 export const Route = createFileRoute("/home")({
   component: RouteComponent,
+  beforeLoad: () => {
+    const jwt_access = sessionStorage.getItem("jwt_access")
+    if(!jwt_access) throw redirect({to:"/"})
+  }
 });
 
 function RouteComponent() {
