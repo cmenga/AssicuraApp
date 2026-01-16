@@ -1,4 +1,5 @@
 import { LogOut, Settings, User } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 
 type ShowProfileMenuProps = {
@@ -28,10 +29,10 @@ export default function ProfileMenu(props: ShowProfileMenuProps) {
 
             {showProfileMenu && (
                 <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-200 py-2 z-50">
-                    <button className="w-full px-4 py-2 text-left hover:bg-gray-50 flex items-center gap-2">
+                    <Link to="/profile" className="w-full px-4 py-2 text-left hover:bg-gray-50 flex items-center gap-2">
                         <User className="w-4 h-4" />
                         <span className="text-sm">Profilo</span>
-                    </button>
+                    </Link>
                     <button className="w-full px-4 py-2 text-left hover:bg-gray-50 flex items-center gap-2">
                         <Settings className="w-4 h-4" />
                         <span className="text-sm">Impostazioni</span>
