@@ -283,16 +283,8 @@ def validate_cap(city: str, cap: str, province: str):
         raise ValueError("Il cap inserito non è corretto")
 
 
-class LoginData(BaseModel):
-    email: EmailStr
-    password: str
-    model_config = {
-        "json_schema_extra": {
-            "example": {"email": "user@example.com", "passowrd": "Ciao1234@"}
-        }
-    }
 
 class TokenData(BaseModel):
     access_token: str
     refresh_token: str
-    type: Literal["Bearer"]
+    type: str

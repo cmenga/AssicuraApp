@@ -1,8 +1,14 @@
+from fastapi.security import OAuth2PasswordBearer
 from passlib.context import CryptContext
 from jose import jwt
 from datetime import datetime, timedelta, timezone
+from dataclasses import dataclass
+
 
 from settings import get_secret_key
+from api.exceptions import AuthenticationException
+
+oauth_scheme = OAuth2PasswordBearer(tokenUrl="/auth/sign-in")
 
 
 class HasherPassword:
@@ -14,6 +20,12 @@ class HasherPassword:
     def verify_password_hash(self, password: str, hashed_password: str):
         return self.bcrypt_context.verify(password, hashed_password)
 
+
+@dataclass
+class AccessTokenData:
+    sub: str
+    email: str
+    exp: str
 
 class AuthJWT:
     ALGHORITM: str = "HS256"
@@ -40,6 +52,18 @@ class AuthJWT:
             key=self.SECRET_KEY,
         )
 
+    def decode_access_token(self, token: str):
+        try:
+            payload = jwt.decode(token, key=self.SECRET_KEY, algorithms=self.ALGHORITM)
+            print(payload)
+            token_decode = AccessTokenData(**payload)
+            if token_decode.sub is None:
+                raise AuthenticationException("Impossibile convalidare le credenziali")
+        except Exception:
+            raise AuthenticationException("Impossibile convalidare le credenziali")
+        
+        return token_decode
+
 
 def get_hasher_password():
     return HasherPassword()
@@ -47,4 +71,3 @@ def get_hasher_password():
 
 def get_auth_jwt():
     return AuthJWT()
-

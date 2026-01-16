@@ -1,12 +1,13 @@
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
 
-from database.models import User
-from api.security import HasherPassword
+from database.models import User, Address
+from api.security import HasherPassword, AccessTokenData
+from api.exceptions import AuthenticationException, NotFoundException
 from settings import logger
 
 
-def get_current_user(
+def get_user(
     db: Session, hasher_password: HasherPassword, email: str, password: str
 ) -> User:
     """
@@ -62,3 +63,21 @@ def get_current_user(
         email=fetched_user.email,
     )
     return fetched_user
+
+
+def get_current_user(db: Session, token_data: AccessTokenData):
+    user = (
+        db.query(User)
+        .filter(User.id == token_data.sub, User.email == token_data.email)
+        .first()
+    )
+    if not user:
+        raise AuthenticationException("Impossibile convalidare le credenziali")
+    return user
+
+
+def get_addresses(db: Session, user_id: str):
+    fetched_address = db.query(Address).filter(Address.user_id == user_id).all()
+    if not fetched_address:
+        raise NotFoundException("Non esistono indirizzi per questo utente") 
+    return fetched_address

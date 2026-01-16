@@ -1,10 +1,11 @@
-from fastapi import APIRouter, Body, status, HTTPException
+from fastapi import APIRouter, Body, status, HTTPException,Depends
+from fastapi.security import OAuth2PasswordRequestForm
 from typing import Annotated
 from sqlalchemy.exc import IntegrityError
 
 from api.dependency import db_dependency, hasher_password_dependency,jwt_dependency
-from api.auth_schema import UserRegistration, AddressRegistration, LoginData, TokenData
-from api.utils import get_current_user
+from api.auth.schema import UserRegistration, AddressRegistration, TokenData
+from api.utils import get_user
 
 from database.models import User, Address
 from settings import logger
@@ -94,7 +95,7 @@ async def create_new_account(
 
 
 @auth_router.post("/sign-in", status_code=status.HTTP_200_OK)
-async def get_access_token(db: db_dependency, hasher_password: hasher_password_dependency, auth_jwt: jwt_dependency, payload: LoginData) -> TokenData:
+async def get_access_token(db: db_dependency, hasher_password: hasher_password_dependency, auth_jwt: jwt_dependency, form_data: OAuth2PasswordRequestForm = Depends()) -> TokenData:
     """
     This function handles user sign-in by generating access and refresh tokens for authentication.
     
@@ -120,7 +121,7 @@ async def get_access_token(db: db_dependency, hasher_password: hasher_password_d
         refresh token are generated using the provided user's ID and email. The type of token is specified
         as "Bearer".
     """
-    user = get_current_user(db, hasher_password, payload.email, payload.password)
+    user = get_user(db, hasher_password, form_data.username, form_data.password)
     access_token = auth_jwt.create_access_token(user.id.__str__(), user.email)
     refresh_token = auth_jwt.create_refresh_token(user.id.__str__())
     
