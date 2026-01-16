@@ -1,4 +1,4 @@
-import { authApi } from "@/features/auth/api/auth";
+import { authApi } from "@/api/auth";
 import type {
   UserRegisterDTO,
   UserAddress,
