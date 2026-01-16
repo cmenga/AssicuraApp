@@ -10,7 +10,7 @@ import type { UserModel } from "@/shared/type";
 export const Route = createFileRoute("/home")({
   component: RouteComponent,
   beforeLoad: isUserLogged,
-  loader: loaderComponent
+  loader: loader
 });
 
 function RouteComponent() {
@@ -26,21 +26,20 @@ function RouteComponent() {
         firstName={data.first_name}
         lastName={data.last_name}
       />
-      <UserDashboard activeTab={activeTab} onActiveTab={setActiveTab} user={data}/>
+      <UserDashboard activeTab={activeTab} onActiveTab={setActiveTab} user={data} />
       <MobileUserNavigation activeTab={activeTab} onActiveTab={setActiveTab} />
     </div>
   );
 }
 
 
-async function loaderComponent() {
+async function loader() {
   const sessionUser = sessionStorage.getItem("user_data");
   if (!sessionUser) {
     const response = await userApi.get("/me");
     sessionStorage.setItem("user_data", JSON.stringify(response.data));
     return response.data;
   }
-
   const user = JSON.parse(sessionUser);
   return user;
 }

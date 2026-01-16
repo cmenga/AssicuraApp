@@ -14,3 +14,14 @@ export interface UserModel {
   email: string;
   phone_number: string;
 }
+
+
+export interface AddressModel {
+  cap: number;
+  city: string;
+  civic_number: string;
+  province: string;
+  street: string;
+  type: string;
+
+}
