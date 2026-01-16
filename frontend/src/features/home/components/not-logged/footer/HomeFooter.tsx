@@ -1,5 +1,5 @@
 import Footer from "@/shared/components/Footer";
-import { FooterList, type FooterListModel } from "./FooterList";
+import FooterList, { type FooterListModel } from "./FooterList";
 
 const products: FooterListModel = {
   title: "Prodotti",
@@ -16,7 +16,7 @@ const support: FooterListModel = {
   links: ["FAQ", "Contatti", "Area Clienti", "Denuncia Sinistri"],
 };
 
-export function HomeFooter() {
+export default function HomeFooter() {
   return (
     <Footer>
       <div>

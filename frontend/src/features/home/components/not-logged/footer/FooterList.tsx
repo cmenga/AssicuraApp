@@ -3,7 +3,7 @@ export type FooterListModel = {
   links: string[];
 };
 
-export function FooterList(props: FooterListModel) {
+export default function FooterList(props: FooterListModel) {
   const { links, title } = props;
 
   return (
