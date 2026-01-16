@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { Menu, X } from "lucide-react";
 
-export function MobileNavigation() {
+export default function MobileNavigation() {
   return (
     <div className="md:hidden py-4 space-y-3 border-t">
       <a
