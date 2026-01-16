@@ -10,7 +10,7 @@ type FormInputDropdownProps = {
     "required" | "value" | "onChange" | "className"
   >;
 
-export function FormInputDropdown(props: FormInputDropdownProps) {
+export default function FormInputDropdown(props: FormInputDropdownProps) {
   const { labelName, previous, options, ..._props } = props;
   const [value, setValue] = useState<string | undefined>(previous);
 

@@ -11,7 +11,7 @@ type FormInputEmailProps = {
     "type" | "required" | "value" | "onChange" | "className"
   >;
 
-export function FormInputEmail(props: FormInputEmailProps) {
+export default function FormInputEmail(props: FormInputEmailProps) {
   const { previous, isRequired = false, children, ..._props } = props;
   const [value, setValue] = useState<string | undefined>(previous);
 

@@ -10,7 +10,7 @@ type DateProps = {
     "type" | "required" | "className" | "value" | "onChange"
   >;
 
-export function FormInputDate(props: DateProps) {
+export default function FormInputDate(props: DateProps) {
   const { labelName, previous, children, ..._props } = props;
   const [value, setValue] = useState<string | undefined>(previous);
 

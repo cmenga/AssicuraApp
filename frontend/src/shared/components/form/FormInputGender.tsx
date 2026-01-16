@@ -3,7 +3,7 @@ import type { InputProps } from "@/shared/type";
 
 type FormInputGenderProps = { name?: string } & InputProps;
 
-export function FormInputGender(props: FormInputGenderProps) {
+export default function FormInputGender(props: FormInputGenderProps) {
   const { labelName, previous, name } = props;
   const [value, setValue] = useState<string | undefined>(previous);
 

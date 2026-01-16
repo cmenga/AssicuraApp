@@ -1,12 +1,12 @@
 import { FileText } from "lucide-react";
 
-import { FormHeader } from "./FormHeader";
-import { FormInputText } from "@/shared/components/form/FormInputText";
-import { FormInputDropdown } from "@/shared/components/form/FormInputDropdown";
-import { FormInputDate } from "@/shared/components/form/FormInputDate";
-import { FormInputPassword } from "@/shared/components/form/FormInputPassword";
-import { FormInputCheckbox } from "@/shared/components/form/FormInputCheckbox";
-import { ErrorMessage } from "@/shared/components/form//ErrorMessage";
+import FormHeader from "./FormHeader";
+import FormInputText from "@/shared/components/form/FormInputText";
+import FormInputDropdown from "@/shared/components/form/FormInputDropdown";
+import FormInputDate from "@/shared/components/form/FormInputDate";
+import FormInputPassword from "@/shared/components/form/FormInputPassword";
+import FormInputCheckbox from "@/shared/components/form/FormInputCheckbox";
+import ErrorMessage from "@/shared/components/form//ErrorMessage";
 
 import type { DropdownOptions } from "../../type";
 import {
@@ -33,7 +33,7 @@ type RegisterStepTrheeProps = {
   errors?: Record<string, string>;
 };
 
-export function RegisterStepThree(props: RegisterStepTrheeProps) {
+export default function RegisterStepThree(props: RegisterStepTrheeProps) {
   const {
     licenseCategory,
     licenseExpiryDate,

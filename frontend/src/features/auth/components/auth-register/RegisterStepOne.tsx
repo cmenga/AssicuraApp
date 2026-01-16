@@ -1,15 +1,16 @@
-import { FormInputText } from "@/shared/components/form/FormInputText";
-import { FormInputDate } from "@/shared/components/form/FormInputDate";
-import { FormInputGender } from "@/shared/components/form/FormInputGender";
-
-import { FormHeader } from "./FormHeader";
 import { FileText, MapPin, User } from "lucide-react";
+
+import FormInputText from "@/shared/components/form/FormInputText";
+import FormInputDate from "@/shared/components/form/FormInputDate";
+import FormInputGender from "@/shared/components/form/FormInputGender";
+import ErrorMessage from "@/shared/components/form/ErrorMessage";
+import FormHeader from "./FormHeader";
+
 import {
   getMaxRegisterDate,
   handleFiscalIdKeyPress,
   handleNameKeyPress,
 } from "../../utils";
-import { ErrorMessage } from "@/shared/components/form/ErrorMessage";
 
 type RegisterSteOneProps = {
   firstName: string;
@@ -21,7 +22,7 @@ type RegisterSteOneProps = {
   errors?: Record<string, string>;
 };
 
-export function RegisterStepOne(props: RegisterSteOneProps) {
+export default function RegisterStepOne(props: RegisterSteOneProps) {
   const {
     firstName,
     lastName,

@@ -1,16 +1,16 @@
 import { useState, type FormEvent } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 
-import { FormInputEmail } from "@/shared/components/form/FormInputEmail";
-import { FormInputPassword } from "@/shared/components/form/FormInputPassword";
+import FormInputEmail from "@/shared/components/form/FormInputEmail";
+import FormInputPassword from "@/shared/components/form/FormInputPassword";
 
-import { FormInputCheckbox } from "@/shared/components/form/FormInputCheckbox";
-import { ErrorMessage } from "@/shared/components/form/ErrorMessage";
+import  FormInputCheckbox from "@/shared/components/form/FormInputCheckbox";
+import ErrorMessage  from "@/shared/components/form/ErrorMessage";
 
 import type { UserLoginDTO } from "../../type";
 import { submitUserLogin } from "../../action";
 
-export function LoginForm() {
+export default function LoginForm() {
   const confirm_message: string | null = sessionStorage.getItem("sign-up");
   const [error, setError] = useState<string | undefined>(undefined);
   const navigate = useNavigate();

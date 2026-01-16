@@ -1,10 +1,10 @@
 import { Home } from "lucide-react";
 
-import { FormHeader } from "./FormHeader";
-import { FormInputEmail } from "@/shared/components/form/FormInputEmail";
-import { FormInputPhoneNumber } from "@/shared/components/form/FormInputPhoneNumber";
-import { FormInputText } from "@/shared/components/form/FormInputText";
-import { ErrorMessage } from "@/shared/components/form/ErrorMessage";
+import FormHeader from "./FormHeader";
+import FormInputEmail from "@/shared/components/form/FormInputEmail";
+import FormInputPhoneNumber from "@/shared/components/form/FormInputPhoneNumber";
+import FormInputText from "@/shared/components/form/FormInputText";
+import ErrorMessage from "@/shared/components/form/ErrorMessage";
 
 import {
   handleCivicKeyPress,
@@ -26,7 +26,7 @@ type RegisterStepTwoProps = {
   errors?: Record<string, string>;
 };
 
-export function RegisterStepTwo(props: RegisterStepTwoProps) {
+export default function RegisterStepTwo(props: RegisterStepTwoProps) {
   const {
     cap,
     city,

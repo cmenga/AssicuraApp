@@ -9,7 +9,7 @@ import HomeFooter from "./components/not-logged/footer/HomeFooter";
 
 
 
-export function NotLoggedHome() {
+export default function NotLoggedHome() {
     return (
         <>
             <HomeNavigation />

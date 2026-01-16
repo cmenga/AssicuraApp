@@ -1,6 +1,6 @@
-import { RegisterForm } from "@/features/auth/components/auth-register/RegisterForm";
+import RegisterForm from "@/features/auth/components/auth-register/RegisterForm";
 import { RegisterHeader } from "@/features/auth/components/auth-register/RegisterHeader";
-import { RegisterProgressStep } from "@/features/auth/components/auth-register/RegisterProgressStep";
+import RegisterProgressStep from "@/features/auth/components/auth-register/RegisterProgressStep";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 

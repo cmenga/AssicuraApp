@@ -19,7 +19,7 @@ type RegisterProgressStepProps = {
   current: number;
 };
 
-export function RegisterProgressStep(props: RegisterProgressStepProps) {
+export default function RegisterProgressStep(props: RegisterProgressStepProps) {
   const { current } = props;
 
   return (

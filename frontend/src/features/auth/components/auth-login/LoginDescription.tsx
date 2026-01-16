@@ -1,6 +1,6 @@
 import { Car, CheckCircle, Shield } from "lucide-react";
 
-export function LoginDescription() {
+export default function LoginDescription() {
   return (
     <div className="hidden md:block">
       <div className="text-center mb-8">

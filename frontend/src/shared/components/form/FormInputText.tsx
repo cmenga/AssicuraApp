@@ -15,7 +15,7 @@ type TextProps = {
   "type" | "required" | "value" | "className" | "onChange"
 >;
 
-export function FormInputText(props: TextProps) {
+export default function FormInputText(props: TextProps) {
   const { icon, children, labelName, previous, ..._props } = props;
   const IconComponent = icon;
 

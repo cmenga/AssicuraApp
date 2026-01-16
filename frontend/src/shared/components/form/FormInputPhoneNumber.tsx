@@ -10,7 +10,7 @@ type FormInputPhoneNumber = {
     "type" | "required" | "value" | "onChange" | "className"
   >;
 
-export function FormInputPhoneNumber(props: FormInputPhoneNumber) {
+export default function FormInputPhoneNumber(props: FormInputPhoneNumber) {
   const { previous, children, ..._props } = props;
   const [value, setValue] = useState<string | undefined>(previous);
 

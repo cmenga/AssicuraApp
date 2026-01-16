@@ -3,7 +3,7 @@ type FormHeaderProps = {
   description: string;
 };
 
-export function FormHeader(props: FormHeaderProps) {
+export default function FormHeader(props: FormHeaderProps) {
   const { title, description } = props;
   return (
     <div className="mb-6">

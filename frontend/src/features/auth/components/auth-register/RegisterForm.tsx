@@ -2,10 +2,10 @@ import { useRef, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { CheckCircle, ChevronLeft, ChevronRight } from "lucide-react";
 
-import { RegisterStepOne } from "./RegisterStepOne";
-import { RegisterStepTwo } from "./RegisterStepTwo";
-import { RegisterStepThree } from "./RegisterStepThree";
-import { ErrorMessage } from "@/shared/components/form/ErrorMessage";
+import RegisterStepOne from "./RegisterStepOne";
+import RegisterStepTwo from "./RegisterStepTwo";
+import RegisterStepThree from "./RegisterStepThree";
+import ErrorMessage from "@/shared/components/form/ErrorMessage";
 
 import type { UserRegisterForm, ActionResponse } from "../../type";
 import { registerUser } from "../../action";
@@ -42,7 +42,7 @@ type RegisterFormProps = {
   onPrevStep: () => void;
 };
 
-export function RegisterForm(props: RegisterFormProps) {
+export default function RegisterForm(props: RegisterFormProps) {
   const { currentStep, onCurrentStep, onPrevStep } = props;
   const navigate = useNavigate();
   const [state, setState] = useState<UserRegisterForm>(FORM_STATE_INIT);

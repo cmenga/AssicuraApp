@@ -8,7 +8,7 @@ type FormInputCheckboxProps = {
   "type" | "checked" | "onChenge" | "className"
 >;
 
-export function FormInputCheckbox(props: FormInputCheckboxProps) {
+export default function FormInputCheckbox(props: FormInputCheckboxProps) {
   const { previous, children, ..._props } = props;
   const [value, setValue] = useState<boolean | undefined>(previous);
 
