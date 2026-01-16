@@ -1,4 +1,4 @@
-export function CTAButtons() {
+export default function CTAButtons() {
   return (
     <section className="py-20 px-4 sm:px-6 lg:px-8 bg-linear-to-r from-blue-600 to-cyan-500">
       <div className="max-w-4xl mx-auto text-center text-white">

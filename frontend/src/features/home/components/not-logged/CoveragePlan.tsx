@@ -8,7 +8,7 @@ export type CoverageModel = {
   popular?: boolean;
 };
 
-export function CoveragePlan(props: CoverageModel) {
+export default function CoveragePlan(props: CoverageModel) {
   const { popular, description, features, price, title } = props;
 
   return (

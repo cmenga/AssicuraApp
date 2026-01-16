@@ -7,7 +7,7 @@ export type ReviewModel = {
   vehicle: string;
 };
 
-export function ReviewCard(props: ReviewModel) {
+export default function ReviewCard(props: ReviewModel) {
   const { name, rating, text, vehicle } = props;
 
   return (

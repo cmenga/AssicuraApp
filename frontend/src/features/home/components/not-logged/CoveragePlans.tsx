@@ -1,4 +1,4 @@
-import { CoveragePlan, type CoverageModel } from "./CoveragePlan";
+import CoveragePlan, { type CoverageModel } from "./CoveragePlan";
 
 const coverages: CoverageModel[] = [
   {
@@ -30,7 +30,7 @@ const coverages: CoverageModel[] = [
   },
 ];
 
-export function CoveragePlans() {
+export default function CoveragePlans() {
   return (
     <section id="prodotti" className="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50">
       <div className="max-w-7xl mx-auto">

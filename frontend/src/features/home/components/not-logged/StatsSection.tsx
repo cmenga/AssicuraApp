@@ -5,7 +5,7 @@ const stats = [
   { value: "2min", label: "Per un Preventivo" },
 ];
 
-export function StatsSection() {
+export default function StatsSection() {
   return (
     <section className="py-12 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

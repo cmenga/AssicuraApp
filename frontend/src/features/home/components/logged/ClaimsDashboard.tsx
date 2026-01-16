@@ -1,6 +1,16 @@
 import { Calendar, Car, CheckCircle, Eye, FileText, Phone, Plus } from "lucide-react";
 
-const claims = [
+const claims: {
+    id: number,
+    numero: string,
+    data: string,
+    tipo: string,
+    targa: string,
+    stato: "Attiva" | "In scadenza" | "Scaduta" | "In lavorazione" | "Approvato" | "Rifiutato";
+    descrizione: string;
+    importo: string;
+
+}[] = [
     {
         id: 1,
         numero: 'SIN-2025-001234',
@@ -23,7 +33,7 @@ const claims = [
     }
 ];
 
-const getStatusColor = (stato) => {
+const getStatusColor = (stato: "Attiva" | "In scadenza" | "Scaduta" | "In lavorazione" | "Approvato" | "Rifiutato") => {
     const colors = {
         'Attiva': 'bg-green-100 text-green-700',
         'In scadenza': 'bg-orange-100 text-orange-700',

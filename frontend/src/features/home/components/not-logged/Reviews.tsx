@@ -1,4 +1,4 @@
-import { ReviewCard, type ReviewModel } from "./ReviewCard";
+import ReviewCard, { type ReviewModel } from "./ReviewCard";
 
 const reviews: ReviewModel[] = [
   {
@@ -21,7 +21,7 @@ const reviews: ReviewModel[] = [
   },
 ];
 
-export function Reviews() {
+export default function Reviews() {
   return (
     <section id="recensioni" className="py-20 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">

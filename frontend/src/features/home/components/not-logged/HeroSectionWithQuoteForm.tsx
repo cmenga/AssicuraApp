@@ -7,7 +7,7 @@ const vehicles = [
   { id: "furgone", name: "Furgone", icon: <Truck className="w-6 h-6" /> },
 ];
 
-export function HeroSectionWithQuoteForm() {
+export default function HeroSectionWithQuoteForm() {
   const [selectedVehicle, setSelectedVehicle] = useState("auto");
 
   return (
