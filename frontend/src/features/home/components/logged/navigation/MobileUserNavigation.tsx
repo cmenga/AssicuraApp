@@ -1,9 +1,9 @@
 import { AlertCircle, FileText, Home, Shield } from "lucide-react";
-import type { UserNavigationProps } from "../../type";
+import type { NavigationProps } from "@/features/home/type";
 
 
-export function MobileUserNavigation(props: UserNavigationProps) {
-    const {activeTab,onActiveTab} = props
+export default function MobileUserNavigation({ activeTab, onActiveTab }: NavigationProps) {
+
     return (
         <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-3 z-50">
             <div className="grid grid-cols-4 gap-2">

@@ -1,9 +1,11 @@
 import { userApi } from "@/shared/api/user.service";
-import UserDashboard from "@/features/home/UserDashboard";
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useState } from "react";
-import { UserNavigation } from "@/features/home/components/logged/UserNavigation";
-import { MobileUserNavigation } from "@/features/home/components/logged/MobileUserNavigation";
+
+import UserNavigation from "@/features/home/components/logged/navigation/UserNavigation";
+import UserDashboard from "@/features/home/UserDashboard";
+import MobileUserNavigation from "@/features/home/components/logged/navigation/MobileUserNavigation";
+import type { UserModel } from "@/shared/type";
 
 export const Route = createFileRoute("/home")({
   component: RouteComponent,
@@ -13,12 +15,17 @@ export const Route = createFileRoute("/home")({
 
 function RouteComponent() {
   const [activeTab, setActiveTab] = useState('overview');
-  const data = Route.useLoaderData();
-  console.log(data);
+  const data: UserModel = Route.useLoaderData();
 
   return (
     <div className="min-h-screen bg-white">
-      <UserNavigation activeTab={activeTab} onActiveTab={setActiveTab} />
+      <UserNavigation
+        activeTab={activeTab} onActiveTab={setActiveTab}
+        avatar={data.gender == "male" ? "MR" : "MS"}
+        email={data.email}
+        firstName={data.first_name}
+        lastName={data.last_name}
+      />
       <UserDashboard activeTab={activeTab} onActiveTab={setActiveTab} />
       <MobileUserNavigation activeTab={activeTab} onActiveTab={setActiveTab} />
     </div>

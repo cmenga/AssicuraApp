@@ -2,3 +2,15 @@ export type InputProps = {
   labelName: string;
   previous?: string;
 };
+
+
+export interface UserModel {
+  first_name: string;
+  last_name: string;
+  fiscal_id: string;
+  date_of_birth: string;
+  place_of_birth: string;
+  gender: string;
+  email: string;
+  phone_number: string;
+}
