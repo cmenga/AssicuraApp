@@ -1,4 +1,4 @@
-import { authApi } from "@/shared/api/auth";
+import { authApi } from "@/shared/api/auth.service";
 import type {
   UserRegisterDTO,
   UserAddress,
