@@ -59,7 +59,7 @@ const getStatusColor = (stato) => {
     return colors[stato] || 'bg-gray-100 text-gray-700';
 };
 
-export function PoliciesDashboard() {
+export default function PoliciesDashboard() {
 
     return (
         <div className="space-y-6">

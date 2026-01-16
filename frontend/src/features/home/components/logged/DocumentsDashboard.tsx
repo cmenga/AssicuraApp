@@ -9,7 +9,7 @@ const documents = [
 ];
 
 
-export function DocumentsDashBoard() {
+export default function DocumentsDashBoard() {
     return (
         <div className="space-y-6">
             <div className="flex justify-between items-center">

@@ -26,7 +26,7 @@ function RouteComponent() {
         firstName={data.first_name}
         lastName={data.last_name}
       />
-      <UserDashboard activeTab={activeTab} onActiveTab={setActiveTab} />
+      <UserDashboard activeTab={activeTab} onActiveTab={setActiveTab} user={data}/>
       <MobileUserNavigation activeTab={activeTab} onActiveTab={setActiveTab} />
     </div>
   );

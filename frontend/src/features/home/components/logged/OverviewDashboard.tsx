@@ -1,5 +1,5 @@
-import { AlertCircle, Bike, Car, ChevronRight, Download, Plus, Shield, TrendingUp } from "lucide-react";
-import { Activity } from "react";
+import { AlertCircle, Bike, Car, ChevronRight, Download, Plus, Shield, TrendingUp, Activity } from "lucide-react";
+
 
 const claims = [
     {
@@ -95,7 +95,7 @@ const getStatusColor = (stato: string) => {
     return colors[stato] || 'bg-gray-100 text-gray-700';
 };
 
-export function OverviewDashboard(props: OverviewDashboardProps) {
+export default function OverviewDashboard(props: OverviewDashboardProps) {
 
     return (
         <div className="space-y-8">

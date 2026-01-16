@@ -35,7 +35,7 @@ const getStatusColor = (stato) => {
     return colors[stato] || 'bg-gray-100 text-gray-700';
 };
 
-export function ClaimsDashboard() {
+export default function ClaimsDashboard() {
 
     return (
         <div className="space-y-6">
