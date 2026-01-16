@@ -1,4 +1,4 @@
-import type { InputProps } from "@/shared/type/form.type";
+import type { InputProps } from "@/shared/type";
 import { Mail } from "lucide-react";
 import { useState, type InputHTMLAttributes, type ReactNode } from "react";
 

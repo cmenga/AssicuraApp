@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { InputProps } from "@/shared/type/form.type";
+import type { InputProps } from "@/shared/type";
 
 type FormInputGenderProps = { name?: string } & InputProps;
 
