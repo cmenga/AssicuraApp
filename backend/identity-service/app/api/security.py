@@ -1,6 +1,6 @@
 from fastapi.security import OAuth2PasswordBearer
 from passlib.context import CryptContext
-from jose import jwt
+from jose import jwt,ExpiredSignatureError, JWTError
 from datetime import datetime, timedelta, timezone
 from dataclasses import dataclass
 
@@ -55,12 +55,12 @@ class AuthJWT:
     def decode_access_token(self, token: str):
         try:
             payload = jwt.decode(token, key=self.SECRET_KEY, algorithms=self.ALGHORITM)
-            print(payload)
             token_decode = AccessTokenData(**payload)
-            if token_decode.sub is None:
-                raise AuthenticationException("Impossibile convalidare le credenziali")
-        except Exception:
-            raise AuthenticationException("Impossibile convalidare le credenziali")
+            
+        except ExpiredSignatureError:
+            raise AuthenticationException("Token scaduto")
+        except JWTError:
+            raise AuthenticationException("Token non valido")
         
         return token_decode
 
