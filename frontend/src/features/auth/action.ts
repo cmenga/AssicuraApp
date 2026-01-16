@@ -172,7 +172,11 @@ export async function submitUserLogin(
   data: UserLoginDTO,
   isRemember: boolean,
 ): Promise<ActionResponse> {
-  const response = await authApi.post("/sign-in", data);
+  const response = await authApi.post("/sign-in", data, {
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded"
+    }
+  });
 
   switch (response.status) {
     case 404:
