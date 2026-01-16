@@ -1,6 +1,6 @@
 import { Link, useLocation } from "@tanstack/react-router";
 
-export function AuthNavigation() {
+export default function AuthNavigation() {
   const location = useLocation();
   const isLogin: boolean = location.pathname.endsWith("login");
 

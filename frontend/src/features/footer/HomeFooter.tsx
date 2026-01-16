@@ -1,4 +1,4 @@
-import { Footer } from "./Footer";
+import Footer from "@/shared/components/Footer";
 import { FooterList, type FooterListModel } from "./FooterList";
 
 const products: FooterListModel = {
