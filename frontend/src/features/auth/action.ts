@@ -187,6 +187,12 @@ export async function submitUserLogin(
         errors: { user: response.data.detail },
         success: false,
       };
+    case 422:
+      return {
+        message: "I dati non sono conformi per la richiesta",
+        errors: { user: "Attualmente il sservizio non è disponibile riprovi più tardi" },
+        success: false
+      };
   }
   const access_token = response.data.access_token;
   const refresh_token = response.data.refresh_token;

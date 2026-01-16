@@ -25,11 +25,12 @@ export function LoginForm() {
     >;
 
     const mergedData: UserLoginDTO = {
-      email: String(data["email"]),
+      username: String(data["username"]),
       password: String(data["password"]),
     };
     const isRemember = Boolean(data["rememberMe"]);
     const response = await submitUserLogin(mergedData, isRemember);
+
     if (response.success) {
       sessionStorage.removeItem("sign-up");
       navigate({ to: "/home" });
@@ -57,7 +58,7 @@ export function LoginForm() {
         <FormInputEmail
           placeholder="mario.rossi@example.com"
           autoComplete="username"
-          name="email"
+          name="username"
         />
         <FormInputPassword
           labelName="Password"
