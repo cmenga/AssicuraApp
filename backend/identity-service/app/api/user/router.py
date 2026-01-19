@@ -1,10 +1,12 @@
-from fastapi import APIRouter, status
-from typing import List
+from fastapi import APIRouter, status, Body
+from typing import List, Annotated
+from sqlalchemy.exc import SQLAlchemyError
 
+from settings import logger
 from api.dependency import db_dependency, auth_dependency, jwt_dependency
 from api.utils import get_current_user, get_addresses
-from api.user.schema import UserDataOut, AddressDataOut
-
+from api.user.schema import UserDataOut, AddressDataOut, ContactDataIn
+from api.exceptions import InternalServerException
 
 user_router = APIRouter(tags=["user"], prefix="/user")
 
@@ -71,3 +73,32 @@ async def get_user_address(
         addresses.append(AddressDataOut.model_validate(address))
 
     return addresses
+
+
+@user_router.patch("/update-contact")
+async def update_email(
+    auth_token: auth_dependency,
+    db: db_dependency,
+    jwt: jwt_dependency,
+    item: Annotated[ContactDataIn, Body()],
+):
+    payload = jwt.decode_access_token(auth_token)
+    fetched_user = get_current_user(db, payload)
+  
+    logger.info(
+        "update_contact_start",
+        user_id=fetched_user.id,
+        fields=list(item.model_dump().keys())
+    )
+    for key, value in item.model_dump().items():
+        if value:
+            setattr(fetched_user, key, value)
+            logger.debug("field_set", user_id=fetched_user.id, field=key, value=value)
+
+    try:
+        db.commit()
+        logger.info("update_contact_success", user_id=fetched_user.id)
+    except SQLAlchemyError as ex:
+        db.rollback()
+        logger.exception(ex, user_id=fetched_user.id,)
+        raise InternalServerException(detail=f"Errore database: {ex}")

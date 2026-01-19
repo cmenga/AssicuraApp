@@ -50,6 +50,6 @@ async function loader() {
 
 //TODO: bisogna fare la verifica del token per essere sicuri
 async function isUserLogged() {
-  const jwt_access = sessionStorage.getItem("jwt_access");
-  if (!jwt_access) throw redirect({ to: "/" });
+  const accessToken = sessionStorage.getItem("access_token");
+  if (!accessToken) throw redirect({ to: "/" });
 }

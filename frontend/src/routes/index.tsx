@@ -15,7 +15,6 @@ function RouteComponent() {
 }
 
 function beforeLoad() {
-  const jwtAccess = sessionStorage.getItem("jwt_access");
-
-  if (jwtAccess) throw redirect({ to: "/home" });
+  const accessToken = sessionStorage.getItem("access_token");
+  if (accessToken) throw redirect({ to: "/home" });
 }

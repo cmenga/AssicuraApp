@@ -205,14 +205,14 @@ export async function submitUserLogin(
 
   isRemember &&
     localStorage.setItem(
-      "jwt_refresh",
+      "refresh_token",
       JSON.stringify({
         refresh_token: refresh_token,
         type: response.data.type,
       }),
     );
   sessionStorage.setItem(
-    "jwt_access",
+    "access_token",
     JSON.stringify({ access_token: access_token, type: response.data.type }),
   );
   return { message: "Request Successfull", success: true };

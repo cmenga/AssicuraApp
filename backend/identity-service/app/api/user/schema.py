@@ -1,6 +1,7 @@
-from pydantic import BaseModel
-from typing import Literal, List
+from pydantic import BaseModel, EmailStr, field_validator
+from typing import Literal, Annotated
 from datetime import date
+
 
 class UserDataOut(BaseModel):
     date_of_birth: date
@@ -24,6 +25,19 @@ class AddressDataOut(BaseModel):
     model_config = {"from_attributes": True}
 
 
-class UserWithAddressOut(BaseModel):
-    user: UserDataOut
-    address: List[AddressDataOut]
+class ContactDataIn(BaseModel):
+    email: EmailStr | None
+    phone_number: str | None
+
+    @field_validator("phone_number")
+    @classmethod
+    def validate_phone_number(cls, value: str | None):
+        if not value:
+            return value
+        if not value.isdigit():
+            raise ValueError(
+                "Il numero di telefono inserito deve contenere solo numeri"
+            )
+        return value
+    
+    

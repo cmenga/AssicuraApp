@@ -1,8 +1,20 @@
 import FormInputEmail from "@/shared/components/form/FormInputEmail";
 import { Mail, Pencil, Save, X } from "lucide-react";
-import { useState, type FormEvent } from "react";
+import { useState } from "react";
 import BaseField from "./BaseField";
 import FormInputPhoneNumber from "@/shared/components/form/FormInputPhoneNumber";
+import { useFormStateAction } from "@/shared/hooks/useFormStateAction";
+import { submitContactAction } from "../../action";
+import ErrorMessage from "@/shared/components/form/ErrorMessage";
+import { userApi } from "@/shared/api/user.service";
+import { useNavigate } from "@tanstack/react-router";
+
+
+
+async function updateLoggedUser() {
+  const response = await userApi.get("/me");
+  sessionStorage.setItem("user_data", JSON.stringify(response.data));
+}
 
 type ContactsProps = {
   email: string;
@@ -10,17 +22,14 @@ type ContactsProps = {
 };
 
 export default function Contacts({ email, phoneNumber }: ContactsProps) {
+  const navigate = useNavigate();
+  const { errors, isPending, submitAction, cleanErrors } = useFormStateAction(submitContactAction, {
+    onSuccess: async () => {await updateLoggedUser(); setEditMode(false); navigate({ to: "/profile" }); }
+  });
   const [editMode, setEditMode] = useState<boolean>(false);
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    console.log("Entra nel submit");
-    setEditMode(false);
-    alert("Effettuare la chiamata al backend");
-  }
-
   return (
-    <div className="relative bg-white rounded-2xl shadow-md p-6">
+    <form onSubmit={submitAction} className="relative bg-white rounded-2xl shadow-md p-6">
       {!editMode && (
         <Pencil
           onClick={() => setEditMode(true)}
@@ -28,31 +37,41 @@ export default function Contacts({ email, phoneNumber }: ContactsProps) {
         />
       )}
 
+      {editMode && (
+        <div className="absolute right-4 flex gap-3">
+          <button
+            onClick={() => { setEditMode(false); cleanErrors(); }}
+            className="flex items-center gap-2 bg-gray-200 text-gray-700 px-6 py-2 rounded-xl font-semibold hover:bg-gray-300 transition"
+          >
+            <X className="w-5 h-5" />
+            Annulla
+          </button>
+          <button
+            disabled={isPending}
+            type="submit"
+            className="flex items-center gap-2 bg-green-600 text-white px-6 py-2 rounded-xl font-semibold hover:bg-green-700 transition"
+          >
+            <Save className="w-5 h-5" />
+            {isPending ? "Salvataggio..." : "Salva"}
+          </button>
+        </div>
+      )}
+
       <h3 className=" text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
         <Mail className="w-6 h-6 text-blue-600" />
         Contatti
       </h3>
-      <form onSubmit={handleSubmit} className="grid md:grid-cols-2 gap-6">
+
+      <div className="grid md:grid-cols-2 gap-6">
         {editMode && (
           <>
-            <FormInputEmail previous={email} name="email" />
-            <FormInputPhoneNumber previous={phoneNumber} name="phone_number" />
-            <div className="flex gap-3">
-              <button
-                onClick={() => setEditMode(false)}
-                className="flex items-center gap-2 bg-gray-200 text-gray-700 px-6 py-2 rounded-xl font-semibold hover:bg-gray-300 transition"
-              >
-                <X className="w-5 h-5" />
-                Annulla
-              </button>
-              <button
-                type="submit"
-                className="flex items-center gap-2 bg-green-600 text-white px-6 py-2 rounded-xl font-semibold hover:bg-green-700 transition"
-              >
-                <Save className="w-5 h-5" />
-                Salva
-              </button>
-            </div>
+            <FormInputEmail previous={email} name="email" >
+              {errors?.email && <ErrorMessage message={errors.email} />}
+            </FormInputEmail>
+            <FormInputPhoneNumber previous={phoneNumber} name="phone_number" maxLength={10} minLength={10}  >
+              {errors?.phone_number && <ErrorMessage message={errors.phone_number} />}
+            </FormInputPhoneNumber>
+
           </>
         )}
         {!editMode && (
@@ -61,7 +80,8 @@ export default function Contacts({ email, phoneNumber }: ContactsProps) {
             <BaseField field={phoneNumber} label="telefono" />
           </>
         )}
-      </form>
-    </div>
+      </div>
+    </form>
   );
 }
+
