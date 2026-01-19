@@ -22,3 +22,10 @@ export interface AddressModel {
   street: string;
   type: string;
 }
+
+export interface ActionResponse {
+  success: boolean;
+  message: string;
+  errors?: Record<string, string>;
+  data?: any;
+}

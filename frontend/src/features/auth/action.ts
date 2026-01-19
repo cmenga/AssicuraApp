@@ -5,8 +5,8 @@ import type {
   UserData,
   UserLicense,
   UserLoginDTO,
-  ActionResponse,
 } from "./type";
+import type { ActionResponse } from "@/shared/type";
 
 /**
  * The function `registerUser` saves user data and license data in local storage and then submits user

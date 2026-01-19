@@ -1,9 +1,4 @@
-export interface ActionResponse {
-  success: boolean;
-  message: string;
-  errors?: Record<string, string>;
-  data?: any;
-}
+
 
 export interface UserLoginDTO {
   username: string;
