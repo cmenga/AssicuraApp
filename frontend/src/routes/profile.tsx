@@ -1,8 +1,14 @@
+import DriverLicenses from '@/features/profile/components/driver-licenses/DriverLicenses';
+import NavigationTab from '@/features/profile/components/navigation/NavigationTab';
 import ProfileNavigation from '@/features/profile/components/navigation/ProfileNavigation';
-import ProfilePage from '@/features/profile/Profile';
+import PersonalData from '@/features/profile/components/personal-data/PersonalData';
+import ProfileHeader from '@/features/profile/components/ProfileHeader';
+import SecurityInfo from '@/features/profile/components/SecurityInfo';
+
 import { userApi } from '@/shared/api/user.service';
 
 import { createFileRoute, redirect } from '@tanstack/react-router';
+import { useState } from 'react';
 
 export const Route = createFileRoute('/profile')({
   component: RouteComponent,
@@ -11,10 +17,24 @@ export const Route = createFileRoute('/profile')({
 
 function RouteComponent() {
   const data = Route.useLoaderData();
-  return <div className="min-h-screen bg-gray-50">
-    <ProfileNavigation />
-    <ProfilePage user={data.user} addresses={data.addresses} />
-  </div>;
+  const [activeSection, setActiveSection] = useState<"personali" | "patenti">("personali");
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <ProfileNavigation />
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <ProfileHeader user={data.user} />
+        <NavigationTab activeSection={activeSection} onActiveSection={setActiveSection} />
+        {activeSection === "personali" && (
+          <PersonalData user={data.user} address={data.addresses[0]} />
+        )}
+        {activeSection === "patenti" && (
+          <DriverLicenses />
+        )}
+        <SecurityInfo />
+      </div>
+    </div>
+  );
 
 }
 
