@@ -12,6 +12,7 @@ import { submitUserLogin } from "../../action";
 
 export default function LoginForm() {
   const confirm_message: string | null = sessionStorage.getItem("sign-up");
+  const reloading_message: string | null = sessionStorage.getItem("relogged");
   const [error, setError] = useState<string | undefined>(undefined);
   const navigate = useNavigate();
 
@@ -33,6 +34,7 @@ export default function LoginForm() {
 
     if (response.success) {
       sessionStorage.removeItem("sign-up");
+      sessionStorage.removeItem("relogged")
       navigate({ to: "/home" });
     }
     response.errors && setError(response.errors.user);
@@ -49,6 +51,11 @@ export default function LoginForm() {
           <p className="text-green-600 text-sm bg-green-50 border-sm rounded-sm p-2 mt-2">
             Registrazione avvenuta con successo, accedi per confermare la
             patente
+          </p>
+        )}
+        {reloading_message && (
+          <p className="text-green-600 text-sm bg-green-50 border-sm rounded-sm p-2 mt-2">
+            Cambio email avvenuto con successo, reinserisce le credenziali per ri-loggare
           </p>
         )}
         {error && <ErrorMessage message={error} />}
