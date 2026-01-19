@@ -82,13 +82,32 @@ async def update_email(
     jwt: jwt_dependency,
     item: Annotated[ContactDataIn, Body()],
 ):
+    """
+    This Python function updates a user's contact information in a database based on the provided data.
+
+    Args:
+      auth_token (auth_dependency): The `auth_token` parameter is used to authenticate the user making
+        the request. It is decoded to extract the user's information and verify their identity.
+      db (db_dependency): The `db` parameter in the function represents a dependency injection for a
+        database connection or session. It is used to interact with the database, execute queries, and
+        commit or rollback transactions. In this context, it seems to be an instance of a database
+        dependency that provides access to database operations within the function
+      jwt (jwt_dependency): The `jwt` parameter in the code snippet is a dependency that is used for
+        decoding the access token provided in the `auth_token`. The `jwt` dependency is responsible for
+        decoding the token to extract the payload, which typically contains information about the
+        authenticated user. This decoded payload is then used to identify
+      item (Annotated[ContactDataIn, Body()]): The `item` parameter in the `update_email` function
+        represents the data that is being sent in the request body to update a contact. It is of type
+        `ContactDataIn`, which likely contains the fields that can be updated for a contact. The function
+        loops through the key-value pairs in `
+    """
     payload = jwt.decode_access_token(auth_token)
     fetched_user = get_current_user(db, payload)
-  
+
     logger.info(
         "update_contact_start",
         user_id=fetched_user.id,
-        fields=list(item.model_dump().keys())
+        fields=list(item.model_dump().keys()),
     )
     for key, value in item.model_dump().items():
         if value:
@@ -100,5 +119,8 @@ async def update_email(
         logger.info("update_contact_success", user_id=fetched_user.id)
     except SQLAlchemyError as ex:
         db.rollback()
-        logger.exception(ex, user_id=fetched_user.id,)
+        logger.exception(
+            ex,
+            user_id=fetched_user.id,
+        )
         raise InternalServerException(detail=f"Errore database: {ex}")
