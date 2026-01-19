@@ -10,28 +10,32 @@ import type { UserModel } from "@/shared/type";
 export const Route = createFileRoute("/home")({
   component: RouteComponent,
   beforeLoad: isUserLogged,
-  loader: loader
+  loader: loader,
 });
 
 function RouteComponent() {
-  const [activeTab, setActiveTab] = useState('overview');
+  const [activeTab, setActiveTab] = useState("overview");
   const data: UserModel = Route.useLoaderData();
 
   return (
     <div className="min-h-screen bg-white">
       <UserNavigation
-        activeTab={activeTab} onActiveTab={setActiveTab}
+        activeTab={activeTab}
+        onActiveTab={setActiveTab}
         avatar={data.gender == "male" ? "MR" : "MS"}
         email={data.email}
         firstName={data.first_name}
         lastName={data.last_name}
       />
-      <UserDashboard activeTab={activeTab} onActiveTab={setActiveTab} user={data} />
+      <UserDashboard
+        activeTab={activeTab}
+        onActiveTab={setActiveTab}
+        user={data}
+      />
       <MobileUserNavigation activeTab={activeTab} onActiveTab={setActiveTab} />
     </div>
   );
 }
-
 
 async function loader() {
   const sessionUser = sessionStorage.getItem("user_data");
@@ -43,7 +47,6 @@ async function loader() {
   const user = JSON.parse(sessionUser);
   return user;
 }
-
 
 //TODO: bisogna fare la verifica del token per essere sicuri
 async function isUserLogged() {

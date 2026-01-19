@@ -174,8 +174,8 @@ export async function submitUserLogin(
 ): Promise<ActionResponse> {
   const response = await authApi.post("/sign-in", data, {
     headers: {
-      "Content-Type": "application/x-www-form-urlencoded"
-    }
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
   });
 
   switch (response.status) {
@@ -194,8 +194,10 @@ export async function submitUserLogin(
     case 422:
       return {
         message: "I dati non sono conformi per la richiesta",
-        errors: { user: "Attualmente il sservizio non è disponibile riprovi più tardi" },
-        success: false
+        errors: {
+          user: "Attualmente il sservizio non è disponibile riprovi più tardi",
+        },
+        success: false,
       };
   }
   const access_token = response.data.access_token;

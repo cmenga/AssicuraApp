@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import MobileNavigation, { MobileMenuButton } from "./MobileHomeNavigation";
 
-
 export default function HomeNavigation() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 

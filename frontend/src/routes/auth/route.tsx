@@ -1,7 +1,7 @@
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 
 import Footer from "@/shared/components/Footer";
-import AuthNavigation  from "@/features/auth/components/AuthNavigation";
+import AuthNavigation from "@/features/auth/components/AuthNavigation";
 
 export const Route = createFileRoute("/auth")({
   component: RouteComponent,

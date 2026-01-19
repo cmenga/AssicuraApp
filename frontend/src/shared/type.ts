@@ -3,7 +3,6 @@ export type InputProps = {
   previous?: string;
 };
 
-
 export interface UserModel {
   first_name: string;
   last_name: string;
@@ -15,7 +14,6 @@ export interface UserModel {
   phone_number: string;
 }
 
-
 export interface AddressModel {
   cap: number;
   city: string;
@@ -23,5 +21,4 @@ export interface AddressModel {
   province: string;
   street: string;
   type: string;
-
 }
