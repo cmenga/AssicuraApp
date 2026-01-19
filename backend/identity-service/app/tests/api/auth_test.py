@@ -1,5 +1,5 @@
-from tests.conftest import app,override_get_db
-from database.session import get_db 
+from tests.conftest import app, override_get_db
+from database.session import get_db
 from fastapi import status
 from scripts.run_all import run_all
 
@@ -32,11 +32,11 @@ VALID_ADDRESS = {
 }
 
 
-def test_signup_success(client):    
+def test_signup_success(client):
     """
     The function `test_signup_success` sends a POST request to the "/auth/sign-up" endpoint with valid
     user and address data and asserts that the response status code is 204.
-    
+
     Args:
         client: The `client` parameter in the `test_signup_success` function is typically an instance of a
             test client that is used to make requests to your API endpoints during testing. This client allows
@@ -56,7 +56,7 @@ def test_signup_success(client):
 def test_signup_user_already_exists(client):
     """
     The function `test_signup_user_already_exists` tests signing up a user who already exists.
-    
+
     Args:
         client: The `client` parameter in the `test_signup_user_already_exists` function is likely an
             instance of a test client that is used to make HTTP requests to the application being tested. In
@@ -71,11 +71,10 @@ def test_signup_user_already_exists(client):
     assert response.status_code == status.HTTP_409_CONFLICT
 
 
-
 def test_signup_password_mismatch(client):
     """
     The function `test_signup_password_mismatch` tests signing up with mismatched passwords.
-    
+
     Args:
         client: The `client` parameter in the `test_signup_password_mismatch` function is likely an
             instance of a test client that is used to make HTTP requests to your application during testing. It
@@ -97,7 +96,7 @@ def test_sign_in_success(client):
     """
     The function `test_sign_in_success` tests the successful sign-in functionality by sending a POST
     request with email and password, and asserts the expected response status code and content.
-    
+
     Args:
         client: The `client` parameter in the `test_sign_in_success` function is typically an instance of
             a test client that is used to make HTTP requests to your API endpoints during testing. This client
@@ -106,24 +105,23 @@ def test_sign_in_success(client):
     """
     response = client.post(
         "/auth/sign-in",
-        json={
-            "email": "test@example.com",
-            "password": "Password1!"
-        }
+        data={"username": "test@example.com", "password": "Password1!"},
+        headers={"Content-type": "application/x-www-form-urlencoded"},
     )
 
     assert response.status_code == status.HTTP_200_OK
 
     data = response.json()
-    assert "access_token" in data 
+    assert "access_token" in data
     assert "refresh_token" in data
     assert "type" in data and data["type"] == "Bearer"
-    
+
+
 def test_sign_in_not_success(client):
     """
     The function `test_sign_in_not_success` sends a POST request to the "/auth/sign-in" endpoint with
     specific credentials and asserts that the response status code is 404 Not Found.
-    
+
     Args:
         client: The `client` parameter in the `test_sign_in_not_success` function is likely an instance of
             a client object that is used for making HTTP requests in a testing environment. It is commonly used
@@ -132,19 +130,18 @@ def test_sign_in_not_success(client):
     """
     response = client.post(
         "/auth/sign-in",
-        json={
-            "email": "test@s.com",
-            "password": "Password1!"
-        }
+        data={"username": "test@s.com", "password": "Password1!"},
+        headers={"Content-type": "application/x-www-form-urlencoded"},
     )
 
     assert response.status_code == status.HTTP_404_NOT_FOUND
+
 
 def test_sign_in_unauthorized(client):
     """
     The function `test_sign_in_unauthorized` sends a POST request to the "/auth/sign-in" endpoint with a
     specific email and password, and asserts that the response status code is 401 (Unauthorized).
-    
+
     Args:
         client: The `client` parameter in the `test_sign_in_unauthorized` function is likely an instance
             of a test client that is used to make HTTP requests to your application during testing. It is
@@ -153,10 +150,8 @@ def test_sign_in_unauthorized(client):
     """
     response = client.post(
         "/auth/sign-in",
-        json={
-            "email": "test@example.com",
-            "password": "Password1"
-        }
+        data={"username": "test@example.com", "password": "Password1"},
+        headers={"Content-type": "application/x-www-form-urlencoded"},
     )
 
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
