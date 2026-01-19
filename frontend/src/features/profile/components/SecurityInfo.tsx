@@ -4,7 +4,7 @@ import { Shield } from "lucide-react";
 export default function SecurityInfo() {
 
     return (
-        <div className="bg-blue-50 border border-blue-200 rounded-xl p-6 mb-6">
+        <div className="bg-blue-50 border border-blue-200 rounded-xl p-6 my-6">
             <div className="flex items-start gap-4">
                 <div className="bg-blue-100 p-3 rounded-lg">
                     <Shield className="w-6 h-6 text-blue-600" />
