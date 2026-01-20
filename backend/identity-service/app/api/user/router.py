@@ -3,11 +3,25 @@ from typing import List, Annotated
 from sqlalchemy.exc import SQLAlchemyError
 
 from settings import logger
-from database.models import Address
-from api.dependency import db_dependency, auth_dependency, jwt_dependency
+from api.dependency import (
+    db_dependency,
+    auth_dependency,
+    jwt_dependency,
+    hasher_password_dependency,
+)
 from api.utils import get_current_user, get_addresses
-from api.user.schema import UserDataOut, AddressDataOut, ContactDataIn, AddressDataIn
-from api.exceptions import InternalServerException, NotFoundException
+from api.user.schema import (
+    UserDataOut,
+    AddressDataOut,
+    ContactDataIn,
+    AddressDataIn,
+    ChangePasswordIn,
+)
+from api.exceptions import (
+    InternalServerException,
+    NotFoundException,
+    ForbiddenException,
+)
 
 user_router = APIRouter(tags=["user"], prefix="/user")
 
@@ -152,3 +166,50 @@ async def update_address(
         db.rollback()
         logger.error(ex, user_id=payload.sub)
         raise InternalServerException(detail=f"Errore database: {ex}")
+
+
+@user_router.patch("/change-password", status_code=status.HTTP_200_OK)
+async def change_password(
+    auth_token: auth_dependency,
+    db: db_dependency,
+    jwt: jwt_dependency,
+    hasher_password: hasher_password_dependency,
+    item: Annotated[ChangePasswordIn, Body()],
+):
+    logger.info(
+        "change_password_called", payload=item.model_dump()
+    )
+
+    # Decodifico token e recupero utente
+    payload = jwt.decode_access_token(auth_token)
+    logger.debug("JWT decoded", payload=payload)
+
+    fetched_user = get_current_user(db, payload)
+    if not fetched_user:
+        logger.warning("User not found", user_id=payload.sub)
+        raise ForbiddenException(detail="Utente non trovato")
+
+    # Verifico la vecchia password
+    if not hasher_password.verify_password_hash(
+        item.old_password, fetched_user.hashed_password
+    ):
+        logger.warning("Old password does not match", user_id=fetched_user.id)
+        raise ForbiddenException(
+            detail="Password errata, inserisci la password corretta"
+        )
+
+    # Creo l'hash della nuova password
+    hashed_password = hasher_password.get_password_hash(item.new_password)
+    fetched_user.hashed_password = hashed_password
+    logger.debug("New password hashed and set", user_id=fetched_user.id)
+
+    # Commit sul DB
+    try:
+        db.commit()
+        logger.info("Password changed successfully", user_id=fetched_user.id)
+    except SQLAlchemyError as ex:
+        db.rollback()
+        logger.exception(ex, user_id=fetched_user.id)
+        raise InternalServerException(detail=f"Errore database: {ex}")
+
+    return {"success": True, "message": "Password aggiornata correttamente"}

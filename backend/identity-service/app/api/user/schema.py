@@ -186,3 +186,34 @@ def validate_cap(city: str, cap: str, province: str):
 
     if not is_valid_cap:
         raise ValueError("Il cap inserito non è corretto")
+
+
+class ChangePasswordIn(BaseModel):
+    old_password: str
+    new_password: str
+    confirm_password: str
+
+    @field_validator("new_password")
+    @classmethod
+    def validate_new_password(cls, value: str):
+        from password_validator import PasswordValidator
+
+        schema = PasswordValidator()
+        schema.min(8).max(
+            64
+        ).has().uppercase().has().lowercase().has().digits().has().no().spaces()
+
+        if not schema.validate(value):
+            raise ValueError("La password non è valida")
+        if not re.search(r"[^a-zA-Z0-9]", value):
+            raise ValueError("La password non è valida")
+
+        return value
+
+    @model_validator(mode="after")
+    def validate_same_passwords(self):
+        if self.new_password != self.confirm_password:
+            raise ValueError("Le password non combaciano")
+        if self.new_password.upper() == self.old_password.upper():
+            raise ValueError("La nuova password non può essere uguale a quella vecchia")
+        return self
