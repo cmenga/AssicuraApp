@@ -40,6 +40,9 @@ export async function submitAddressACtion(formData: FormData): Promise<ActionRes
   return { message: "Successfull request", success: true };
 }
 
+export async function submitPasswordAction(formData: FormData): Promise<ActionResponse> {
+  return { message: "", success: true };
+}
 /**
  * The function `validationActionResponse` processes data to create an `ActionResponse` object with
  * messages, errors, and success status.

@@ -1,7 +1,7 @@
 import type { AddressModel, UserModel } from "@/shared/type";
 import Anagraphic from "./Anagraphic";
-import Contacts from "./Contacts";
 import Address from "./Address";
+import Credentials from "./Credentials";
 
 type PersonalDataProps = {
   user: UserModel;
@@ -14,7 +14,7 @@ export default function PersonalData({ user, address }: PersonalDataProps) {
       <Anagraphic user={user} />
 
       <div className="grid md:grid-cols-2 gap-2">
-        <Contacts email={user.email} phoneNumber={user.phone_number} />
+        <Credentials email={user.email} phoneNumber={user.phone_number} />
         <Address address={address} />
       </div>
     </div>

@@ -91,3 +91,19 @@ export function handleProvinceKeyPress(event: KeyboardEvent<HTMLInputElement>) {
     event.preventDefault();
   }
 }
+
+/**
+ * The function `handlePasswordKeyPress` restricts input to only allow certain characters for a
+ * password field.
+ * @param event - The `event` parameter is a `KeyboardEvent` object that represents an event generated
+ * by a keyboard (usually related to a specific key being pressed). In this case, it specifically
+ * refers to an event associated with an `<input>` element.
+ */
+export function handlePasswordKeyPress(event: KeyboardEvent<HTMLInputElement>) {
+  const key = event.key;
+  const regex = /^[A-Za-z0-9!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]$/;
+
+  if (!regex.test(key) && !ALLOWED_KEYS.includes(key)) {
+    event.preventDefault();
+  }
+}
