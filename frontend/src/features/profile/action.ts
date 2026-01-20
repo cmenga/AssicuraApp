@@ -41,7 +41,18 @@ export async function submitAddressACtion(formData: FormData): Promise<ActionRes
 }
 
 export async function submitPasswordAction(formData: FormData): Promise<ActionResponse> {
-  return { message: "", success: true };
+  const data = Object.fromEntries(formData.entries());
+  const response = await userApi.patch("/change-password", data);
+  console.log(response)
+  switch (response.status) {
+    case 403:
+      return { message: response.data.detail, success: false };
+    case 404:
+      return { message: response.data.detail, success: false };
+    case 422:
+      return validationActionResponse(response.data);
+  }
+  return { message: "Password cambiata con successo", success: true };
 }
 /**
  * The function `validationActionResponse` processes data to create an `ActionResponse` object with
@@ -75,6 +86,12 @@ async function validationActionResponse(data: any) {
       returnedValue.errors = {
         ...returnedValue.errors,
         residence_province: newForm["body"],
+      };
+      
+    } else if (newForm["body"]?.toLowerCase().includes("password")) {
+      returnedValue.errors = {
+        ...returnedValue.errors,
+        change_password: newForm["body"],
       };
     } else {
       returnedValue.errors = {

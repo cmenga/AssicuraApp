@@ -16,6 +16,8 @@ export default function ChangePassword() {
     const { errors, isPending, submitAction, cleanErrors } = useFormStateAction(submitPasswordAction, {
         onSuccess: async () => { cleanErrors(); setEditMode(false); navigate({ to: "/profile" }); }
     });
+
+    console.log(errors);
     return (
         <form onSubmit={submitAction} className="relative bg-white rounded-2xl shadow-md p-6">
             {!editMode && (
@@ -49,7 +51,7 @@ export default function ChangePassword() {
                 <Lock className="w-6 h-6 text-blue-600" />
                 Credenziali
             </h3>
-
+            {errors?.change_password && <ErrorMessage message={errors?.change_password} />}
             <div className="grid md:grid-cols-2 gap-6">
                 {editMode && (
                     <>
