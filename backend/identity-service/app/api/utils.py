@@ -2,34 +2,14 @@ from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
 
 from database.models import User, Address
-from api.security import HasherPassword, AccessTokenData
+from api.security import IPasswordHasher, AccessToken
 from api.exceptions import AuthenticationException, NotFoundException
 from settings import logger
 
 
 def get_user(
-    db: Session, hasher_password: HasherPassword, email: str, password: str
+    db: Session, hasher: IPasswordHasher, email: str, password: str
 ) -> User:
-    """
-    The function `get_current_user` retrieves a user from the database based on email, verifies the
-    password, and returns the user if found.
-
-    Args:
-        db (Session): The `db` parameter is of type `Session` and is used to interact with the database.
-            It is typically used to query, insert, update, and delete data from the database.
-        hasher_password (HasherPassword): The `hasher_password` parameter in the `get_current_user`
-            function seems to be an instance of a class or a utility that is used for hashing passwords and
-            verifying password hashes. It is likely used to securely compare the password provided by the user
-            with the hashed password stored in the database for the
-      email (str): The `get_current_user` function you provided takes in several parameters:
-            password (str): The `get_current_user` function you provided takes in several parameters:
-
-    Returns:
-        The function `get_current_user` returns the user object fetched from the database if the user
-        exists and the provided password matches the hashed password stored in the database. If the user
-        does not exist or the password does not match, it raises appropriate HTTP exceptions with
-        corresponding status codes and details.
-    """
     fetched_user = db.query(User).filter(User.email == email).first()
 
     if not fetched_user:
@@ -47,7 +27,7 @@ def get_user(
         email=fetched_user.email,
     )
 
-    if not hasher_password.verify_password_hash(password, fetched_user.hashed_password):
+    if not hasher.verify(password, fetched_user.hashed_password):
         logger.warning(
             "login_failed_invalid_password",
             user_id=fetched_user.id,
@@ -65,10 +45,10 @@ def get_user(
     return fetched_user
 
 
-def get_current_user(db: Session, token_data: AccessTokenData):
+def get_current_user(db: Session, token: AccessToken ):
     user = (
         db.query(User)
-        .filter(User.id == token_data.sub, User.email == token_data.email)
+        .filter(User.id == token.sub, User.email == token.email)
         .first()
     )
     if not user:

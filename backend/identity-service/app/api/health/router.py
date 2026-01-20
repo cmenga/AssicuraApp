@@ -3,13 +3,13 @@ from fastapi.routing import APIRouter
 from fastapi.exceptions import HTTPException
 from sqlalchemy import text
 
-from api.dependency import db_dependency
+from api.dependency import DbSession
 
 health_router = APIRouter(prefix="/health", tags=["Health"])
 
 
 @health_router.get("")
-async def health(db: db_dependency):
+async def health(db: DbSession):
     isDbReady: bool = False
     try:
         # Esegue query semplice per testare connessione
