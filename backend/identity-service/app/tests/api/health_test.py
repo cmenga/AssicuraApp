@@ -1,5 +1,5 @@
 from tests.conftest import TestingSessionLocal, pytest, app
-from database.session import get_db
+from api.dependency import get_db
 
 
 def ovverife_get_db():

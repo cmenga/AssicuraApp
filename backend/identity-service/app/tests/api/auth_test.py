@@ -1,5 +1,5 @@
 from tests.conftest import app, override_get_db
-from database.session import get_db
+from api.dependency import get_db
 from fastapi import status
 from scripts.run_all import run_all
 

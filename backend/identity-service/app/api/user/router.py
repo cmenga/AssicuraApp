@@ -40,7 +40,7 @@ async def get_user_address(
     return addresses
 
 
-@user_router.patch("/update-contact", status_code=status.HTTP_204_NO_CONTENT)
+@user_router.patch("/update-contact", status_code=status.HTTP_200_OK)
 async def update_contact(
     token: JwtToken,
     db: DbSession,
