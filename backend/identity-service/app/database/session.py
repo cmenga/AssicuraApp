@@ -10,14 +10,3 @@ def get_session(db_url: str | None = None):
     return sessionmaker(bind=engine)
 
 
-def get_db():
-    """
-    The function `get_db` creates a database session and yields it for use, ensuring the session is
-    closed properly afterwards.
-    """
-    SessionLocal = get_session()
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
