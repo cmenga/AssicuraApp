@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Body, status, HTTPException,Depends
+from fastapi import APIRouter, Body, status, HTTPException, Depends
 from fastapi.security import OAuth2PasswordRequestForm
 from typing import Annotated
 from sqlalchemy.exc import IntegrityError
@@ -77,11 +77,17 @@ async def create_new_account(
 
 
 @auth_router.post("/sign-in", status_code=status.HTTP_200_OK)
-async def get_access_token(db: DbSession, hasher: PasswordHasher, jwt: JwtService, form_data: OAuth2PasswordRequestForm = Depends()) -> TokenData:
+async def get_access_token(
+    db: DbSession,
+    hasher: PasswordHasher,
+    jwt: JwtService,
+    form_data: OAuth2PasswordRequestForm = Depends(),
+) -> TokenData:
     user = get_user(db, hasher, form_data.username, form_data.password)
-    access_token = auth_jwt.create_access_token(user.id.__str__(), user.email)
-    refresh_token = auth_jwt.create_refresh_token(user.id.__str__())
-    
-    token = TokenData(access_token=access_token,refresh_token=refresh_token, type="Bearer")
+    access_token = jwt.create_access_token(user.id.__str__(), user.email)
+    refresh_token = jwt.create_refresh_token(user.id.__str__())
+
+    token = TokenData(
+        access_token=access_token, refresh_token=refresh_token, type="Bearer"
+    )
     return token
-    
