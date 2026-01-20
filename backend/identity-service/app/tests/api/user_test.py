@@ -38,6 +38,16 @@ def test_get_addresses(client):
 
 
 def test_update_contact(client):
+    """
+    The function `test_update_contact` updates a user's contact information and verifies the changes
+    made.
+    
+    Args:
+      client: The `client` parameter in the `test_update_contact` function is typically an instance of a
+        HTTP client that is used to make requests to a web server during testing. It could be a client
+        provided by a testing framework like Flask-Testing, requests library, or any other library that
+        allows you to
+    """
     headers = get_auth_headers(client)
     payload = {"email": "new_email@test.com", "phone_number": "1234567890"}
 

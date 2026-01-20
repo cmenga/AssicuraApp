@@ -3,10 +3,11 @@ from typing import List, Annotated
 from sqlalchemy.exc import SQLAlchemyError
 
 from settings import logger
+from database.models import Address
 from api.dependency import db_dependency, auth_dependency, jwt_dependency
 from api.utils import get_current_user, get_addresses
-from api.user.schema import UserDataOut, AddressDataOut, ContactDataIn
-from api.exceptions import InternalServerException
+from api.user.schema import UserDataOut, AddressDataOut, ContactDataIn, AddressDataIn
+from api.exceptions import InternalServerException, NotFoundException
 
 user_router = APIRouter(tags=["user"], prefix="/user")
 
@@ -75,8 +76,8 @@ async def get_user_address(
     return addresses
 
 
-@user_router.patch("/update-contact")
-async def update_email(
+@user_router.patch("/update-contact", status_code=status.HTTP_204_NO_CONTENT)
+async def update_contact(
     auth_token: auth_dependency,
     db: db_dependency,
     jwt: jwt_dependency,
@@ -123,4 +124,31 @@ async def update_email(
             ex,
             user_id=fetched_user.id,
         )
+        raise InternalServerException(detail=f"Errore database: {ex}")
+
+
+@user_router.put("/update-address", status_code=status.HTTP_204_NO_CONTENT)
+async def update_address(
+    auth_token: auth_dependency,
+    db: db_dependency,
+    jwt: jwt_dependency,
+    address: Annotated[AddressDataIn, Body()],
+):
+    payload = jwt.decode_access_token(auth_token)
+    fecthed_address = get_addresses(db, payload.sub)[0]
+
+    if not fecthed_address:
+        logger.warning("Address not found for user", user_id=payload.sub)
+        raise NotFoundException("Indirizzo non trovato per questo utente")
+
+    for key, value in address.model_dump().items():
+        setattr(fecthed_address, key, value)
+        logger.debug("Set attribute", field=key, value=value)
+
+    try:
+        db.commit()
+        logger.info("Address updated successfully", user_id=payload.sub)
+    except SQLAlchemyError as ex:
+        db.rollback()
+        logger.error(ex, user_id=payload.sub)
         raise InternalServerException(detail=f"Errore database: {ex}")
