@@ -9,6 +9,7 @@ type ShowProfileMenuProps = {
   avatar: string;
 };
 
+
 export default function ProfileMenu(props: ShowProfileMenuProps) {
   const { firstName, lastName, email, avatar } = props;
   const [showProfileMenu, setShowProfileMenu] = useState(false);
@@ -43,7 +44,7 @@ export default function ProfileMenu(props: ShowProfileMenuProps) {
             <span className="text-sm">Impostazioni</span>
           </button>
           <hr className="my-2" />
-          <button className="w-full px-4 py-2 text-left hover:bg-gray-50 flex items-center gap-2 text-red-600">
+          <button onClick={logoutUser} className="w-full px-4 py-2 text-left hover:bg-gray-50 flex items-center gap-2 text-red-600">
             <LogOut className="w-4 h-4" />
             <span className="text-sm">Esci</span>
           </button>
@@ -51,4 +52,11 @@ export default function ProfileMenu(props: ShowProfileMenuProps) {
       )}
     </div>
   );
+}
+
+
+function logoutUser() {
+  sessionStorage.clear();
+  localStorage.removeItem("refresh_token");
+  window.location.href = "/home";
 }

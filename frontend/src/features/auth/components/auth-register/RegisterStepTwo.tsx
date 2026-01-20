@@ -7,13 +7,13 @@ import FormInputText from "@/shared/components/form/FormInputText";
 import ErrorMessage from "@/shared/components/form/ErrorMessage";
 
 import {
-  handleCivicKeyPress,
-  handleEmailKeyPress,
-  handleNameKeyPress,
   handleNumberKeyPress,
-  handleProvinceKeyPress,
+  handleEmailKeyPress,
   handleStreetKeyPress,
-} from "../../utils";
+  handleCivicKeyPress,
+  handleNameKeyPress,
+  handleProvinceKeyPress
+} from "@/shared/utils";
 
 type RegisterStepTwoProps = {
   email: string;

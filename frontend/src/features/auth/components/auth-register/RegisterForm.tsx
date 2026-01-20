@@ -7,7 +7,8 @@ import RegisterStepTwo from "./RegisterStepTwo";
 import RegisterStepThree from "./RegisterStepThree";
 import ErrorMessage from "@/shared/components/form/ErrorMessage";
 
-import type { UserRegisterForm, ActionResponse } from "../../type";
+import type { UserRegisterForm } from "../../type";
+import type { ActionResponse } from "@/shared/type";
 import { registerUser } from "../../action";
 
 const FORM_STATE_INIT: UserRegisterForm = {
@@ -70,7 +71,6 @@ export default function RegisterForm(props: RegisterFormProps) {
     }
     onCurrentStep(1);
     response.errors && setErrors(response.errors);
-    console.log(response);
   }
 
   function saveData() {

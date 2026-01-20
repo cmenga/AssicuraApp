@@ -8,6 +8,7 @@ import { submitContactAction } from "../../action";
 import ErrorMessage from "@/shared/components/form/ErrorMessage";
 import { userApi } from "@/shared/api/user.service";
 import { useNavigate } from "@tanstack/react-router";
+import { handleEmailKeyPress, handleNumberKeyPress } from "@/shared/utils";
 
 
 
@@ -41,7 +42,7 @@ export default function Contacts({ email, phoneNumber }: ContactsProps) {
         <div className="absolute right-4 flex gap-3">
           <button
             onClick={() => { setEditMode(false); cleanErrors(); }}
-            className="flex items-center gap-2 bg-gray-200 text-gray-700 px-6 py-2 rounded-xl font-semibold hover:bg-gray-300 transition"
+            className="cursor-pointer flex items-center gap-2 bg-gray-200 text-gray-700 px-6 py-2 rounded-xl font-semibold hover:bg-gray-300 transition"
           >
             <X className="w-5 h-5" />
             Annulla
@@ -49,7 +50,7 @@ export default function Contacts({ email, phoneNumber }: ContactsProps) {
           <button
             disabled={isPending}
             type="submit"
-            className="flex items-center gap-2 bg-green-600 text-white px-6 py-2 rounded-xl font-semibold hover:bg-green-700 transition"
+            className="cursor-pointer flex items-center gap-2 bg-green-600 text-white px-6 py-2 rounded-xl font-semibold hover:bg-green-700 transition"
           >
             <Save className="w-5 h-5" />
             {isPending ? "Salvataggio..." : "Salva"}
@@ -65,10 +66,10 @@ export default function Contacts({ email, phoneNumber }: ContactsProps) {
       <div className="grid md:grid-cols-2 gap-6">
         {editMode && (
           <>
-            <FormInputEmail previous={email} name="email" >
+            <FormInputEmail previous={email} name="email"  onKeyDown={handleEmailKeyPress}>
               {errors?.email && <ErrorMessage message={errors.email} />}
             </FormInputEmail>
-            <FormInputPhoneNumber previous={phoneNumber} name="phone_number" maxLength={10} minLength={10}  >
+            <FormInputPhoneNumber previous={phoneNumber} name="phone_number" maxLength={10} minLength={10} onKeyDown={handleNumberKeyPress}  >
               {errors?.phone_number && <ErrorMessage message={errors.phone_number} />}
             </FormInputPhoneNumber>
 

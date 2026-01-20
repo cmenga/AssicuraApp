@@ -24,7 +24,7 @@ export function useFormStateAction(action: (formData: FormData) => Promise<Actio
         try {
             const formData: FormData = new FormData(event.currentTarget);
             const response = await action(formData);
-
+            await new Promise((resolve) => setTimeout(resolve, 500));
             response.errors && setErrors(response.errors);
             response.success && callbacks?.onSuccess?.();
             return response;

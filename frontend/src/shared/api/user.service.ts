@@ -34,7 +34,7 @@ userApi.interceptors.response.use(
   (response) => { return response; },
   (error) => {
     const status = error.response?.status;
-    console.log(status);
+
     if (status === 401) {
       forceLogout();
     }

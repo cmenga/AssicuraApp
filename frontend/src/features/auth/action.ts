@@ -79,7 +79,7 @@ async function submitUserBasics(
     address: { ...address },
   };
   const response = await authApi.post("/sign-up", dto);
-  console.log(response.data);
+
   switch (response.status) {
     case 422:
       return validationErrorResponse(response.data);

@@ -27,6 +27,18 @@ export async function submitContactAction(formData: FormData): Promise<ActionRes
 }
 
 
+export async function submitAddressACtion(formData: FormData): Promise<ActionResponse> {
+  const data = Object.fromEntries(formData.entries());
+  const response = await userApi.put("/update-address", data);
+
+  switch (response.status) {
+    case 404:
+      return { message: response.data.detail, success: false };
+    case 422:
+      return validationActionResponse(response.data);
+  }
+  return { message: "Successfull request", success: true };
+}
 
 /**
  * The function `validationActionResponse` processes data to create an `ActionResponse` object with
@@ -51,9 +63,21 @@ async function validationActionResponse(data: any) {
     const newForm: Record<string, string> = {
       [err.field]: err.message,
     };
-    returnedValue.errors = {
-      ...returnedValue.errors,
-      ...newForm
+    if (newForm["body"]?.toLowerCase().includes("cap")) {
+      returnedValue.errors = {
+        ...returnedValue.errors,
+        cap: newForm["body"],
+      };
+    } else if (newForm["body"]?.toLowerCase().includes("città")) {
+      returnedValue.errors = {
+        ...returnedValue.errors,
+        residence_province: newForm["body"],
+      };
+    } else {
+      returnedValue.errors = {
+        ...returnedValue.errors,
+        ...newForm
+      };
     };
   });
   return returnedValue;

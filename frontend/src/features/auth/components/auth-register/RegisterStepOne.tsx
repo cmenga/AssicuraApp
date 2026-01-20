@@ -9,8 +9,9 @@ import FormHeader from "./FormHeader";
 import {
   getMaxRegisterDate,
   handleFiscalIdKeyPress,
-  handleNameKeyPress,
 } from "../../utils";
+
+import { handleNameKeyPress } from "@/shared/utils";
 
 type RegisterSteOneProps = {
   firstName: string;
