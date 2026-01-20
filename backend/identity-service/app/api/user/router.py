@@ -13,11 +13,7 @@ from api.user.schema import (
     AddressDataIn,
     ChangePasswordIn,
 )
-from api.exceptions import (
-    InternalServerException,
-    NotFoundException,
-    ForbiddenException,
-)
+from api.exceptions import HTTPInternalServer, HTTPNotFound, HTTPForbidden
 
 user_router = APIRouter(tags=["user"], prefix="/user")
 
@@ -73,7 +69,7 @@ async def update_contact(
             ex,
             user_id=fetched_user.id,
         )
-        raise InternalServerException(detail=f"Errore database: {ex}")
+        raise HTTPInternalServer(f"Errore database: {ex}")
 
 
 @user_router.put("/update-address", status_code=status.HTTP_204_NO_CONTENT)
@@ -88,7 +84,7 @@ async def update_address(
 
     if not fecthed_address:
         logger.warning("Address not found for user", user_id=payload.sub)
-        raise NotFoundException("Indirizzo non trovato per questo utente")
+        raise HTTPNotFound("Indirizzo non trovato per questo utente")
 
     for key, value in address.model_dump().items():
         setattr(fecthed_address, key, value)
@@ -100,7 +96,7 @@ async def update_address(
     except SQLAlchemyError as ex:
         db.rollback()
         logger.error(ex, user_id=payload.sub)
-        raise InternalServerException(detail=f"Errore database: {ex}")
+        raise HTTPInternalServer(f"Errore database: {ex}")
 
 
 @user_router.patch("/change-password", status_code=status.HTTP_200_OK)
@@ -120,14 +116,12 @@ async def change_password(
     fetched_user = get_current_user(db, payload)
     if not fetched_user:
         logger.warning("User not found", user_id=payload.sub)
-        raise ForbiddenException(detail="Utente non trovato")
+        raise HTTPForbidden("Utente non trovato")
 
     # Verifico la vecchia password
     if not hasher.verify(item.old_password, fetched_user.hashed_password):
         logger.warning("Old password does not match", user_id=fetched_user.id)
-        raise ForbiddenException(
-            detail="Password errata, inserisci la password corretta"
-        )
+        raise HTTPForbidden("Password errata, inserisci la password corretta")
 
     # Creo l'hash della nuova password
     hashed_password = hasher.hash(item.new_password)
@@ -141,6 +135,6 @@ async def change_password(
     except SQLAlchemyError as ex:
         db.rollback()
         logger.exception(ex, user_id=fetched_user.id)
-        raise InternalServerException(detail=f"Errore database: {ex}")
+        raise HTTPInternalServer(f"Errore database: {ex}")
 
     return {"success": True, "message": "Password aggiornata correttamente"}

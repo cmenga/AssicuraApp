@@ -28,4 +28,4 @@ def get_jwt_service() -> IJWTServise:
 DbSession = Annotated[Session, Depends(get_db)]
 PasswordHasher = Annotated[IPasswordHasher, Depends(get_hasher)]
 JwtToken = Annotated[str, Depends(oauth_scheme)]
-JwtService = Annotated[IJWTServise, Depends()]
+JwtService = Annotated[IJWTServise, Depends(get_jwt_service)]

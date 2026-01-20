@@ -7,7 +7,7 @@ from typing import Protocol, TypeVar, Type
 from abc import abstractmethod
 
 from settings import get_secret_key
-from api.exceptions import AuthenticationException
+from api.exceptions import HTTPUnauthorized
 
 oauth_scheme = OAuth2PasswordBearer(tokenUrl="/auth/sign-in")
 
@@ -75,7 +75,7 @@ class JWTService(IJWTServise):
     def _create_token(self, claims: dict, *, hours: int = 0, days: int = 0):
         from datetime import timedelta, timezone, datetime
 
-        claims["exp"] = datetime.now(timezone.utc) - timedelta(hours=hours, days=days)
+        claims["exp"] = datetime.now(timezone.utc) + timedelta(hours=hours, days=days)
         return jwt.encode(claims, key=self.SECRET_KEY, algorithm=self.ALGHORITM)
 
     def _decode_token(self, token: str, model: Type[T]):
@@ -86,6 +86,6 @@ class JWTService(IJWTServise):
             obj = model(**payload)
             return obj
         except ExpiredSignatureError:
-            raise AuthenticationException("Token scaduto")
+            raise HTTPUnauthorized("Token scaduto")
         except JWTError:
-            raise AuthenticationException("Token non valido")
+            raise HTTPUnauthorized("Token non valido")

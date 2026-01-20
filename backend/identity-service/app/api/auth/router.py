@@ -6,6 +6,7 @@ from sqlalchemy.exc import IntegrityError
 from api.dependency import DbSession, PasswordHasher, JwtService
 from api.auth.schema import UserRegistration, AddressRegistration, TokenData
 from api.utils import get_user
+from api.exceptions import HTTPConflit, HTTPInternalServer
 
 from database.models import User, Address
 from settings import logger
@@ -31,10 +32,7 @@ async def create_new_account(
             fiscal_id=user.fiscal_id,
             user_id=str(existing_user.id),
         )
-        raise HTTPException(
-            detail="L'utente inserito risulta già iscritto",
-            status_code=status.HTTP_409_CONFLICT,
-        )
+        raise HTTPConflit("L'utente inserito risulta già iscritto")
 
     logger.debug(
         "User not found, proceeding with registration",
@@ -70,10 +68,8 @@ async def create_new_account(
     except IntegrityError as ex:
         logger.exception(ex)
         db.rollback()
-        raise HTTPException(
-            detail="C'è stato un problema con il salvataggio dei dati",
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-        )
+        raise HTTPInternalServer("C'è stato un problema con il salvataggio dei dati")
+            
 
 
 @auth_router.post("/sign-in", status_code=status.HTTP_200_OK)

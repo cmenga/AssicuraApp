@@ -1,15 +1,12 @@
 from sqlalchemy.orm import Session
-from fastapi import HTTPException, status
 
 from database.models import User, Address
 from api.security import IPasswordHasher, AccessToken
-from api.exceptions import AuthenticationException, NotFoundException
+from api.exceptions import  HTTPUnauthorized, HTTPNotFound
 from settings import logger
 
 
-def get_user(
-    db: Session, hasher: IPasswordHasher, email: str, password: str
-) -> User:
+def get_user(db: Session, hasher: IPasswordHasher, email: str, password: str) -> User:
     fetched_user = db.query(User).filter(User.email == email).first()
 
     if not fetched_user:
@@ -17,9 +14,7 @@ def get_user(
             "login_failed_user_not_found",
             email=email,
         )
-        raise HTTPException(
-            detail="L'utente non esiste", status_code=status.HTTP_404_NOT_FOUND
-        )
+        raise HTTPNotFound("L'utente inserito non esiste")
 
     logger.debug(
         "login_user_found",
@@ -33,10 +28,8 @@ def get_user(
             user_id=fetched_user.id,
             email=fetched_user.email,
         )
-        raise HTTPException(
-            detail="La passowrd o la mail non corrispondono",
-            status_code=status.HTTP_401_UNAUTHORIZED,
-        )
+        raise HTTPUnauthorized("La passowrd o la mail non corrispondono")
+    
     logger.info(
         "login_success",
         user_id=fetched_user.id,
@@ -45,19 +38,17 @@ def get_user(
     return fetched_user
 
 
-def get_current_user(db: Session, token: AccessToken ):
+def get_current_user(db: Session, token: AccessToken):
     user = (
-        db.query(User)
-        .filter(User.id == token.sub, User.email == token.email)
-        .first()
+        db.query(User).filter(User.id == token.sub, User.email == token.email).first()
     )
     if not user:
-        raise AuthenticationException("Impossibile convalidare le credenziali")
+        raise HTTPUnauthorized("Impossibile convalidare le credenziali")
     return user
 
 
 def get_addresses(db: Session, user_id: str):
     fetched_address = db.query(Address).filter(Address.user_id == user_id).all()
     if not fetched_address:
-        raise NotFoundException("Non esistono indirizzi per questo utente") 
+        raise HTTPNotFound("Non esistono indirizzi per questo utente")
     return fetched_address
