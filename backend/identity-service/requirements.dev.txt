@@ -1,0 +1,13 @@
+fastapi[standard]
+uvicorn[standard]
+email_validator>=2.2.0
+sqlalchemy>=2.0.41
+psycopg2>=2.9.10
+alembic>=1.16.4
+python-jose>=3.5.0
+structlog>=25.5.0
+pytest>=8.4.1
+requests>=2.32.4
+python-codicefiscale>=0.10.3
+password-validator>=1.0
+passlib[argon2]

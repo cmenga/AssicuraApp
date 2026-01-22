@@ -1,15 +1,11 @@
-export type CoverageModel = {
-  title: string;
-  description: string;
-  price: string;
-  features: string[];
-  popular?: boolean;
+export type NavigationProps = {
+  onActiveTab: (tab: string) => void;
+  activeTab: string;
 };
 
-
-export type ReviewModel = {
-  name: string;
-  rating: number;
-  text: string;
-  vehicle: string;
-};
+export interface NotificationModel {
+  id: number;
+  message: string;
+  data: string;
+  type: string;
+}

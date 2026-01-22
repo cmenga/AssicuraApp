@@ -1,0 +1,39 @@
+services:
+
+  identity-dev:
+    build:
+      context: .
+      target: dev
+    image: identity:dev
+    volumes:
+      - ./app:/app
+    ports:
+      - '8001:8001'
+    environment:
+      - DATABASE_URL=postgresql://admin:admin@identity-db-dev:5432/assicura_dev
+    networks:
+      - identity-dev
+    depends_on:
+      - identity-db-dev
+
+  identity-db-dev:
+    image: postgres:18.1-alpine3.23
+    container_name: identity-db-dev
+    volumes:
+      - identity-data-dev:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=assicura_dev
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin
+    networks:
+      - identity-dev
+    ports:
+      - "5432:5432"
+
+networks:
+  identity-dev:
+    driver: bridge
+
+volumes:
+  identity-data-dev:
+    driver: local
