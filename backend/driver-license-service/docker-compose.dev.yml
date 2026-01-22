@@ -10,7 +10,7 @@ services:
     ports:
       - '8002:8001'
     environment:
-      - DATABASE_URL=postgresql://admin:admin@driver-license-db-dev:5432/driver-license-db
+      - DATABASE_URL=postgresql://admin:admin@driver-license-db-dev:5432/driver-license
     networks:
       - driver-license-dev
     depends_on:
@@ -22,7 +22,7 @@ services:
     volumes:
       -  driver-license-data-dev:/var/lib/postgresql/data
     environment:
-      - POSTGRES_DB=driver-license-db
+      - POSTGRES_DB=driver-license
       - POSTGRES_USER=admin
       - POSTGRES_PASSWORD=admin
     networks:
