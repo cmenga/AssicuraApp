@@ -1,0 +1,41 @@
+services:
+
+  driver-license-dev:
+    build:
+      context: .
+      target: dev
+    image: driver-license:dev
+    volumes:
+      - ./app:/app
+    ports:
+      - '8002:8001'
+    environment:
+      - DATABASE_URL=postgresql://admin:admin@driver-license-db-dev:5432/driver-license-db
+    networks:
+      - driver-license-dev
+    depends_on:
+      - driver-license-db-dev
+
+  driver-license-db-dev:
+    image: postgres:18.1-alpine3.23
+    container_name: driver-license-db-dev
+    volumes:
+      -  driver-license-data-dev:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=driver-license-db
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin
+    networks:
+      - driver-license-dev
+    ports:
+      - "5433:5432"
+
+networks:
+  driver-license-dev:
+    name: driver-license-dev
+    driver: bridge
+
+volumes:
+  driver-license-data-dev:
+    name: driver-license-data-dev
+    driver: local

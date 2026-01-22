@@ -1,0 +1,40 @@
+services:
+  template:
+    build:
+      context: .
+      target: prod
+    image: template:prod
+    # Warning: uncomment only if you want to see the logs directly in your development environment without accessing the container
+    # volumes: 
+    #   - ./logs:/var/log/assicurapp
+    ports:
+      - '5001:5001'
+    environment:
+      - DATABASE_URL=postgresql://admin:admin@template-db:5432/template_name_db
+    networks:
+      - template-network
+    depends_on:
+      - template-db
+
+  template-db:
+    image: postgres:18.1-alpine3.23
+    container_name: template-db
+    volumes:
+      - template-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=template_name_db
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin
+    networks:
+      - template-network
+
+
+networks:
+  template-network:
+    name: template-network
+    driver: bridge
+
+volumes:
+  template-data:
+    name: template-data
+    driver: local
