@@ -11,8 +11,9 @@ import ErrorMessage from "@/shared/components/form//ErrorMessage";
 import type { DropdownOptions } from "../../type";
 import {
   handleDrivingLicenseKeyPress,
-  handlePasswordKeyPress,
 } from "../../utils";
+
+import { handlePasswordKeyPress } from "@/shared/utils";
 
 const LICENSE_OPTIONS: DropdownOptions[] = [
   { value: "A", name: "A - Moto" },
