@@ -10,7 +10,7 @@ services:
     ports:
       - '8001:8001'
     environment:
-      - DATABASE_URL=postgresql://admin:admin@identity-db-dev:5432/assicura_dev
+      - DATABASE_URL=postgresql://admin:admin@identity-db-dev:5432/users
     networks:
       - identity-dev
     depends_on:
@@ -22,7 +22,7 @@ services:
     volumes:
       - identity-data-dev:/var/lib/postgresql/data
     environment:
-      - POSTGRES_DB=assicura_dev
+      - POSTGRES_DB=users
       - POSTGRES_USER=admin
       - POSTGRES_PASSWORD=admin
     networks:
