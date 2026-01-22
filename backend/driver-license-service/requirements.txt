@@ -6,3 +6,4 @@ psycopg2>=2.9.10
 alembic>=1.16.4
 python-jose>=3.5.0
 structlog>=25.5.0
+passlib[argon2]

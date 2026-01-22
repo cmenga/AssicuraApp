@@ -8,3 +8,4 @@ python-jose>=3.5.0
 structlog>=25.5.0
 pytest>=8.4.1
 requests>=2.32.4
+passlib[argon2]

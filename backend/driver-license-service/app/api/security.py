@@ -3,7 +3,7 @@ from typing import Protocol, Type, TypeVar, TypedDict
 from abc import abstractmethod
 from passlib.context import CryptContext
 
-from settings import logger, get_secret_key
+from settings import logger, get_secret_key, get_algorithm
 from api.exceptions import HTTPUnauthorized
 
 oauth_scheme = OAuth2PasswordBearer(tokenUrl="http://localhost:8001/auth/sign-in")
@@ -37,7 +37,7 @@ class RefreshToken(TypedDict):
     exp: str
 
 
-class IJWT(Protocol):
+class IJwtService(Protocol):
     @abstractmethod
     def decode_access_token(self, token: str) -> AccessToken: ...
     @abstractmethod
@@ -46,9 +46,8 @@ class IJWT(Protocol):
 
 T = TypeVar("T")
 
-
-class JWT(IJWT):
-    ALGORITHM: str = "HS256"
+class JwtService(IJwtService):
+    ALGORITHM: str = get_algorithm()
     SECRET_KEY: str = get_secret_key()
 
     def decode_access_token(self, token: str) -> AccessToken:
