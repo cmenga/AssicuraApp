@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from fastapi import Depends
 
 from database.session import get_session
+from api.security import oauth_scheme
 
 def get_db():
     """
@@ -17,4 +18,4 @@ def get_db():
         db.close()
         
 DbSession = Annotated[Session,Depends(get_db)]
-
+JwtToken = Annotated[str, Depends(oauth_scheme)]

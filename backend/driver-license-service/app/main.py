@@ -37,7 +37,7 @@ async def startup(app: FastAPI):
 
 
 # Create FastApi app
-app: FastAPI = FastAPI(title="Core", version="0.0.1", lifespan=startup)
+app: FastAPI = FastAPI(title="driver license service", version="0.0.1", lifespan=startup)
 
 
 # Middleware
@@ -56,8 +56,10 @@ app.add_middleware(LoggerMiddleware, logger)
 
 # All routers are added here
 from api.health.router import health_router
+from api.license.router import license_router
 
 app.include_router(health_router)
+app.include_router(license_router)
 
 # Change validation error
 from fastapi.requests import Request
