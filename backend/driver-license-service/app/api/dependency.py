@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from fastapi import Depends
 
 from database.session import get_session
-from api.security import oauth_scheme
+from api.security import oauth_scheme, IPasswordHasher, Argon2Hasher
 
 def get_db():
     """
@@ -16,6 +16,10 @@ def get_db():
         yield db
     finally:
         db.close()
-        
+
+def get_password_hasher() -> IPasswordHasher:
+    return Argon2Hasher()
+
 DbSession = Annotated[Session,Depends(get_db)]
+PasswordHasher = Annotated[IPasswordHasher, Depends(get_password_hasher)]
 JwtToken = Annotated[str, Depends(oauth_scheme)]
