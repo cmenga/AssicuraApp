@@ -44,7 +44,7 @@ class Address(Base):
     
     user: Mapped["User"] = relationship(back_populates="addresses")
 
-    __tablearg__ = (
+    __table_args__ = (
         CheckConstraint(
             "type IN ('residence','domicile')",
             name='ck_address_type'
