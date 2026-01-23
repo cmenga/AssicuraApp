@@ -3,6 +3,7 @@ from pathlib import Path
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import delete
+
 # Root path per import
 root_path = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(root_path))
@@ -11,21 +12,24 @@ sys.path.insert(0, str(root_path))
 from database.session import get_session
 
 from settings import get_local_database_url
+
 TestingSessionLocal = get_session(get_local_database_url())
 
-# Clean data for testing
+
+@pytest.fixture(autouse=True, scope="session")
 def clean_data():
-    # from database.models import User
-    # db = TestingSessionLocal()
+    from database.models import DriverLicense, LicenseCategory
 
-    # db.execute(delete(User))
-    # db.commit()
+    db = TestingSessionLocal()
+    db.execute(delete(DriverLicense))
+    db.execute(delete(LicenseCategory))
+    db.commit()
+    db.close()
 
-    # db.close()
-    pass
-clean_data()
+
 # App FastAPI
 from main import app
+
 
 # Override dependency DB
 def override_get_db():
@@ -35,7 +39,15 @@ def override_get_db():
     finally:
         db.close()
 
+
 # Fixture client
 @pytest.fixture
 def client():
     return TestClient(app)
+
+
+# Run all script
+from scripts.run_all import run_all
+@pytest.fixture(autouse=True, scope="session")
+def run_scripts():
+    run_all()
