@@ -1,8 +1,11 @@
 from settings import logger
 
+from scripts.populate_license_category import main as populate_license_category_main
+
 
 def run_all():
-    pass
+    populate_license_category_main()
+
 
 if __name__ == "__main__":
     try:
