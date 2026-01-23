@@ -17,27 +17,30 @@ async def startup(app: FastAPI):
             detail="The service is currently unreachable",
         )
 
-    # Run scripts internally instead of from the command line
-    from scripts.run_all import run_all
-    try:
-        run_all()
-    except Exception as ex:
-        logger.exception(ex)
-        
     # Start subprocess for alembic migration
     from subprocess import run
 
     try:
         # Alembic upgrade head, idempotente
-        run(["alembic","-c", "/app/alembic.ini", "upgrade", "head"], check=True)
+        run(["alembic", "-c", "/app/alembic.ini", "upgrade", "head"], check=True)
     except Exception as ex:
         logger.exception(ex)
+    # Run scripts internally instead of from the command line
+    from scripts.run_all import run_all
+
+    try:
+        run_all()
+    except Exception as ex:
+        logger.exception(ex)
+
     logger.debug("Start server: http://localhost:8002")
     yield
 
 
 # Create FastApi app
-app: FastAPI = FastAPI(title="driver license service", version="0.0.1", lifespan=startup)
+app: FastAPI = FastAPI(
+    title="driver license service", version="0.0.1", lifespan=startup
+)
 
 
 # Middleware
@@ -65,6 +68,7 @@ app.include_router(license_router)
 from fastapi.requests import Request
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
+
 
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(
