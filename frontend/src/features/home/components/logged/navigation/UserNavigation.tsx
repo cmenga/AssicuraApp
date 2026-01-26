@@ -29,7 +29,7 @@ export default function UserNavigation(props: UserNavigationProps) {
                   className={`px-4 py-2 rounded-md font-medium transition ${
                     activeTab === tab
                       ? "bg-white text-blue-600 shadow-sm"
-                      : "text-gray-600 hover:text-gray-900"
+                      : "cursor-pointer text-gray-600 hover:text-gray-900"
                   }`}
                 >
                   {tab === "overview" && "Dashboard"}
