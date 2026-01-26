@@ -1,12 +1,12 @@
-from fastapi import APIRouter, Body, status, HTTPException, Depends
+from fastapi import APIRouter, Body, status, Depends, Request, Response, Cookie
 from fastapi.security import OAuth2PasswordRequestForm
 from typing import Annotated
 from sqlalchemy.exc import IntegrityError
 
-from api.dependency import DbSession, PasswordHasher, JwtService
+from api.dependency import DbSession, PasswordHasher, JWTAccessService, JWTRefreshService
 from api.auth.schema import UserRegistration, AddressRegistration, TokenData
 from api.utils import get_user
-from api.exceptions import HTTPConflit, HTTPInternalServer
+from api.exceptions import HTTPConflit, HTTPInternalServer, HTTPUnauthorized
 
 from database.models import User, Address
 from settings import logger
@@ -69,21 +69,73 @@ async def create_new_account(
         logger.exception(ex)
         db.rollback()
         raise HTTPInternalServer("C'è stato un problema con il salvataggio dei dati")
-            
 
 
 @auth_router.post("/sign-in", status_code=status.HTTP_200_OK)
 async def get_access_token(
+    response: Response,
     db: DbSession,
     hasher: PasswordHasher,
-    jwt: JwtService,
+    jwt_access: JWTAccessService,
+    jwt_refresh: JWTRefreshService,
     form_data: OAuth2PasswordRequestForm = Depends(),
 ) -> TokenData:
     user = get_user(db, hasher, form_data.username, form_data.password)
-    access_token = jwt.create_access_token(user.id.__str__(), user.email)
-    refresh_token = jwt.create_refresh_token(user.id.__str__())
+    access_token = jwt_access.encode(str(user.id))
+    refresh_token = jwt_refresh.encode(str(user.id))
+
+    response.set_cookie(
+        key="refresh_token",
+        value=refresh_token,
+        httponly=True,
+        secure=True,
+        samesite="strict",
+        max_age=60 * 60 * 24 * 30,
+    )
 
     token = TokenData(
-        access_token=access_token, refresh_token=refresh_token, type="Bearer"
+        access_token=access_token, type="Bearer"
     )
     return token
+
+
+@auth_router.post("/refresh", status_code=status.HTTP_200_OK)
+async def refresh_token(
+    jwt_refresh: JWTRefreshService,
+    jwt_access: JWTAccessService,
+    refresh_token: str | None = Cookie(default=None),
+    # token: JwtToken,
+):
+    """
+    Refreshes the access token using a valid refresh token.
+
+    Args:
+        token (JwtToken): The refresh token sent by the client.
+        jwt (JwtService): JWT service used to decode and create tokens.
+
+    Returns:
+        dict: A dictionary containing:
+            - access_token (str): Newly created access token.
+            - token_type (str): Token type, e.g., "bearer".
+
+    Raises:
+        HTTPUnauthorized: If the provided token is invalid or not a refresh token.
+    """
+
+    if not refresh_token:
+        raise HTTPUnauthorized("No refresh token provided")
+
+    payload = jwt_refresh.decode(refresh_token)
+    logger.info("refresh_token_decoded", payload=payload)
+
+    if payload.get("type") != "refresh":
+        logger.warning("refresh_token_invalid_type", payload=payload)
+        raise HTTPUnauthorized("Token non valido")
+
+    access_token = jwt_access.encode(user_id=payload["sub"])
+    logger.info("refresh_token_success", user_id=payload["sub"])
+
+    return {
+        "access_token": access_token,
+        "token_type": "bearer",
+    }

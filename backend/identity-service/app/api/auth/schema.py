@@ -286,5 +286,4 @@ def validate_cap(city: str, cap: str, province: str):
 
 class TokenData(BaseModel):
     access_token: str
-    refresh_token: str
-    type: str
+    type: Literal["Bearer"]

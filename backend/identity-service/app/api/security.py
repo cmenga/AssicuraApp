@@ -1,9 +1,10 @@
 from fastapi.security import OAuth2PasswordBearer
 from passlib.context import CryptContext
-from jose import jwt
+from jose import jwt, ExpiredSignatureError, JWTError
+from uuid import UUID
+from datetime import datetime, timezone, timedelta
 
-
-from typing import Protocol, TypeVar, Type,TypedDict
+from typing import Protocol, TypedDict, Literal
 from abc import abstractmethod
 
 from settings import get_secret_key
@@ -29,62 +30,55 @@ class Argon2Hasher(IPasswordHasher):
         return self.bcrypt_context.verify(password, hashed)
 
 
-
-class AccessToken(TypedDict):
+class Token(TypedDict):
     sub: str
-    email: str
-    exp: str
+    exp: int
+    type: Literal["access", "refresh"]
 
 
+class IJWTService(Protocol):
+    ALGHORITM: str
+    SECRET_KEY: str
 
-class RefreshToken(TypedDict):
-    sub: str
-    exp: str
-
-
-T = TypeVar("T")
-
-
-class IJWTServise(Protocol):
     @abstractmethod
-    def create_access_token(self, user_id: str, email: str) -> str: ...
+    def decode(self, token: str) -> Token: ...
     @abstractmethod
-    def create_refresh_token(self, user_id: str) -> str: ...
-    @abstractmethod
-    def decode_access_token(self, token) -> AccessToken: ...
-    @abstractmethod
-    def decode_refresh_token(self, token: str) -> RefreshToken: ...
+    def encode(self, user_id: str) -> str: ...
 
 
-class JWTService(IJWTServise):
+class AccessTokenBearer(IJWTService):
     ALGHORITM: str = "HS256"
     SECRET_KEY: str = get_secret_key()
 
-    def create_access_token(self, user_id: str, email: str) -> str:
-        return self._create_token({"sub": user_id, "email": email}, hours=6)
+    def encode(self, user_id: str) -> str:
 
-    def create_refresh_token(self, user_id: str) -> str:
-        return self._create_token({"sub": user_id}, days=30)
+        expire = datetime.now(timezone.utc) + timedelta(minutes=15)
+        claims = {"sub": user_id, "type": "access", "exp": expire.timestamp()}
+        return jwt.encode(claims=claims, key=self.SECRET_KEY, algorithm=self.ALGHORITM)
 
-    def decode_access_token(self, token) -> AccessToken:
-        return self._decode_token(token, AccessToken)
-
-    def decode_refresh_token(self, token: str) -> RefreshToken:
-        return self._decode_token(token, RefreshToken)
-
-    def _create_token(self, claims: dict, *, hours: int = 0, days: int = 0):
-        from datetime import timedelta, timezone, datetime
-
-        claims["exp"] = datetime.now(timezone.utc) + timedelta(hours=hours, days=days)
-        return jwt.encode(claims, key=self.SECRET_KEY, algorithm=self.ALGHORITM)
-
-    def _decode_token(self, token: str, model: Type[T]):
-        from jose import ExpiredSignatureError, JWTError
-
+    def decode(self, token: str) -> Token:
         try:
             payload = jwt.decode(token, key=self.SECRET_KEY, algorithms=self.ALGHORITM)
-            obj = model(**payload)
-            return obj
+            return Token(**payload)
+        except ExpiredSignatureError:
+            raise HTTPUnauthorized("Token scaduto")
+        except JWTError:
+            raise HTTPUnauthorized("Token non valido")
+
+
+class RefreshTokenBearer(IJWTService):
+    ALGHORITM = "HS256"
+    SECRET_KEY = get_secret_key()
+
+    def encode(self, user_id: str) -> str:
+        expire = datetime.now(timezone.utc) + timedelta(days=7)
+        claims = {"sub": user_id, "type": "refresh", "exp": expire.timestamp()}
+        return jwt.encode(claims=claims, key=self.SECRET_KEY, algorithm=self.ALGHORITM)
+
+    def decode(self, token: str) -> Token:
+        try:
+            payload = jwt.decode(token, key=self.SECRET_KEY, algorithms=self.ALGHORITM)
+            return Token(**payload)
         except ExpiredSignatureError:
             raise HTTPUnauthorized("Token scaduto")
         except JWTError:

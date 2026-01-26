@@ -29,7 +29,7 @@ def get_local_database_url():
         return "postgresql://admin:admin@localhost:8432/test_db"  # Example for postgres, use your local connection string
 
 ORIGINS = [
-    "http://localhost",
+    "http://localhost:8001",
     "http://identity-dev:8001",
     "http://localhost:8002",
     "http://localhost:3000"

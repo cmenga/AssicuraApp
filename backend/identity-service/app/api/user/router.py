@@ -4,7 +4,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from requests import delete
 
 from settings import logger
-from api.dependency import DbSession, JwtToken, JwtService, PasswordHasher
+from api.dependency import DbSession, JwtToken, PasswordHasher, JWTAccessService
 
 from api.utils import get_current_user, get_addresses
 from api.user.schema import (
@@ -14,24 +14,31 @@ from api.user.schema import (
     AddressDataIn,
     ChangePasswordIn,
 )
-from api.exceptions import HTTPInternalServer, HTTPNotFound, HTTPForbidden,HTTPBadGateway
+from api.exceptions import (
+    HTTPInternalServer,
+    HTTPNotFound,
+    HTTPForbidden,
+    HTTPBadGateway,
+)
 
 user_router = APIRouter(tags=["user"], prefix="/user")
 
 
 @user_router.get("/me", status_code=status.HTTP_200_OK)
 async def get_logged_user(
-    token: JwtToken, db: DbSession, jwt: JwtService
+    token: JwtToken, db: DbSession, jwt: JWTAccessService
 ) -> UserDataOut:
-    user = get_current_user(db, jwt.decode_access_token(token))
+    payload = jwt.decode(token)
+    user = get_current_user(db, payload["sub"])
     return UserDataOut.model_validate(user)
 
 
 @user_router.get("/addresses", status_code=status.HTTP_200_OK)
 async def get_user_address(
-    token: JwtToken, db: DbSession, jwt: JwtService
+    token: JwtToken, db: DbSession, jwt: JWTAccessService
 ) -> List[AddressDataOut]:
-    user = get_current_user(db, jwt.decode_access_token(token))
+    payload = jwt.decode(token)
+    user = get_current_user(db, payload["sub"])
     fetched_addresses = get_addresses(db, str(user.id))
 
     addresses = list()
@@ -45,11 +52,11 @@ async def get_user_address(
 async def update_contact(
     token: JwtToken,
     db: DbSession,
-    jwt: JwtService,
+    jwt: JWTAccessService,
     item: Annotated[ContactDataIn, Body()],
 ):
-    payload = jwt.decode_access_token(token)
-    fetched_user = get_current_user(db, payload)
+    payload = jwt.decode(token)
+    fetched_user = get_current_user(db, payload["sub"])
 
     logger.info(
         "update_contact_start",
@@ -77,10 +84,10 @@ async def update_contact(
 async def update_address(
     token: JwtToken,
     db: DbSession,
-    jwt: JwtService,
+    jwt: JWTAccessService,
     address: Annotated[AddressDataIn, Body()],
 ):
-    payload = jwt.decode_access_token(token)
+    payload = jwt.decode(token)
     fecthed_address = get_addresses(db, payload["sub"])[0]
 
     if not fecthed_address:
@@ -104,32 +111,26 @@ async def update_address(
 async def change_password(
     token: JwtToken,
     db: DbSession,
-    jwt: JwtService,
+    jwt: JWTAccessService,
     hasher: PasswordHasher,
     item: Annotated[ChangePasswordIn, Body()],
 ):
-    logger.info("change_password_called", payload=item.model_dump())
-
-    # Decodifico token e recupero utente
-    payload = jwt.decode_access_token(token)
-    logger.debug("JWT decoded", payload=payload)
-
-    fetched_user = get_current_user(db, payload)
+    payload = jwt.decode(token)
+    fetched_user = get_current_user(db, payload["sub"])
+    
     if not fetched_user:
         logger.warning("User not found", user_id=payload["sub"])
         raise HTTPForbidden("Utente non trovato")
 
-    # Verifico la vecchia password
+
     if not hasher.verify(item.old_password, fetched_user.hashed_password):
         logger.warning("Old password does not match", user_id=fetched_user.id)
         raise HTTPForbidden("Password errata, inserisci la password corretta")
 
-    # Creo l'hash della nuova password
     hashed_password = hasher.hash(item.new_password)
     fetched_user.hashed_password = hashed_password
     logger.debug("New password hashed and set", user_id=fetched_user.id)
 
-    # Commit sul DB
     try:
         db.commit()
         logger.info("Password changed successfully", user_id=fetched_user.id)
@@ -142,7 +143,7 @@ async def change_password(
 
 
 @user_router.delete("/delete", status_code=status.HTTP_200_OK)
-async def delete_user(db: DbSession, jwt: JwtService, token: JwtToken):
+async def delete_user(db: DbSession, jwt: JWTAccessService, token: JwtToken):
     """
     Deletes the authenticated user and all associated addresses.
 
@@ -164,8 +165,8 @@ async def delete_user(db: DbSession, jwt: JwtService, token: JwtToken):
     Raises:
         HTTPInternalServer: If a database error occurs during deletion.
     """
-    payload = jwt.decode_access_token(token)
-    fetched_user = get_current_user(db, payload)
+    payload = jwt.decode(token)
+    fetched_user = get_current_user(db, payload["sub"])
 
     try:
         delete(
@@ -175,7 +176,9 @@ async def delete_user(db: DbSession, jwt: JwtService, token: JwtToken):
         logger.info("User deleted successfully", user_id=fetched_user.id)
     except Exception as ex:
         logger.exception(ex)
-        raise HTTPBadGateway("Impossibile eliminare le patenti di guida dal servizio licenze")
+        raise HTTPBadGateway(
+            "Impossibile eliminare le patenti di guida dal servizio licenze"
+        )
 
     try:
         db.delete(fetched_user)
