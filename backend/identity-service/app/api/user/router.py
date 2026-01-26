@@ -168,11 +168,11 @@ async def delete_user(db: DbSession, jwt: JwtService, token: JwtToken):
     fetched_user = get_current_user(db, payload)
 
     try:
-        logger.info("User deleted successfully", user_id=fetched_user.id)
         delete(
             "http://driver-license-dev:8001/driver-license/delete",
             headers={"Authorization": f"Bearer {token}"},
         )
+        logger.info("User deleted successfully", user_id=fetched_user.id)
     except Exception as ex:
         logger.exception(ex)
         raise HTTPBadGateway("Impossibile eliminare le patenti di guida dal servizio licenze")

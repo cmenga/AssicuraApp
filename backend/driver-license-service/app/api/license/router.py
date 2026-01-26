@@ -5,6 +5,7 @@ from sqlalchemy.exc import IntegrityError
 from api.dependency import JWToken, DbSession, JWTService
 from api.license.schema import DriverLicenseIn
 from api.exceptions import HTTPConflict, HTTPInternalServer
+from api.utils import get_driver_licenses
 from database.models import DriverLicense
 from settings import logger
 
@@ -117,10 +118,7 @@ async def delete_driver_license(db: DbSession, jwt: JWTService, token: JWToken):
     """
     payload = jwt.decode_access_token(token)
     logger.info("Deleting driver licenses", user_id=payload["sub"])
-
-    fetched_licenses = db.query(DriverLicense).filter(
-        DriverLicense.user_id == payload["sub"]
-    ).all()
+    fetched_licenses = get_driver_licenses(db,payload)
     
     try:
         for license in fetched_licenses:
