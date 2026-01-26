@@ -107,3 +107,11 @@ export function handlePasswordKeyPress(event: KeyboardEvent<HTMLInputElement>) {
     event.preventDefault();
   }
 }
+
+
+export function forceLogout() {
+  sessionStorage.clear();
+  localStorage.removeItem("refresh_token");
+  sessionStorage.setItem("relogged", "Rilogga per completare la modifica della mail.")
+  window.location.href = "/auth/login";
+}

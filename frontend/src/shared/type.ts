@@ -29,3 +29,9 @@ export interface ActionResponse {
   errors?: Record<string, string>;
   data?: any;
 }
+
+export interface AccessTokenData {
+  access_token: string;
+  type: string;
+}
+

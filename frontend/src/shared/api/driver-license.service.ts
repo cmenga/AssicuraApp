@@ -2,9 +2,8 @@ import axios from "axios";
 import type { AccessTokenData } from "../type";
 import { forceLogout } from "../utils";
 
-
-export const userApi = axios.create({
-  baseURL: "http://localhost:8001/user",
+export const driverLicenseApi = axios.create({
+  baseURL: "http://localhost:8002/driver-license",
   validateStatus: (status: number) => {
     if (status === 401) return false;
     if (status >= 500) return false;
@@ -12,7 +11,8 @@ export const userApi = axios.create({
   },
 });
 
-userApi.interceptors.request.use(
+
+driverLicenseApi.interceptors.request.use(
   (config) => {
     const jwt = sessionStorage.getItem("access_token");
     if (jwt) {
@@ -28,7 +28,8 @@ userApi.interceptors.request.use(
   },
 );
 
-userApi.interceptors.response.use(
+
+driverLicenseApi.interceptors.response.use(
   (response) => { return response; },
   (error) => {
     const status = error.response?.status;
@@ -39,4 +40,3 @@ userApi.interceptors.response.use(
     return Promise.reject(error);
   }
 );
-
