@@ -133,7 +133,7 @@ export default function RegisterForm(props: RegisterFormProps) {
               saveData();
               onPrevStep();
             }}
-            className="flex items-center justify-center gap-2 flex-1 bg-gray-100 text-gray-700 py-4 rounded-xl font-semibold hover:bg-gray-200 transition-all"
+            className="cursor-pointer flex items-center justify-center gap-2 flex-1 bg-gray-100 text-gray-700 py-4 rounded-xl font-semibold hover:bg-gray-200 transition-all"
           >
             <ChevronLeft className="w-5 h-5" />
             Indietro
@@ -141,7 +141,7 @@ export default function RegisterForm(props: RegisterFormProps) {
         )}
         <button
           type="submit"
-          className="flex items-center justify-center gap-2 flex-1 bg-linear-to-r from-blue-600 to-cyan-500 text-white py-4 rounded-xl font-semibold text-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5"
+          className="cursor-pointer flex items-center justify-center gap-2 flex-1 bg-linear-to-r from-blue-600 to-cyan-500 text-white py-4 rounded-xl font-semibold text-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5"
         >
           {currentStep < 3 ? (
             <>
