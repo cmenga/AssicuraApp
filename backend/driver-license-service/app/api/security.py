@@ -32,19 +32,13 @@ class AccessToken(TypedDict):
     exp: str
 
 
-class RefreshToken(TypedDict):
-    sub: str
-    exp: str
-
-
 class IJwtService(Protocol):
     @abstractmethod
     def decode_access_token(self, token: str) -> AccessToken: ...
-    @abstractmethod
-    def decode_refresh_token(self, token: str) -> RefreshToken: ...
 
 
 T = TypeVar("T")
+
 
 class JwtService(IJwtService):
     ALGORITHM: str = get_algorithm()
@@ -53,11 +47,9 @@ class JwtService(IJwtService):
     def decode_access_token(self, token: str) -> AccessToken:
         return self._decode(token, model=AccessToken)
 
-    def decode_refresh_token(self, token: str) -> RefreshToken:
-        return self._decode(token, model=RefreshToken)
-
     def _decode(self, token: str, model: Type[T]):
         from jose import jwt, JWTError, ExpiredSignatureError
+
         try:
             payload = jwt.decode(token, algorithms=self.ALGORITHM, key=self.SECRET_KEY)
             return model(**payload)
@@ -67,4 +59,3 @@ class JwtService(IJwtService):
         except JWTError as ex:
             logger.exception(ex)
             raise HTTPUnauthorized("Invalid token")
-        
