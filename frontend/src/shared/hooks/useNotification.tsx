@@ -7,20 +7,17 @@ interface NotificationModel {
     type: "error" | "success";
 }
 export function useNotification(duration = 3000): [React.FC, (notification: NotificationModel) => void] {
-    const [notification, setNotification] = useState<NotificationModel | null>(null); // { message, type }
+    const [notification, setNotification] = useState<NotificationModel | null>(null); 
 
-    // Funzione per chiudere la notifica automaticamente
     const hideNotification = useEffectEvent(() => {
         setTimeout(() => setNotification(null), duration);
     });
 
-    // Funzione per mostrare una notifica
     const showNotification = useEffectEvent((notification: NotificationModel) => {
         setNotification(notification);
         hideNotification();
     });
 
-    // Componente che renderizza la notifica
     const NotificationComponent: React.FC = () => {
         if (!notification) return null;
         
