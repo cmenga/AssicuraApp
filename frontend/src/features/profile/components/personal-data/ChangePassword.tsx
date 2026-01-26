@@ -9,7 +9,6 @@ import { submitPasswordAction } from "../../action";
 import { useNavigate } from "@tanstack/react-router";
 
 
-
 export default function ChangePassword() {
     const navigate = useNavigate();
     const [editMode, setEditMode] = useState<boolean>();

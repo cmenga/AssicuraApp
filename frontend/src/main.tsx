@@ -6,7 +6,9 @@ import { routeTree } from "./routeTree.gen.ts";
 
 import "./styles.css";
 import reportWebVitals from "./reportWebVitals.ts";
+import { store } from "./shared/model/store.ts";
 
+store.set("access_token", null);
 // Create a new router instance
 const router = createRouter({
   routeTree,

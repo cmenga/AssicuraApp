@@ -7,8 +7,11 @@ import SecurityInfo from "@/features/profile/components/SecurityInfo";
 import { driverLicenseApi } from "@/shared/api/driver-license.service";
 
 import { userApi } from "@/shared/api/user.service";
+import { useStoreKey } from "@/shared/hooks/useStoreKey";
+import { store } from "@/shared/model/store";
+import type { AddressModel, DriverLicenseModel, UserModel } from "@/shared/type";
 
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 
 export const Route = createFileRoute("/profile")({
@@ -17,7 +20,13 @@ export const Route = createFileRoute("/profile")({
 });
 
 function RouteComponent() {
-  const data = Route.useLoaderData();
+  const user = useStoreKey<UserModel>("user");
+  const address = useStoreKey<AddressModel>("address");
+  const driverLicense = useStoreKey<DriverLicenseModel[]>("driver-license");
+  if (!user) throw new Error("Utente non trovato");
+  if (!address) throw new Error("Indirizzo non trovato");
+
+
   const [activeSection, setActiveSection] = useState<"personali" | "patenti">(
     "personali",
   );
@@ -26,49 +35,63 @@ function RouteComponent() {
     <div className="min-h-screen bg-gray-50">
       <ProfileNavigation />
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <ProfileHeader user={data.user} />
+        <ProfileHeader user={user} />
         <NavigationTab
           activeSection={activeSection}
           onActiveSection={setActiveSection}
         />
         {activeSection === "personali" && (
-          <PersonalData user={data.user} address={data.addresses[0]} />
+          <PersonalData user={user} address={address} />
         )}
-        {activeSection === "patenti" && <DriverLicenses licenses={data.driverLicense}/>}
+        {activeSection === "patenti" && <DriverLicenses licenses={driverLicense} />}
         <SecurityInfo />
       </div>
     </div>
   );
 }
 
+
 async function loader() {
-  const sessionUser = sessionStorage.getItem("user_data");
-  if (!sessionUser) throw redirect({ to: "/home" });
-  const user = JSON.parse(sessionUser);
-
-  const sessionAddresses = await getAddresses();
-  const sessionDriverLicense = await getDriverLicenses();
-
-  return { user: user, addresses: sessionAddresses, driverLicense: sessionDriverLicense };
+  await getUser();
+  await getAddresses();
+  await getDriverLicenses();
 }
 
+async function getUser() {
+  const user = store.get("user");
+  if (user) return;
+
+  const response = await userApi.get("/me");
+  if (response.status == 404) {
+    throw new Error("Utente non trovato");
+  }
+  const fetchedUser = await response.data;
+  store.set<UserModel>("user", fetchedUser);
+}
 
 async function getAddresses() {
-  const addressesStorage = sessionStorage.getItem("addresses_data");
-  if (!addressesStorage) {
-    const response = await userApi.get("/addresses");
-    sessionStorage.setItem("addresses_data", JSON.stringify(response.data));
-    return response.data;
+  const address = store.get("address")
+  if (address) return;
+
+  const response = await userApi.get("/addresses");
+  switch (response.status) {
+    case 404:
+      throw new Error("Nessun indirizzo è stato trovato per l'utente");
+
   }
-  return JSON.parse(addressesStorage);
+  const fetchedAddresses = await response.data()
+  store.set<AddressModel>("address", fetchedAddresses[0])
 }
 
 async function getDriverLicenses() {
-  const driverLicenseStorage = sessionStorage.getItem("driver_licenses");
-  if (!driverLicenseStorage) {
-    const response = await driverLicenseApi.get("/licenses");
-    sessionStorage.setItem("driver_licenses", JSON.stringify(response.data));
-    return response.data;
+  const driverLicense = store.get("driver-license")
+  if (driverLicense) return
+
+  const response = await driverLicenseApi.get("/licenses");
+  switch (response.status) {
+    case 404:
+      return [];
   }
-  return JSON.parse(driverLicenseStorage)
+  const fetchedDriverLicenses = await response.data;
+  store.set<DriverLicenseModel[]>("driver-license",fetchedDriverLicenses)
 }

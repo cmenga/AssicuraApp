@@ -9,10 +9,22 @@ import ErrorMessage from "@/shared/components/form/ErrorMessage";
 import { useNavigate } from "@tanstack/react-router";
 import { userApi } from "@/shared/api/user.service";
 import { handleCivicKeyPress, handleNameKeyPress, handleNumberKeyPress, handleProvinceKeyPress, handleStreetKeyPress } from "@/shared/utils";
+import { store } from "@/shared/model/store";
 
-async function updateAddressData() {
-  const response = await userApi.get("/addresses");
-  sessionStorage.setItem("addresses_data", JSON.stringify(response.data));
+async function updateAddressData(formData: FormData) {
+  const data = Object.fromEntries(formData.entries());
+
+  store.asyncdispatch("address", async (prev: AddressModel | undefined) => {
+     if (!prev) {
+      const response = userApi.get("/addresses") 
+       return (await response).data[0]
+    }
+
+    return {
+      ...prev,
+      ...data
+    };
+  });
 }
 
 type AddressProps = {
@@ -22,7 +34,7 @@ export default function Address({ address }: AddressProps) {
   const navigate = useNavigate();
   const [editMode, setEditMode] = useState<boolean>(false);
   const { isPending, errors, submitAction, cleanErrors } = useFormStateAction(submitAddressACtion, {
-    onSuccess: async () => { await updateAddressData(); setEditMode(false); navigate({ to: "/profile" }); }
+    onSuccess: async (formData) => { await updateAddressData(formData); setEditMode(false); navigate({ to: "/profile" }); }
   });
 
   return (

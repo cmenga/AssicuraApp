@@ -41,7 +41,7 @@ def get_user(db: Session, hasher: IPasswordHasher, email: str, password: str) ->
 def get_current_user(db: Session, user_id: str):
     user = db.query(User).filter(User.id == user_id).first()
     if not user:
-        raise HTTPUnauthorized("Impossibile convalidare le credenziali")
+        raise HTTPNotFound("Utente non trovato")
     return user
 
 

@@ -58,7 +58,6 @@ function ConfirmDeleteModal() {
     modalRef.current.close();
     const response = await deleteUser();
     if (response.success) {
-      sessionStorage.setItem("delete_account", "true");
       setNotify({ message: response.message, type: "success" });
       await new Promise((resolve) => setTimeout(resolve, 3000));
       navigate({ to: "/" });

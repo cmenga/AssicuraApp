@@ -1,6 +1,7 @@
 import axios from "axios";
 import type { AccessTokenData } from "../type";
-import { forceLogout } from "../utils";
+import { forceLogout, refreshAccessToken } from "./auth.service";
+
 
 export const driverLicenseApi = axios.create({
   baseURL: "http://localhost:8002/driver-license",
@@ -30,13 +31,23 @@ driverLicenseApi.interceptors.request.use(
 
 
 driverLicenseApi.interceptors.response.use(
-  (response) => { return response; },
-  (error) => {
-    const status = error.response?.status;
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
 
-    if (status === 401) {
-      forceLogout();
+    if (error.response?.status !== 401 || originalRequest._retry) {
+      return Promise.reject(error);
     }
-    return Promise.reject(error);
+
+    originalRequest._retry = true;
+
+    try {
+      const token = await refreshAccessToken();
+      originalRequest.headers.Authorization = `Bearer ${token.access_token}`;
+      return driverLicenseApi(originalRequest);
+    } catch {
+      forceLogout();
+      return Promise.reject(error);
+    }
   }
 );

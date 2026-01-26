@@ -7,7 +7,7 @@ import DriverLicense from "./DriverLicense";
 import type { DriverLicenseModel } from "@/shared/type";
 
 type DriverLicensesProps = {
-  licenses: DriverLicenseModel[];
+  licenses?: DriverLicenseModel[];
 };
 
 export default function DriverLicenses({ licenses }: DriverLicensesProps) {
@@ -20,7 +20,7 @@ export default function DriverLicenses({ licenses }: DriverLicensesProps) {
       </div>
 
       <div className="grid md:grid-cols-2">
-        {licenses.map((license, index) => {
+        {licenses && licenses.map((license, index) => {
           return <DriverLicense
             key={index}
             code={license.code}

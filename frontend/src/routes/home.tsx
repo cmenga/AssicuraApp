@@ -8,6 +8,9 @@ import MobileUserNavigation from "@/features/home/components/logged/navigation/M
 import type { UserModel } from "@/shared/type";
 import { driverLicenseApi } from "@/shared/api/driver-license.service";
 import { useNotification } from "@/shared/hooks/useNotification";
+import { store } from "@/shared/model/store";
+import { useStoreKey } from "@/shared/hooks/useStoreKey";
+
 
 
 export const Route = createFileRoute("/home")({
@@ -16,26 +19,35 @@ export const Route = createFileRoute("/home")({
   loader: loader,
 });
 
+
+async function isUserLogged() {
+  const accessToken = sessionStorage.getItem("access_token");
+  if (!accessToken) throw redirect({ to: "/" });
+}
+
 function RouteComponent() {
+  const storedUser = useStoreKey<UserModel>("user");
+  if (!storedUser) throw new Error("Utente non trovato");
+
   const [activeTab, setActiveTab] = useState("overview");
   const [Notify, setNotify] = useNotification();
-  const data: { user: UserModel, response?: undefined | any; } = Route.useLoaderData();
-  const status = data.response?.status;
+  const data: { response?: undefined | any; } = Route.useLoaderData();
+  const status = data.response?.status ?? null;
 
   useEffect(() => {
-    async function showNotify() {
-      if (status != 204) {
-        setNotify({ message: "La patente inserita in fase di registrazione non risulta veritiera", type: "error" });
-        await new Promise((resolve) => setTimeout(resolve, 3000));
-      }
-      if (status == 204) {
+    if (!status) return;
+    const showNotify = async () => {
+      if (status !== 204) {
+        setNotify({ message: "La patente inserita non risulta veritiera", type: "error" });
+      } else {
         setNotify({ message: "La patente è stata salvata con successo", type: "success" });
-        await new Promise((resolve) => setTimeout(resolve, 3000));
       }
-    }
+    };
 
-    if (status) showNotify();
-  }, [status]);
+    showNotify();
+
+  }, [status, setNotify]);
+
 
   return (
     <div className="relative min-h-screen bg-white">
@@ -43,44 +55,45 @@ function RouteComponent() {
       <UserNavigation
         activeTab={activeTab}
         onActiveTab={setActiveTab}
-        avatar={data.user.gender == "male" ? "MR" : "MS"}
-        email={data.user.email}
-        firstName={data.user.first_name}
-        lastName={data.user.last_name}
+        avatar={storedUser.gender == "male" ? "MR" : "MS"}
+        email={storedUser.email}
+        firstName={storedUser.first_name}
+        lastName={storedUser.last_name}
       />
       <UserDashboard
         activeTab={activeTab}
         onActiveTab={setActiveTab}
-        user={data.user}
+        user={storedUser}
       />
       <MobileUserNavigation activeTab={activeTab} onActiveTab={setActiveTab} />
     </div>
   );
 }
 
+
+
 async function loader() {
-  const user: UserModel = await getUserData();
-  const response = await addDriverLicense(user.date_of_birth);
+  await getUserData();
+  const user = store.get<UserModel>("user");
 
-  return { user: user, response: response };
-}
-
-//TODO: bisogna fare la verifica del token per essere sicuri
-async function isUserLogged() {
-  const accessToken = sessionStorage.getItem("access_token");
-  if (!accessToken) throw redirect({ to: "/" });
+  if (user) {
+    const response = await addDriverLicense(user.date_of_birth);
+    return { response };
+  }
 
 }
 
 async function getUserData() {
-  const sessionUser = sessionStorage.getItem("user_data");
-  if (!sessionUser) {
-    const response = await userApi.get("/me");
-    sessionStorage.setItem("user_data", JSON.stringify(response.data));
-    return response.data;
+  const user = store.get("user");
+  if (user) return;
+
+  const response = await userApi.get("/me");
+  switch (response.status) {
+    case 404:
+      throw new Error("Utente non trovato");
   }
-  const user = JSON.parse(sessionUser);
-  return user;
+  const fetchedUser = response.data;
+  store.set<UserModel>("user", fetchedUser);
 }
 
 

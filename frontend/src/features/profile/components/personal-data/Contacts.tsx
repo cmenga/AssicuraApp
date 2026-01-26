@@ -6,15 +6,27 @@ import FormInputPhoneNumber from "@/shared/components/form/FormInputPhoneNumber"
 import { useFormStateAction } from "@/shared/hooks/useFormStateAction";
 import { submitContactAction } from "../../action";
 import ErrorMessage from "@/shared/components/form/ErrorMessage";
-import { userApi } from "@/shared/api/user.service";
 import { useNavigate } from "@tanstack/react-router";
 import { handleEmailKeyPress, handleNumberKeyPress } from "@/shared/utils";
+import { store } from "@/shared/model/store";
+import type { UserModel } from "@/shared/type";
+import { userApi } from "@/shared/api/user.service";
 
 
 
-async function updateLoggedUser() {
-  const response = await userApi.get("/me");
-  sessionStorage.setItem("user_data", JSON.stringify(response.data));
+async function updateLoggedUser(formData: FormData) {
+  const data = Object.fromEntries(formData.entries());
+  store.asyncdispatch('user', async (prev: UserModel | undefined) => {
+    if (!prev) {
+      const response = await userApi.get("/me");
+      return await response.data;
+    }
+    
+    return {
+      ...prev,
+      ...data
+    };
+  });
 }
 
 type ContactsProps = {
@@ -24,10 +36,13 @@ type ContactsProps = {
 
 export default function Contacts({ email, phoneNumber }: ContactsProps) {
   const navigate = useNavigate();
-  const { errors, isPending, submitAction, cleanErrors } = useFormStateAction(submitContactAction, {
-    onSuccess: async () => {await updateLoggedUser(); setEditMode(false); navigate({ to: "/profile" }); }
-  });
   const [editMode, setEditMode] = useState<boolean>(false);
+  const { errors, isPending, submitAction, cleanErrors } = useFormStateAction(submitContactAction, {
+    onSuccess: async (formData) => {
+      await updateLoggedUser(formData); cleanErrors(); setEditMode(false); navigate({ to: "/profile" });
+
+    }
+  });
 
   return (
     <form onSubmit={submitAction} className="relative bg-white rounded-2xl shadow-md p-6">
@@ -66,7 +81,7 @@ export default function Contacts({ email, phoneNumber }: ContactsProps) {
       <div className="grid md:grid-cols-2 gap-6">
         {editMode && (
           <>
-            <FormInputEmail previous={email} name="email"  onKeyDown={handleEmailKeyPress}>
+            <FormInputEmail previous={email} name="email" onKeyDown={handleEmailKeyPress}>
               {errors?.email && <ErrorMessage message={errors.email} />}
             </FormInputEmail>
             <FormInputPhoneNumber previous={phoneNumber} name="phone_number" maxLength={10} minLength={10} onKeyDown={handleNumberKeyPress}  >

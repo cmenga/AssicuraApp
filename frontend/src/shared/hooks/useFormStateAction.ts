@@ -12,7 +12,7 @@ import type { ActionResponse } from "../type";
  * object that can contain the following callback functions:
  * @returns The function `useFormStateAction` returns an object with the following properties:
  */
-export function useFormStateAction(action: (formData: FormData) => Promise<ActionResponse>, callbacks?: { onStart?: () => void, onEnd?: () => void; onSuccess?: () => void; }) {
+export function useFormStateAction(action: (formData: FormData) => Promise<ActionResponse>, callbacks?: { onStart?: () => void, onEnd?: () => void; onSuccess?: (formData: FormData) => void; }) {
     const [isPending, setIsPending] = useState<boolean>(false);
     const [errors, setErrors] = useState<Record<string, string> | undefined>(undefined);
 
@@ -26,7 +26,7 @@ export function useFormStateAction(action: (formData: FormData) => Promise<Actio
             const response = await action(formData);
             await new Promise((resolve) => setTimeout(resolve, 500));
             response.errors && setErrors(response.errors);
-            response.success && callbacks?.onSuccess?.();
+            response.success && callbacks?.onSuccess?.(formData);
             return response;
         } finally {
             setIsPending(false);
