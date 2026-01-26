@@ -19,7 +19,6 @@ const getDaysUntilExpiry = (expiry: any) => {
 export default function DriverLicense(props: DriverLicenseProps) {
     const { code, issueDate, expiryDate, licenseNumber } = props;
     const daysLeft = getDaysUntilExpiry(expiryDate);
-    console.log(daysLeft);
     const isExpiringSoon = daysLeft < 90;
 
     return (

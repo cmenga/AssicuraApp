@@ -1,7 +1,5 @@
 import type { ActionResponse } from "@/shared/type";
 import { userApi } from "@/shared/api/user.service";
-
-
 /**
  * The function `submitContactAction` submits contact form data to a server and returns a response
  * based on the server's status code.
@@ -43,7 +41,7 @@ export async function submitAddressACtion(formData: FormData): Promise<ActionRes
 export async function submitPasswordAction(formData: FormData): Promise<ActionResponse> {
   const data = Object.fromEntries(formData.entries());
   const response = await userApi.patch("/change-password", data);
-  console.log(response)
+
   switch (response.status) {
     case 403:
       return { message: response.data.detail, success: false };
@@ -87,7 +85,7 @@ async function validationActionResponse(data: any) {
         ...returnedValue.errors,
         residence_province: newForm["body"],
       };
-      
+
     } else if (newForm["body"]?.toLowerCase().includes("password")) {
       returnedValue.errors = {
         ...returnedValue.errors,
@@ -101,4 +99,18 @@ async function validationActionResponse(data: any) {
     };
   });
   return returnedValue;
+}
+
+
+export async function deleteUser(): Promise<ActionResponse> {
+  const response = await userApi.delete("/delete");
+
+  if (response.status == 200) {
+    localStorage.clear();
+    sessionStorage.clear();
+    return { success: true, message: response.data.message };
+
+  }
+  return { success: false, message: response.data.message };
+
 }

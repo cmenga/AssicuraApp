@@ -2,6 +2,9 @@ import type { UserModel } from "@/shared/type";
 import { Trash2 } from "lucide-react";
 import { Modal } from "@/shared/components/Modal";
 import { useRef } from "react";
+import { deleteUser } from "../action";
+import { useNavigate } from "@tanstack/react-router";
+import { useNotification } from "@/shared/hooks/useNotification";
 
 type ProfileHeaderProps = {
   user: UserModel;
@@ -33,6 +36,8 @@ export default function ProfileHeader({ user }: ProfileHeaderProps) {
 }
 
 function ConfirmDeleteModal() {
+  const navigate = useNavigate();
+  const [Notify, setNotify] = useNotification(15000);
   const modalRef = useRef<HTMLDialogElement | null>(null);
 
   function handleShowModal() {
@@ -47,15 +52,24 @@ function ConfirmDeleteModal() {
     modalRef.current.close();
   }
 
-  function handleDelete() {
+  async function handleDelete() {
     if (!modalRef.current) return;
     document.body.style.overflowY = "auto";
     modalRef.current.close();
-    //TODO: qui deve eliminare l'utente
+    const response = await deleteUser();
+    if (response.success) {
+      sessionStorage.setItem("delete_account", "true");
+      setNotify({ message: response.message, type: "success" });
+      await new Promise((resolve) => setTimeout(resolve, 3000));
+      navigate({ to: "/" });
+    }
+    setNotify({ message: response.message, type: "error" });
   }
+
   return (
     <>
-      <button onClick={() => { console.log("Cancella account"); handleShowModal(); }} className="cursor-pointer absolute top-2 right-4 bg-red-100 hover:bg-red-300 p-2 rounded-lg">
+      <Notify />
+      <button onClick={handleShowModal} className="cursor-pointer absolute top-2 right-4 bg-red-100 hover:bg-red-300 p-2 rounded-lg">
         <Trash2 className="w-6 h-6 text-red-600 hover:text-red-800" />
       </button>
 

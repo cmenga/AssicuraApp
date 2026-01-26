@@ -1,6 +1,7 @@
 from fastapi import APIRouter, status, Body
 from typing import List, Annotated
 from sqlalchemy.exc import SQLAlchemyError
+from requests import delete
 
 from settings import logger
 from api.dependency import DbSession, JwtToken, JwtService, PasswordHasher
@@ -13,7 +14,7 @@ from api.user.schema import (
     AddressDataIn,
     ChangePasswordIn,
 )
-from api.exceptions import HTTPInternalServer, HTTPNotFound, HTTPForbidden
+from api.exceptions import HTTPInternalServer, HTTPNotFound, HTTPForbidden,HTTPBadGateway
 
 user_router = APIRouter(tags=["user"], prefix="/user")
 
@@ -138,3 +139,56 @@ async def change_password(
         raise HTTPInternalServer(f"Errore database: {ex}")
 
     return {"success": True, "message": "Password aggiornata correttamente"}
+
+
+@user_router.delete("/delete", status_code=status.HTTP_200_OK)
+async def delete_user(db: DbSession, jwt: JwtService, token: JwtToken):
+    """
+    Deletes the authenticated user and all associated addresses.
+
+    This endpoint decodes the provided JWT access token to identify
+    the current user. It then deletes the user from the database.
+    If the user's addresses are configured with ORM cascade, they
+    will be removed automatically.
+
+    Args:
+        db (DbSession): Database session injected via dependency.
+        jwt (JwtService): Service responsible for decoding JWT access tokens.
+        token (JwtToken): JWT access token of the authenticated user.
+
+    Returns:
+        dict: A dictionary containing:
+            - success (bool): True if the user was deleted successfully.
+            - message (str): A descriptive message about the deletion.
+
+    Raises:
+        HTTPInternalServer: If a database error occurs during deletion.
+    """
+    payload = jwt.decode_access_token(token)
+    fetched_user = get_current_user(db, payload)
+
+    try:
+        logger.info("User deleted successfully", user_id=fetched_user.id)
+        delete(
+            "http://driver-license-dev:8001/driver-license/delete",
+            headers={"Authorization": f"Bearer {token}"},
+        )
+    except Exception as ex:
+        logger.exception(ex)
+        raise HTTPBadGateway("Impossibile eliminare le patenti di guida dal servizio licenze")
+
+    try:
+        db.delete(fetched_user)
+        db.commit()
+
+        logger.info("User deleted successfully", user_id=fetched_user.id)
+
+        return {
+            "success": True,
+            "message": f"utente cancellato con successo",
+        }
+
+    except SQLAlchemyError as ex:
+        db.rollback()
+        logger.exception(ex, user_id=fetched_user.id, error=str(ex))
+        raise HTTPInternalServer(f"Database error: {ex}")

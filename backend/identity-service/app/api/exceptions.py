@@ -1,3 +1,4 @@
+from typing_extensions import Annotated, Doc
 from fastapi import HTTPException, status
 from typing import Any, Dict
 
@@ -20,3 +21,7 @@ class HTTPNotFound(HTTPException):
 class HTTPInternalServer(HTTPException):
     def __init__(self, detail: Any = None,*, headers: Dict[str, str] | None = None) -> None:
         super().__init__(status.HTTP_500_INTERNAL_SERVER_ERROR, detail, headers)
+        
+class HTTPBadGateway(HTTPException):
+    def __init__(self, detail: Any = None, headers: Dict[str, str] | None = None) -> None:
+        super().__init__(status.HTTP_502_BAD_GATEWAY, detail, headers)

@@ -17,7 +17,6 @@ export default function ChangePassword() {
         onSuccess: async () => { cleanErrors(); setEditMode(false); navigate({ to: "/profile" }); }
     });
 
-    console.log(errors);
     return (
         <form onSubmit={submitAction} className="relative bg-white rounded-2xl shadow-md p-6">
             {!editMode && (

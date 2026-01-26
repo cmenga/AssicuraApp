@@ -28,6 +28,7 @@ def get_local_database_url():
 
 ORIGINS = [
     "http://localhost:8002",
+    "http://localhost:8001",
     "http://localhost:3000"
 ]
 

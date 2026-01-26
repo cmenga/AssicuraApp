@@ -12,7 +12,7 @@ services:
     environment:
       - DATABASE_URL=postgresql://admin:admin@identity-db-dev:5432/users
     networks:
-      - identity-dev
+      - assicura-app-dev
     depends_on:
       - identity-db-dev
 
@@ -26,13 +26,15 @@ services:
       - POSTGRES_USER=admin
       - POSTGRES_PASSWORD=admin
     networks:
-      - identity-dev
+      - assicura-app-dev
     ports:
       - "5432:5432"
 
 networks:
-  identity-dev:
+  assicura-app-dev:
+    name: assicura-app-dev
     driver: bridge
+
 
 volumes:
   identity-data-dev:

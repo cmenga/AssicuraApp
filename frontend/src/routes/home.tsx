@@ -1,12 +1,14 @@
 import { userApi } from "@/shared/api/user.service";
 import { createFileRoute, redirect } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import UserNavigation from "@/features/home/components/logged/navigation/UserNavigation";
 import UserDashboard from "@/features/home/UserDashboard";
 import MobileUserNavigation from "@/features/home/components/logged/navigation/MobileUserNavigation";
 import type { UserModel } from "@/shared/type";
 import { driverLicenseApi } from "@/shared/api/driver-license.service";
+import { useNotification } from "@/shared/hooks/useNotification";
+
 
 export const Route = createFileRoute("/home")({
   component: RouteComponent,
@@ -16,10 +18,28 @@ export const Route = createFileRoute("/home")({
 
 function RouteComponent() {
   const [activeTab, setActiveTab] = useState("overview");
-  const data: { user: UserModel, driverLicense?: undefined | any; } = Route.useLoaderData();
-  console.log(data.driverLicense)
+  const [Notify, setNotify] = useNotification();
+  const data: { user: UserModel, response?: undefined | any; } = Route.useLoaderData();
+  const status = data.response?.status;
+
+  useEffect(() => {
+    async function showNotify() {
+      if (status != 204) {
+        setNotify({ message: "La patente inserita in fase di registrazione non risulta veritiera", type: "error" });
+        await new Promise((resolve) => setTimeout(resolve, 3000));
+      }
+      if (status == 204) {
+        setNotify({ message: "La patente è stata salvata con successo", type: "success" });
+        await new Promise((resolve) => setTimeout(resolve, 3000));
+      }
+    }
+
+    if (status) showNotify();
+  }, [status]);
+
   return (
-    <div className="min-h-screen bg-white">
+    <div className="relative min-h-screen bg-white">
+      <Notify />
       <UserNavigation
         activeTab={activeTab}
         onActiveTab={setActiveTab}
@@ -40,9 +60,9 @@ function RouteComponent() {
 
 async function loader() {
   const user: UserModel = await getUserData();
-  const driverLicense = await addDriverLicense(user.date_of_birth);
+  const response = await addDriverLicense(user.date_of_birth);
 
-  return { user: user, driverLicense: driverLicense };
+  return { user: user, response: response };
 }
 
 //TODO: bisogna fare la verifica del token per essere sicuri
@@ -51,7 +71,6 @@ async function isUserLogged() {
   if (!accessToken) throw redirect({ to: "/" });
 
 }
-
 
 async function getUserData() {
   const sessionUser = sessionStorage.getItem("user_data");
@@ -67,7 +86,6 @@ async function getUserData() {
 
 async function addDriverLicense(date_of_birth: string) {
   const sessionDriverLicense = localStorage.getItem("license_dto");
-  console.log(sessionDriverLicense)
   if (sessionDriverLicense) {
     const data = JSON.parse(sessionDriverLicense);
 
@@ -79,7 +97,7 @@ async function addDriverLicense(date_of_birth: string) {
       date_of_birth: date_of_birth
     });
     localStorage.removeItem("license_dto");
-    return (await response).data ;
+    return await response;
   }
-  return undefined
+  return undefined;
 }

@@ -12,7 +12,7 @@ services:
     environment:
       - DATABASE_URL=postgresql://admin:admin@driver-license-db-dev:5432/driver-license
     networks:
-      - driver-license-dev
+      - assicura-app-dev
     depends_on:
       - driver-license-db-dev
 
@@ -26,13 +26,13 @@ services:
       - POSTGRES_USER=admin
       - POSTGRES_PASSWORD=admin
     networks:
-      - driver-license-dev
+      - assicura-app-dev
     ports:
       - "5433:5432"
 
 networks:
-  driver-license-dev:
-    name: driver-license-dev
+  assicura-app-dev:
+    name: assicura-app-dev
     driver: bridge
 
 volumes:

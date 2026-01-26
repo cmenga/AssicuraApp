@@ -71,6 +71,13 @@ class LoggerMiddleware(BaseHTTPMiddleware):
 class CheckOriginMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
         origin = request.headers.get("origin")
+        logger.info(
+            "Check origin host",
+            origin=origin,
+            method=request.method,
+            endpoint=request.url.path,
+            client_ip=request.client.host if request.client else None,
+        )
         if origin and origin not in ORIGINS:
             logger.error(
                 "Request blocked: origin not allowed",

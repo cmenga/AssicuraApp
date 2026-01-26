@@ -92,3 +92,49 @@ async def add_new_driver_license(
         db.rollback()
 
         raise HTTPInternalServer("Salvataggio nel database non riuscito")
+
+
+@license_router.delete("/delete", status_code=status.HTTP_200_OK)
+async def delete_driver_license(db: DbSession, jwt: JWTService, token: JWToken):
+    """
+    Deletes all driver licenses associated with the authenticated user.
+
+    This endpoint decodes the provided JWT access token to identify
+    the current user and deletes all their driver licenses from the database.
+
+    Args:
+        db (DbSession): Database session injected via dependency.
+        jwt (JWTService): Service used to decode JWT access tokens.
+        token (JWToken): JWT access token of the authenticated user.
+
+    Returns:
+        dict: A dictionary containing:
+            - success (bool): True if the licenses were deleted successfully.
+            - message (str): Descriptive message about the deletion.
+
+    Raises:
+        HTTPInternalServer: If a database error occurs during deletion.
+    """
+    payload = jwt.decode_access_token(token)
+    logger.info("Deleting driver licenses", user_id=payload["sub"])
+
+    fetched_licenses = db.query(DriverLicense).filter(
+        DriverLicense.user_id == payload["sub"]
+    ).all()
+    
+    try:
+        for license in fetched_licenses:
+            db.delete(license)
+            logger.debug("Deleted license", license_id=str(license.id))
+        
+        db.commit()
+        logger.info("All driver licenses deleted successfully", user_id=payload["sub"])
+    except Exception as ex:
+        db.rollback()
+        logger.exception("Failed to delete driver licenses", user_id=payload["sub"], error=str(ex))
+        raise HTTPInternalServer("Saving to the database failed")
+
+    return {"success": True, "message": "Driver licenses removed successfully"}
+
+    
+    
