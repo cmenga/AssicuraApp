@@ -2,8 +2,8 @@ from fastapi.security import OAuth2PasswordBearer
 from passlib.context import CryptContext
 from jose import jwt
 
-from dataclasses import dataclass
-from typing import Protocol, TypeVar, Type
+
+from typing import Protocol, TypeVar, Type,TypedDict
 from abc import abstractmethod
 
 from settings import get_secret_key
@@ -29,15 +29,15 @@ class Argon2Hasher(IPasswordHasher):
         return self.bcrypt_context.verify(password, hashed)
 
 
-@dataclass
-class AccessToken:
+
+class AccessToken(TypedDict):
     sub: str
     email: str
     exp: str
 
 
-@dataclass
-class RefreshToken:
+
+class RefreshToken(TypedDict):
     sub: str
     exp: str
 

@@ -40,7 +40,7 @@ def get_user(db: Session, hasher: IPasswordHasher, email: str, password: str) ->
 
 def get_current_user(db: Session, token: AccessToken):
     user = (
-        db.query(User).filter(User.id == token.sub, User.email == token.email).first()
+        db.query(User).filter(User.id == token["sub"], User.email == token["email"]).first()
     )
     if not user:
         raise HTTPUnauthorized("Impossibile convalidare le credenziali")

@@ -81,10 +81,10 @@ async def update_address(
     address: Annotated[AddressDataIn, Body()],
 ):
     payload = jwt.decode_access_token(token)
-    fecthed_address = get_addresses(db, payload.sub)[0]
+    fecthed_address = get_addresses(db, payload["sub"])[0]
 
     if not fecthed_address:
-        logger.warning("Address not found for user", user_id=payload.sub)
+        logger.warning("Address not found for user", user_id=payload["sub"])
         raise HTTPNotFound("Indirizzo non trovato per questo utente")
 
     for key, value in address.model_dump().items():
@@ -93,10 +93,10 @@ async def update_address(
 
     try:
         db.commit()
-        logger.info("Address updated successfully", user_id=payload.sub)
+        logger.info("Address updated successfully", user_id=payload["sub"])
     except SQLAlchemyError as ex:
         db.rollback()
-        logger.error(ex, user_id=payload.sub)
+        logger.error(ex, user_id=payload["sub"])
         raise HTTPInternalServer(f"Errore database: {ex}")
 
 
@@ -116,7 +116,7 @@ async def change_password(
 
     fetched_user = get_current_user(db, payload)
     if not fetched_user:
-        logger.warning("User not found", user_id=payload.sub)
+        logger.warning("User not found", user_id=payload["sub"])
         raise HTTPForbidden("Utente non trovato")
 
     # Verifico la vecchia password
