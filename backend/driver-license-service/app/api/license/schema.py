@@ -50,3 +50,10 @@ class DriverLicenseIn(BaseModel):
             )
 
         return self
+    
+class DriverLicenseOut(BaseModel):
+    number: str
+    code: str
+    expiry_date: date
+    issue_date: date
+    id: str
