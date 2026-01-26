@@ -30,6 +30,13 @@ export interface ActionResponse {
   data?: any;
 }
 
+export interface DriverLicenseModel {
+  code: string;
+  expiry_date: string;
+  id: string;
+  issue_date: string;
+  number: string;
+}
 export interface AccessTokenData {
   access_token: string;
   type: string;

@@ -4,6 +4,7 @@ import ProfileNavigation from "@/features/profile/components/navigation/ProfileN
 import PersonalData from "@/features/profile/components/personal-data/PersonalData";
 import ProfileHeader from "@/features/profile/components/ProfileHeader";
 import SecurityInfo from "@/features/profile/components/SecurityInfo";
+import { driverLicenseApi } from "@/shared/api/driver-license.service";
 
 import { userApi } from "@/shared/api/user.service";
 
@@ -33,7 +34,7 @@ function RouteComponent() {
         {activeSection === "personali" && (
           <PersonalData user={data.user} address={data.addresses[0]} />
         )}
-        {activeSection === "patenti" && <DriverLicenses />}
+        {activeSection === "patenti" && <DriverLicenses licenses={data.driverLicense}/>}
         <SecurityInfo />
       </div>
     </div>
@@ -45,13 +46,29 @@ async function loader() {
   if (!sessionUser) throw redirect({ to: "/home" });
   const user = JSON.parse(sessionUser);
 
+  const sessionAddresses = await getAddresses();
+  const sessionDriverLicense = await getDriverLicenses();
+
+  return { user: user, addresses: sessionAddresses, driverLicense: sessionDriverLicense };
+}
+
+
+async function getAddresses() {
   const addressesStorage = sessionStorage.getItem("addresses_data");
   if (!addressesStorage) {
     const response = await userApi.get("/addresses");
     sessionStorage.setItem("addresses_data", JSON.stringify(response.data));
-    return { user: user, addresses: response.data };
+    return response.data;
   }
+  return JSON.parse(addressesStorage);
+}
 
-  const sessionAddresses = JSON.parse(addressesStorage);
-  return { user: user, addresses: sessionAddresses };
+async function getDriverLicenses() {
+  const driverLicenseStorage = sessionStorage.getItem("driver_licenses");
+  if (!driverLicenseStorage) {
+    const response = await driverLicenseApi.get("/licenses");
+    sessionStorage.setItem("driver_licenses", JSON.stringify(response.data));
+    return response.data;
+  }
+  return JSON.parse(driverLicenseStorage)
 }

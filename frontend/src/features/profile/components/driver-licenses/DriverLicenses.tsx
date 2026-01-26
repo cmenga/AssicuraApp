@@ -4,29 +4,13 @@ import {
 } from "lucide-react";
 
 import DriverLicense from "./DriverLicense";
+import type { DriverLicenseModel } from "@/shared/type";
 
-const patenti = [
-  {
-    id: 1,
-    numero: "U1ABC1234567",
-    categoria: "B",
-    dataRilascio: "2005-06-15",
-    dataScadenza: "2030-06-15",
-    enteRilascio: "Motorizzazione Civile di Roma",
-    stato: "Valida",
-  },
-  {
-    id: 2,
-    numero: "U1XYZ9876543",
-    categoria: "A",
-    dataRilascio: "2010-03-20",
-    dataScadenza: "2030-03-20",
-    enteRilascio: "Motorizzazione Civile di Roma",
-    stato: "Valida",
-  },
-];
+type DriverLicensesProps = {
+  licenses: DriverLicenseModel[];
+};
 
-export default function DriverLicenses() {
+export default function DriverLicenses({ licenses }: DriverLicensesProps) {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -36,8 +20,13 @@ export default function DriverLicenses() {
       </div>
 
       <div className="grid md:grid-cols-2">
-        {patenti.map((value, index) => {
-          return <DriverLicense key={index} code={value.categoria} expiryDate={value.dataScadenza} issueDate={value.dataRilascio} licenseNumber={value.id.toString()} />;
+        {licenses.map((license, index) => {
+          return <DriverLicense
+            key={index}
+            code={license.code}
+            expiryDate={license.expiry_date}
+            issueDate={license.issue_date}
+            licenseNumber={license.number} />;
         })}
       </div>
 
