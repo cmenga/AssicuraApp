@@ -27,20 +27,26 @@ def main():
     global file_name
     logger.debug("script.populate_database", name="populate_license_catecory", script=file_name, status="start")
     LocalSession = get_session(get_local_database_url())
+    is_add_record = False
+    
     with LocalSession() as session:
         logger.debug("script.create_session",name="populate_license_catecory", script=file_name, status="up")
         for category in categories_to_seed:
             exists = session.get(entity=LicenseCategory, ident=category["code"])
             
             if not exists:
+                is_add_record = True
                 logger.debug("script.add_category",name="populate_license_catecory", script=file_name, status="up")
                 session.add(LicenseCategory(**category, is_active=True))
                 continue
             logger.debug("script.skip_category",name="populate_license_catecory", script=file_name, status="up")
 
+        if not is_add_record:
+            logger.debug("script.skip_commit",name="populate_license_catecory", script=file_name, status="end")
+            return
         try:
             session.commit()
-            logger.debug("script.success_commit",name="populate_license_catecory", script=file_name, status="up")
+            logger.debug("script.success_commit",name="populate_license_catecory", script=file_name, status="end")
         except Exception as ex:
             session.rollback()
             logger.exception(ex, name="populate_license_catecory", script=file_name, status="exception")
