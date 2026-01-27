@@ -10,7 +10,7 @@ type FormInputCheckboxProps = {
 
 export default function FormInputCheckbox(props: FormInputCheckboxProps) {
   const { previous, children, ..._props } = props;
-  const [value, setValue] = useState<boolean | undefined>(previous);
+  const [value, setValue] = useState<boolean | undefined>(previous ?? false);
 
   return (
     <label className="flex items-center gap-3 group">
