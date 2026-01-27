@@ -1,6 +1,6 @@
-import { store } from "./model/store";
+import { store } from "../model/store";
 import { redirect } from "@tanstack/react-router";
-import type { AccessTokenData } from "./type";
+import type { AccessTokenData } from "../type";
 
 type GuardOptions = {
   authRequired?: boolean;

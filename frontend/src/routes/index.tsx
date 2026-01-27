@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import NotLoggedHome from "@/features/home/NotLoggedHome";
-import { routeGuard } from "@/shared/guard";
+import { routeGuard } from "@/shared/utils/guard";
 
 export const Route = createFileRoute("/")({
   component: RouteComponent,

@@ -7,7 +7,7 @@ import SecurityInfo from "@/features/profile/components/SecurityInfo";
 import { driverLicenseApi } from "@/shared/api/driver-license.service";
 
 import { userApi } from "@/shared/api/user.service";
-import { routeGuard } from "@/shared/guard";
+import { routeGuard } from "@/shared/utils/guard";
 import { useStoreKey } from "@/shared/hooks/useStoreKey";
 import { store } from "@/shared/model/store";
 import type { AddressModel, DriverLicenseModel, UserModel } from "@/shared/type";

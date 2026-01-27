@@ -10,7 +10,7 @@ import { driverLicenseApi } from "@/shared/api/driver-license.service";
 import { useNotification } from "@/shared/hooks/useNotification";
 import { store } from "@/shared/model/store";
 import { useStoreKey } from "@/shared/hooks/useStoreKey";
-import { routeGuard } from "@/shared/guard";
+import { routeGuard } from "@/shared/utils/guard";
 
 
 
