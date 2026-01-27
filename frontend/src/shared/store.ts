@@ -40,7 +40,6 @@ class Store {
 
   token = {
     set<T>(key: string, value: T) {
-      //Da inserire il salvataggio per il token
       sessionStorage.setItem(key, JSON.stringify(value));
     },
     get<T>(key: string): T | undefined {
@@ -55,6 +54,12 @@ class Store {
     }
   };
 
+  clear() {
+    this.state.clear();
+    this.listeners.clear();
+    sessionStorage.clear();
+    localStorage.clear();
+  }
 }
 
 
@@ -68,7 +73,7 @@ export async function storeFetchThrow<T>(key: string, service: AxiosInstance, ur
   if (response.status == 404) {
     throw new Error("Utente non trovato");
   }
-    store.set<T>(key, response.data);
+  store.set<T>(key, response.data);
 }
 
 export async function storeFetch<T>(key: string, service: AxiosInstance, url: string, config?: AxiosRequestConfig) {

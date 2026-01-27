@@ -14,6 +14,9 @@ export const authApi = axios.create({
 
 export async function refreshAccessToken(): Promise<AccessTokenData> {
   const response = await authApi.post("/refresh", {}, { withCredentials: true });
+  if (!response.data.access_token) {
+    throw new Error("non siamo riusciti a rillogare prego rieffetui la login")
+  }
   const token: AccessTokenData = {
     access_token: response.data.access_token,
     type: "Bearer",
@@ -24,7 +27,7 @@ export async function refreshAccessToken(): Promise<AccessTokenData> {
 }
 
 export function forceLogout() {
-  store.dispatch("access-token", () => "")
+  store.clear();
   store.set<string>("relogged", "Rilogga per completare la modifica della mail.");
   window.location.href = "/auth/login";
 }

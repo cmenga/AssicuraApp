@@ -2,6 +2,7 @@ import { LogOut, Settings, User } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { authApi } from "@/shared/api/auth.service";
+import { store } from "@/shared/store";
 
 type ShowProfileMenuProps = {
   firstName: string;
@@ -42,7 +43,7 @@ export default function ProfileMenu(props: ShowProfileMenuProps) {
             <span className="text-sm">Impostazioni</span>
           </button>
           <hr className="my-2" />
-          <button onClick={logoutUser} className="cursor-pointer w-full px-4 py-2 text-left hover:bg-gray-50 flex items-center gap-2 text-red-600">
+          <button onClick={logout} className="cursor-pointer w-full px-4 py-2 text-left hover:bg-gray-50 flex items-center gap-2 text-red-600">
             <LogOut className="w-4 h-4" />
             <span className="text-sm">Esci</span>
           </button>
@@ -53,8 +54,8 @@ export default function ProfileMenu(props: ShowProfileMenuProps) {
 }
 
 
-async function logoutUser() {
+async function logout() {
   authApi.post("/sign-out")
-  sessionStorage.clear();
+  store.clear();
   window.location.href = "/";
 }

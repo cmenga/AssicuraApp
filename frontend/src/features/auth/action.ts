@@ -172,8 +172,7 @@ export async function submitUserLogin(
   formData: FormData
 ): Promise<ActionResponse> {
   const data = Object.fromEntries(formData);
-  console.log(data)
-  //TODO: qui dobbimao mettere il remember me per dargli un access_token piu lungo oppure usare i coockie
+
   const response = await authApi.post("/sign-in", data, {
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
@@ -204,6 +203,9 @@ export async function submitUserLogin(
   }
 
   const accessToken: AccessTokenData = await response.data;
+  if (!response.data.access_token) {
+    return {message: "non è stato possibile accere, riprovi piu tardi", success: false}
+  }
   store.token.set<AccessTokenData>("access-token", accessToken);
   return { message: "Request Successfull", success: true };
 }

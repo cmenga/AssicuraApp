@@ -76,10 +76,6 @@ async def create_new_account(
         raise HTTPInternalServer("C'è stato un problema con il salvataggio dei dati")
 
 
-import structlog
-
-logger = structlog.get_logger("auth")  # o il tuo logger già configurato
-
 
 @auth_router.post("/sign-in", status_code=status.HTTP_200_OK)
 async def get_access_token(
@@ -130,7 +126,6 @@ async def refresh_token(
     jwt_refresh: JWTRefreshService,
     jwt_access: JWTAccessService,
     refresh_token: str | None = Cookie(default=None),
-    # token: JwtToken,
 ):
     """
     Refreshes the access token using a valid refresh token.
@@ -147,7 +142,7 @@ async def refresh_token(
     Raises:
         HTTPUnauthorized: If the provided token is invalid or not a refresh token.
     """
-
+    
     if not refresh_token:
         raise HTTPUnauthorized("No refresh token provided")
 
@@ -160,11 +155,9 @@ async def refresh_token(
 
     access_token = jwt_access.encode(user_id=payload["sub"])
     logger.info("refresh_token_success", user_id=payload["sub"])
-
-    return {
-        "access_token": access_token,
-        "token_type": "bearer",
-    }
+    if not access_token:
+        raise HTTPUnauthorized("Token non valido")
+    return TokenData(access_token=access_token, type="Bearer")
 
 
 @auth_router.post("/sign-out", status_code=status.HTTP_200_OK)

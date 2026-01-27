@@ -16,7 +16,7 @@ export const userApi = axios.create({
 userApi.interceptors.request.use(
   (config) => {
     const token = store.token.get<AccessTokenData>("access-token");
-    if (token) {
+    if (token && token.access_token && token.type) {
       config.headers = config.headers || {};
       config.headers.Authorization = `${token.type} ${token.access_token}`;
       config.headers.Accept = "application/json";

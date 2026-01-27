@@ -1,13 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 import UserNavigation from "@/features/home/components/logged/navigation/UserNavigation";
 import UserDashboard from "@/features/home/UserDashboard";
 import MobileUserNavigation from "@/features/home/components/logged/navigation/MobileUserNavigation";
 import type { UserModel } from "@/shared/type";
-import { driverLicenseApi } from "@/shared/api/driver-license.service";
-import { useNotification } from "@/shared/hooks/useNotification";
-import { store } from "@/shared/store";
 import { useStoreKeyOrThrow } from "@/shared/hooks/useStoreKey";
 import { routeGuard } from "@/shared/utils/guard";
 import { homePageLoader } from "./loader";
@@ -18,34 +15,16 @@ import { homePageLoader } from "./loader";
 export const Route = createFileRoute("/home")({
   component: RouteComponent,
   beforeLoad: () => routeGuard({ authRequired: true }),
-  loader: loader,
+  loader: homePageLoader,
 });
 
 function RouteComponent() {
   const storedUser = useStoreKeyOrThrow<UserModel>("user");
   const [activeTab, setActiveTab] = useState("overview");
-  const [Notify, setNotify] = useNotification();
-  const data: { response?: undefined | any; } = Route.useLoaderData();
-  const status = data.response?.status ?? null;
-
-  useEffect(() => {
-    if (!status) return;
-    const showNotify = async () => {
-      if (status !== 204) {
-        setNotify({ message: "La patente inserita non risulta veritiera", type: "error" });
-      } else {
-        setNotify({ message: "La patente è stata salvata con successo", type: "success" });
-      }
-    };
-
-    showNotify();
-
-  }, [status, setNotify]);
-
 
   return (
     <div className="relative min-h-screen bg-white">
-      <Notify />
+
       <UserNavigation
         activeTab={activeTab}
         onActiveTab={setActiveTab}
@@ -62,36 +41,4 @@ function RouteComponent() {
       <MobileUserNavigation activeTab={activeTab} onActiveTab={setActiveTab} />
     </div>
   );
-}
-
-
-
-async function loader() {
-  homePageLoader()
-  const user = store.get<UserModel>("user")
-  if (user) {
-    const response = await addDriverLicense(user.date_of_birth);
-    return { response };
-  }
-  return {response: null}
-}
-
-
-
-async function addDriverLicense(date_of_birth: string) {
-  const sessionDriverLicense = localStorage.getItem("license_dto");
-  if (sessionDriverLicense) {
-    const data = JSON.parse(sessionDriverLicense);
-
-    const response = driverLicenseApi.post("/add", {
-      license_code: data.license_category,
-      license_number: data.license_number,
-      issue_date: data.license_issue_date,
-      expiry_date: data.license_expiry_date,
-      date_of_birth: date_of_birth
-    });
-    localStorage.removeItem("license_dto");
-    return await response;
-  }
-  return undefined;
 }

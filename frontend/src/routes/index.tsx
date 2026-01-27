@@ -4,7 +4,7 @@ import { routeGuard } from "@/shared/utils/guard";
 
 export const Route = createFileRoute("/")({
   component: RouteComponent,
-  beforeLoad: () => routeGuard({guestOnly: true, redirectTo: "/home"}),
+  beforeLoad: () => routeGuard({ guestOnly: true, redirectTo: "/home" }),
 });
 
 function RouteComponent() {
@@ -14,4 +14,5 @@ function RouteComponent() {
     </div>
   );
 }
+
 
