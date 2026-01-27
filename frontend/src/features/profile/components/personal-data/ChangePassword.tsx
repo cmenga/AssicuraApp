@@ -3,7 +3,7 @@ import BaseField from "./BaseField";
 import { useState } from "react";
 import { Lock, Pencil, Save, X } from "lucide-react";
 import FormInputPassword from "@/shared/components/form/FormInputPassword";
-import { handlePasswordKeyPress } from "@/shared/utils";
+import { handlePasswordKeyPress } from "@/shared/utils/onKeyDown";
 import ErrorMessage from "@/shared/components/form/ErrorMessage";
 import { submitPasswordAction } from "../../action";
 import { useNavigate } from "@tanstack/react-router";

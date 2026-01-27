@@ -11,7 +11,7 @@ import {
   handleFiscalIdKeyPress,
 } from "../../utils";
 
-import { handleNameKeyPress } from "@/shared/utils";
+import { handleNameKeyPress } from "@/shared/utils/onKeyDown";
 
 type RegisterSteOneProps = {
   firstName: string;

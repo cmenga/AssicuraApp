@@ -7,7 +7,7 @@ import { useFormStateAction } from "@/shared/hooks/useFormStateAction";
 import { submitContactAction } from "../../action";
 import ErrorMessage from "@/shared/components/form/ErrorMessage";
 import { useNavigate } from "@tanstack/react-router";
-import { handleEmailKeyPress, handleNumberKeyPress } from "@/shared/utils";
+import { handleEmailKeyPress, handleNumberKeyPress } from "@/shared/utils/onKeyDown";
 import { store } from "@/shared/model/store";
 import type { UserModel } from "@/shared/type";
 import { userApi } from "@/shared/api/user.service";

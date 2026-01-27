@@ -8,7 +8,7 @@ import { submitAddressACtion } from "../../action";
 import ErrorMessage from "@/shared/components/form/ErrorMessage";
 import { useNavigate } from "@tanstack/react-router";
 import { userApi } from "@/shared/api/user.service";
-import { handleCivicKeyPress, handleNameKeyPress, handleNumberKeyPress, handleProvinceKeyPress, handleStreetKeyPress } from "@/shared/utils";
+import { handleCivicKeyPress, handleNameKeyPress, handleNumberKeyPress, handleProvinceKeyPress, handleStreetKeyPress } from "@/shared/utils/onKeyDown";
 import { store } from "@/shared/model/store";
 
 async function updateAddressData(formData: FormData) {

@@ -13,7 +13,7 @@ import {
   handleCivicKeyPress,
   handleNameKeyPress,
   handleProvinceKeyPress
-} from "@/shared/utils";
+} from "@/shared/utils/onKeyDown";
 
 type RegisterStepTwoProps = {
   email: string;

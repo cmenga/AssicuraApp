@@ -13,7 +13,7 @@ import {
   handleDrivingLicenseKeyPress,
 } from "../../utils";
 
-import { handlePasswordKeyPress } from "@/shared/utils";
+import { handlePasswordKeyPress } from "@/shared/utils/onKeyDown";
 
 const LICENSE_OPTIONS: DropdownOptions[] = [
   { value: "A", name: "A - Moto" },
