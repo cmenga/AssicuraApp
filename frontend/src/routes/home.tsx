@@ -1,5 +1,5 @@
 import { userApi } from "@/shared/api/user.service";
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 
 import UserNavigation from "@/features/home/components/logged/navigation/UserNavigation";
@@ -10,20 +10,16 @@ import { driverLicenseApi } from "@/shared/api/driver-license.service";
 import { useNotification } from "@/shared/hooks/useNotification";
 import { store } from "@/shared/model/store";
 import { useStoreKey } from "@/shared/hooks/useStoreKey";
+import { routeGuard } from "@/shared/guard";
+
 
 
 
 export const Route = createFileRoute("/home")({
   component: RouteComponent,
-  beforeLoad: isUserLogged,
+  beforeLoad: () => routeGuard({ authRequired: true }),
   loader: loader,
 });
-
-
-async function isUserLogged() {
-  const accessToken = sessionStorage.getItem("access_token");
-  if (!accessToken) throw redirect({ to: "/" });
-}
 
 function RouteComponent() {
   const storedUser = useStoreKey<UserModel>("user");

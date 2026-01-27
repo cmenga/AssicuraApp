@@ -8,7 +8,7 @@ import "./styles.css";
 import reportWebVitals from "./reportWebVitals.ts";
 import { store } from "./shared/model/store.ts";
 
-store.set("access_token", null);
+store.set("access-token", undefined)
 // Create a new router instance
 const router = createRouter({
   routeTree,

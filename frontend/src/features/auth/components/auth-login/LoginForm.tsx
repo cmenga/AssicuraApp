@@ -15,15 +15,15 @@ function updateStore() {
   store.dispatch("sign-up", () => undefined);
   store.dispatch("relogged", () => undefined);
 }
+
 export default function LoginForm() {
   const confirmSignUp = store.get("sign-up") ?? undefined;
   const reloggedMessage = store.get("relogged") ?? undefined;
-
   const navigate = useNavigate();
   const { errors, isPending, cleanErrors, submitAction } = useFormStateAction(submitUserLogin, {
     onSuccess: () => { cleanErrors(); updateStore(); navigate({ to: "/home" }); }
   });
-  console.log(errors);
+
   return (
     <div className="bg-white rounded-3xl shadow-2xl p-8 md:p-10">
       <div className="mb-8">

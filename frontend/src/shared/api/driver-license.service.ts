@@ -1,6 +1,7 @@
 import axios from "axios";
 import type { AccessTokenData } from "../type";
 import { forceLogout, refreshAccessToken } from "./auth.service";
+import { store } from "../model/store";
 
 
 export const driverLicenseApi = axios.create({
@@ -15,9 +16,8 @@ export const driverLicenseApi = axios.create({
 
 driverLicenseApi.interceptors.request.use(
   (config) => {
-    const jwt = sessionStorage.getItem("access_token");
-    if (jwt) {
-      const token: AccessTokenData = JSON.parse(jwt);
+    const token = store.token.get<AccessTokenData>("access-token");
+    if (token) {
       config.headers = config.headers || {};
       config.headers.Authorization = `${token.type} ${token.access_token}`;
       config.headers.Accept = "application/json";

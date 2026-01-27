@@ -107,5 +107,3 @@ export function handlePasswordKeyPress(event: KeyboardEvent<HTMLInputElement>) {
     event.preventDefault();
   }
 }
-
-

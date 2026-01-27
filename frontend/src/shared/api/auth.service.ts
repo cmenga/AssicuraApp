@@ -18,14 +18,13 @@ export async function refreshAccessToken(): Promise<AccessTokenData> {
     access_token: response.data.access_token,
     type: "Bearer",
   };
-  console.log(token)
-  sessionStorage.setItem("access_token", JSON.stringify(token));
+  store.token.set<AccessTokenData>("access-token", token);
 
   return token;
 }
 
 export function forceLogout() {
-  store.dispatch("access_token", () => undefined)
+  store.dispatch("access-token", () => "")
   store.set<string>("relogged", "Rilogga per completare la modifica della mail.");
   window.location.href = "/auth/login";
 }

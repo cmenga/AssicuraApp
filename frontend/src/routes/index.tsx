@@ -1,9 +1,10 @@
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import NotLoggedHome from "@/features/home/NotLoggedHome";
+import { routeGuard } from "@/shared/guard";
 
 export const Route = createFileRoute("/")({
   component: RouteComponent,
-  beforeLoad: beforeLoad,
+  beforeLoad: () => routeGuard({guestOnly: true, redirectTo: "/home"}),
 });
 
 function RouteComponent() {
@@ -14,7 +15,3 @@ function RouteComponent() {
   );
 }
 
-function beforeLoad() {
-  const accessToken = sessionStorage.getItem("access_token");
-  if (accessToken) throw redirect({ to: "/home" });
-}

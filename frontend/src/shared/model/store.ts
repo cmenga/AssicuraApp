@@ -4,7 +4,7 @@ class Store {
   private state: Map<string, any> = new Map();
   private listeners: Map<string, Set<Listener>> = new Map();
 
-  get<T>(key: string): T | undefined{
+  get<T>(key: string): T | undefined {
     return this.state.get(key);
   }
 
@@ -35,7 +35,25 @@ class Store {
 
     return () => keyListeners?.delete(fn);
   }
+
+  token = {
+    set<T>(key: string, value: T) {
+      //Da inserire il salvataggio per il token
+      sessionStorage.setItem(key, JSON.stringify(value));
+    },
+    get<T>(key: string): T | undefined {
+      const token = sessionStorage.getItem(key);
+      if (!token) return undefined;
+      return JSON.parse(token);
+    },
+    dispatch<T>(key: string, updater: (prev: T | undefined) => T) {
+      const token = sessionStorage.getItem(key);
+      const prev = token ? JSON.parse(token) : undefined
+      sessionStorage.setItem(key, JSON.stringify(updater(prev)))
+    }
+  };
+
 }
 
 
-export const store = new Store()
+export const store = new Store();

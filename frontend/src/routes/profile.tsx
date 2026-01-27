@@ -7,6 +7,7 @@ import SecurityInfo from "@/features/profile/components/SecurityInfo";
 import { driverLicenseApi } from "@/shared/api/driver-license.service";
 
 import { userApi } from "@/shared/api/user.service";
+import { routeGuard } from "@/shared/guard";
 import { useStoreKey } from "@/shared/hooks/useStoreKey";
 import { store } from "@/shared/model/store";
 import type { AddressModel, DriverLicenseModel, UserModel } from "@/shared/type";
@@ -16,6 +17,7 @@ import { useState } from "react";
 
 export const Route = createFileRoute("/profile")({
   component: RouteComponent,
+  beforeLoad: () => routeGuard({ authRequired: true }),
   loader: loader,
 });
 
@@ -70,7 +72,7 @@ async function getUser() {
 }
 
 async function getAddresses() {
-  const address = store.get("address")
+  const address = store.get("address");
   if (address) return;
 
   const response = await userApi.get("/addresses");
@@ -79,13 +81,13 @@ async function getAddresses() {
       throw new Error("Nessun indirizzo è stato trovato per l'utente");
 
   }
-  const fetchedAddresses = await response.data()
-  store.set<AddressModel>("address", fetchedAddresses[0])
+  const fetchedAddresses = await response.data;
+  store.set<AddressModel>("address", fetchedAddresses[0]);
 }
 
 async function getDriverLicenses() {
-  const driverLicense = store.get("driver-license")
-  if (driverLicense) return
+  const driverLicense = store.get("driver-license");
+  if (driverLicense) return;
 
   const response = await driverLicenseApi.get("/licenses");
   switch (response.status) {
@@ -93,5 +95,5 @@ async function getDriverLicenses() {
       return [];
   }
   const fetchedDriverLicenses = await response.data;
-  store.set<DriverLicenseModel[]>("driver-license",fetchedDriverLicenses)
+  store.set<DriverLicenseModel[]>("driver-license", fetchedDriverLicenses);
 }

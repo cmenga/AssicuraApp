@@ -5,7 +5,7 @@ import type {
   UserData,
   UserLicense,
 } from "./type";
-import type { ActionResponse } from "@/shared/type";
+import type { AccessTokenData, ActionResponse } from "@/shared/type";
 import { store } from "@/shared/model/store";
 
 /**
@@ -172,8 +172,7 @@ export async function submitUserLogin(
   formData: FormData
 ): Promise<ActionResponse> {
   const data = Object.fromEntries(formData);
-  console.log(data);
-
+  //TODO: qui dobbimao mettere il remember me per dargli un access_token piu lungo oppure usare i coockie
   const response = await authApi.post("/sign-in", data, {
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
@@ -202,7 +201,8 @@ export async function submitUserLogin(
         success: false,
       };
   }
-  const access_token = response.data.access_token;
-  store.set<string>("access_token", access_token);
+
+  const accessToken: AccessTokenData = await response.data;
+  store.token.set<AccessTokenData>("access-token", accessToken);
   return { message: "Request Successfull", success: true };
 }
