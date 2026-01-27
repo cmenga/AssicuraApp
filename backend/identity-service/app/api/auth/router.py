@@ -165,3 +165,19 @@ async def refresh_token(
         "access_token": access_token,
         "token_type": "bearer",
     }
+
+
+@auth_router.post("/sign-out", status_code=status.HTTP_200_OK)
+async def logout(response: Response):
+    logger.info("logout.attempt")
+    response.set_cookie(
+        key="refresh_token",
+        value="",
+        httponly=True,
+        secure=True,
+        samesite="strict",
+        max_age=0,  # scade subito
+    )
+    logger.info("logout.refresh_cookie_cleared")
+
+    return {"message": "Logout effettuato correttamente"}
