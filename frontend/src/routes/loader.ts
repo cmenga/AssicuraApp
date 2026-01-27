@@ -4,7 +4,7 @@ import { storeFetch, storeFetchThrow } from "@/shared/store";
 import type { AddressModel, DriverLicenseModel, UserModel } from "@/shared/type";
 
 
-export async function profaliPageLoader() {
+export async function profilePageLoader() {
   await storeFetchThrow<UserModel>("user", userApi, "/me");
   await storeFetchThrow<AddressModel[]>("address", userApi, "/addresses");
   await storeFetch<DriverLicenseModel[]>("driver-license", driverLicenseApi, "/licenses");

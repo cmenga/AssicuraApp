@@ -10,13 +10,13 @@ import SecurityInfo from "@/features/profile/components/SecurityInfo";
 
 import { routeGuard } from "@/shared/utils/guard";
 import { useStoreKeyOrThrow } from "@/shared/hooks/useStoreKey";
-import { profaliPageLoader } from "./loader";
+import { profilePageLoader } from "./loader";
 import type { UserModel } from "@/shared/type";
 
 export const Route = createFileRoute("/profile")({
   component: RouteComponent,
   beforeLoad: () => routeGuard({ authRequired: true }),
-  loader: profaliPageLoader,
+  loader: profilePageLoader,
 });
 
 function RouteComponent() {
