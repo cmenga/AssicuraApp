@@ -1,4 +1,3 @@
-import { userApi } from "@/shared/api/user.service";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 
@@ -11,6 +10,7 @@ import { useNotification } from "@/shared/hooks/useNotification";
 import { store } from "@/shared/store";
 import { useStoreKeyOrThrow } from "@/shared/hooks/useStoreKey";
 import { routeGuard } from "@/shared/utils/guard";
+import { homePageLoader } from "./loader";
 
 
 
@@ -67,28 +67,15 @@ function RouteComponent() {
 
 
 async function loader() {
-  await getUserData();
-  const user = store.get<UserModel>("user");
-
+  homePageLoader()
+  const user = store.get<UserModel>("user")
   if (user) {
     const response = await addDriverLicense(user.date_of_birth);
     return { response };
   }
-
+  return {response: null}
 }
 
-async function getUserData() {
-  const user = store.get("user");
-  if (user) return;
-
-  const response = await userApi.get("/me");
-  switch (response.status) {
-    case 404:
-      throw new Error("Utente non trovato");
-  }
-  const fetchedUser = response.data;
-  store.set<UserModel>("user", fetchedUser);
-}
 
 
 async function addDriverLicense(date_of_birth: string) {

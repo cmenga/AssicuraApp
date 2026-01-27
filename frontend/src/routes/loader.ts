@@ -9,3 +9,7 @@ export async function profilePageLoader() {
   await storeFetchThrow<AddressModel[]>("address", userApi, "/addresses");
   await storeFetch<DriverLicenseModel[]>("driver-license", driverLicenseApi, "/licenses");
 }
+
+export async function homePageLoader() {
+  await storeFetchThrow<UserModel>("user", userApi, "/me")  
+}
