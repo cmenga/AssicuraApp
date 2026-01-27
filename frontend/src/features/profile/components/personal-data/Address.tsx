@@ -9,7 +9,7 @@ import ErrorMessage from "@/shared/components/form/ErrorMessage";
 import { useNavigate } from "@tanstack/react-router";
 import { userApi } from "@/shared/api/user.service";
 import { handleCivicKeyPress, handleNameKeyPress, handleNumberKeyPress, handleProvinceKeyPress, handleStreetKeyPress } from "@/shared/utils/onKeyDown";
-import { store } from "@/shared/model/store";
+import { store } from "@/shared/store";
 
 async function updateAddressData(formData: FormData) {
   const data = Object.fromEntries(formData.entries());
@@ -17,7 +17,7 @@ async function updateAddressData(formData: FormData) {
   store.asyncdispatch("address", async (prev: AddressModel | undefined) => {
      if (!prev) {
       const response = userApi.get("/addresses") 
-       return (await response).data[0]
+       return (await response).data
     }
 
     return {

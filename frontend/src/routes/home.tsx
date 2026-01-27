@@ -8,8 +8,8 @@ import MobileUserNavigation from "@/features/home/components/logged/navigation/M
 import type { UserModel } from "@/shared/type";
 import { driverLicenseApi } from "@/shared/api/driver-license.service";
 import { useNotification } from "@/shared/hooks/useNotification";
-import { store } from "@/shared/model/store";
-import { useStoreKey } from "@/shared/hooks/useStoreKey";
+import { store } from "@/shared/store";
+import { useStoreKeyOrThrow } from "@/shared/hooks/useStoreKey";
 import { routeGuard } from "@/shared/utils/guard";
 
 
@@ -22,9 +22,7 @@ export const Route = createFileRoute("/home")({
 });
 
 function RouteComponent() {
-  const storedUser = useStoreKey<UserModel>("user");
-  if (!storedUser) throw new Error("Utente non trovato");
-
+  const storedUser = useStoreKeyOrThrow<UserModel>("user");
   const [activeTab, setActiveTab] = useState("overview");
   const [Notify, setNotify] = useNotification();
   const data: { response?: undefined | any; } = Route.useLoaderData();

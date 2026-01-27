@@ -5,12 +5,12 @@ import {
 
 import DriverLicense from "./DriverLicense";
 import type { DriverLicenseModel } from "@/shared/type";
+import { useStoreKey } from "@/shared/hooks/useStoreKey";
 
-type DriverLicensesProps = {
-  licenses?: DriverLicenseModel[];
-};
 
-export default function DriverLicenses({ licenses }: DriverLicensesProps) {
+export default function DriverLicenses() {
+  const licenses = useStoreKey<DriverLicenseModel[]>("driver-license")
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">

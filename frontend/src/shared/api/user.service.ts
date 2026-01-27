@@ -1,7 +1,7 @@
 import axios from "axios";
 import type { AccessTokenData } from "../type";
 import { forceLogout, refreshAccessToken } from "./auth.service";
-import { store } from "../model/store";
+import { store } from "../store";
 
 
 export const userApi = axios.create({

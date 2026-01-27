@@ -1,3 +1,5 @@
+import type { AxiosInstance, AxiosRequestConfig } from "axios";
+
 type Listener = () => void;
 
 class Store {
@@ -48,8 +50,8 @@ class Store {
     },
     dispatch<T>(key: string, updater: (prev: T | undefined) => T) {
       const token = sessionStorage.getItem(key);
-      const prev = token ? JSON.parse(token) : undefined
-      sessionStorage.setItem(key, JSON.stringify(updater(prev)))
+      const prev = token ? JSON.parse(token) : undefined;
+      sessionStorage.setItem(key, JSON.stringify(updater(prev)));
     }
   };
 
@@ -57,3 +59,24 @@ class Store {
 
 
 export const store = new Store();
+
+
+export async function storeFetchThrow<T>(key: string, service: AxiosInstance, url: string, config?: AxiosRequestConfig) {
+  if (store.get<T>(key)) return;
+
+  const response = await service.get<T>(url, config);
+  if (response.status == 404) {
+    throw new Error("Utente non trovato");
+  }
+    store.set<T>(key, response.data);
+}
+
+export async function storeFetch<T>(key: string, service: AxiosInstance, url: string, config?: AxiosRequestConfig) {
+  if (store.get<T>(key)) return;
+
+  const response = await service.get(url, config);
+  if (response.status == 404) {
+    return undefined;
+  }
+  store.set<T>(key, response.data);
+};

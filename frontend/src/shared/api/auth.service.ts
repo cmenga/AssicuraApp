@@ -1,6 +1,6 @@
 import axios from "axios";
 import type { AccessTokenData } from "../type";
-import { store } from "../model/store";
+import { store } from "../store";
 
 export const authApi = axios.create({
   baseURL: "http://localhost:8001/auth",

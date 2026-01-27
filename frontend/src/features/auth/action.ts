@@ -6,7 +6,7 @@ import type {
   UserLicense,
 } from "./type";
 import type { AccessTokenData, ActionResponse } from "@/shared/type";
-import { store } from "@/shared/model/store";
+import { store } from "@/shared/store";
 
 /**
  * The function `registerUser` saves user data and license data in local storage and then submits user
@@ -172,6 +172,7 @@ export async function submitUserLogin(
   formData: FormData
 ): Promise<ActionResponse> {
   const data = Object.fromEntries(formData);
+  console.log(data)
   //TODO: qui dobbimao mettere il remember me per dargli un access_token piu lungo oppure usare i coockie
   const response = await authApi.post("/sign-in", data, {
     headers: {

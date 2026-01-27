@@ -1,4 +1,4 @@
-import { store } from "../model/store";
+import { store } from "../store";
 import { redirect } from "@tanstack/react-router";
 import type { AccessTokenData } from "../type";
 

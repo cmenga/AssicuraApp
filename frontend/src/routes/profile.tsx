@@ -1,34 +1,26 @@
+import { useState } from "react";
+import { createFileRoute } from "@tanstack/react-router";
+
 import DriverLicenses from "@/features/profile/components/driver-licenses/DriverLicenses";
 import NavigationTab from "@/features/profile/components/navigation/NavigationTab";
 import ProfileNavigation from "@/features/profile/components/navigation/ProfileNavigation";
 import PersonalData from "@/features/profile/components/personal-data/PersonalData";
 import ProfileHeader from "@/features/profile/components/ProfileHeader";
 import SecurityInfo from "@/features/profile/components/SecurityInfo";
-import { driverLicenseApi } from "@/shared/api/driver-license.service";
 
-import { userApi } from "@/shared/api/user.service";
 import { routeGuard } from "@/shared/utils/guard";
-import { useStoreKey } from "@/shared/hooks/useStoreKey";
-import { store } from "@/shared/model/store";
-import type { AddressModel, DriverLicenseModel, UserModel } from "@/shared/type";
-
-import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useStoreKeyOrThrow } from "@/shared/hooks/useStoreKey";
+import { profaliPageLoader } from "./loader";
+import type { UserModel } from "@/shared/type";
 
 export const Route = createFileRoute("/profile")({
   component: RouteComponent,
   beforeLoad: () => routeGuard({ authRequired: true }),
-  loader: loader,
+  loader: profaliPageLoader,
 });
 
 function RouteComponent() {
-  const user = useStoreKey<UserModel>("user");
-  const address = useStoreKey<AddressModel>("address");
-  const driverLicense = useStoreKey<DriverLicenseModel[]>("driver-license");
-  if (!user) throw new Error("Utente non trovato");
-  if (!address) throw new Error("Indirizzo non trovato");
-
-
+  const user = useStoreKeyOrThrow<UserModel>("user");
   const [activeSection, setActiveSection] = useState<"personali" | "patenti">(
     "personali",
   );
@@ -43,9 +35,9 @@ function RouteComponent() {
           onActiveSection={setActiveSection}
         />
         {activeSection === "personali" && (
-          <PersonalData user={user} address={address} />
+          <PersonalData user={user} />
         )}
-        {activeSection === "patenti" && <DriverLicenses licenses={driverLicense} />}
+        {activeSection === "patenti" && <DriverLicenses />}
         <SecurityInfo />
       </div>
     </div>
@@ -53,47 +45,3 @@ function RouteComponent() {
 }
 
 
-async function loader() {
-  await getUser();
-  await getAddresses();
-  await getDriverLicenses();
-}
-
-async function getUser() {
-  const user = store.get("user");
-  if (user) return;
-
-  const response = await userApi.get("/me");
-  if (response.status == 404) {
-    throw new Error("Utente non trovato");
-  }
-  const fetchedUser = await response.data;
-  store.set<UserModel>("user", fetchedUser);
-}
-
-async function getAddresses() {
-  const address = store.get("address");
-  if (address) return;
-
-  const response = await userApi.get("/addresses");
-  switch (response.status) {
-    case 404:
-      throw new Error("Nessun indirizzo è stato trovato per l'utente");
-
-  }
-  const fetchedAddresses = await response.data;
-  store.set<AddressModel>("address", fetchedAddresses[0]);
-}
-
-async function getDriverLicenses() {
-  const driverLicense = store.get("driver-license");
-  if (driverLicense) return;
-
-  const response = await driverLicenseApi.get("/licenses");
-  switch (response.status) {
-    case 404:
-      return [];
-  }
-  const fetchedDriverLicenses = await response.data;
-  store.set<DriverLicenseModel[]>("driver-license", fetchedDriverLicenses);
-}

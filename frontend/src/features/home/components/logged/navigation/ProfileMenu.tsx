@@ -1,6 +1,7 @@
 import { LogOut, Settings, User } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
+import { authApi } from "@/shared/api/auth.service";
 
 type ShowProfileMenuProps = {
   firstName: string;
@@ -52,8 +53,8 @@ export default function ProfileMenu(props: ShowProfileMenuProps) {
 }
 
 
-function logoutUser() {
+async function logoutUser() {
+  authApi.post("/sign-out")
   sessionStorage.clear();
-  localStorage.removeItem("refresh_token");
-  window.location.href = "/home";
+  window.location.href = "/";
 }
