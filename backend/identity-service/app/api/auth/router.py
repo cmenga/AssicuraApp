@@ -120,7 +120,7 @@ async def get_access_token(
         samesite="strict",
         max_age=60 * 60 * 24 * 30,  # 30 giorni
     )
-    logger.info("login.refresh_cookie_set", username=user.username)
+    logger.info("login.refresh_cookie_set", user_id=user.id)
 
     return TokenData(access_token=access_token, type="Bearer")
 
