@@ -7,7 +7,7 @@ import FormInputCheckbox from "@/shared/components/form/FormInputCheckbox";
 import ErrorMessage from "@/shared/components/form/ErrorMessage";
 
 import { submitUserLogin } from "../../action";
-import { store } from "@/shared/model/store";
+import { store } from "@/shared/store";
 import { useFormStateAction } from "@/shared/hooks/useFormStateAction";
 
 
@@ -58,7 +58,7 @@ export default function LoginForm() {
           name="password"
         />
         <div className="flex items-center justify-between">
-          <FormInputCheckbox name="rememberMe">
+          <FormInputCheckbox name="remember_me">
             <span className="text-sm text-gray-700">Ricordami</span>
           </FormInputCheckbox>
           <a

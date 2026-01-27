@@ -106,7 +106,6 @@ export async function deleteUser(): Promise<ActionResponse> {
   const response = await userApi.delete("/delete");
 
   if (response.status == 200) {
-    localStorage.clear();
     sessionStorage.clear();
     return { success: true, message: response.data.message };
 
