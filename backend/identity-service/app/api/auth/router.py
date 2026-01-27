@@ -1,9 +1,14 @@
-from fastapi import APIRouter, Body, status, Depends, Request, Response, Cookie
+from fastapi import APIRouter, Body, status, Depends, Response, Cookie, Form
 from fastapi.security import OAuth2PasswordRequestForm
 from typing import Annotated
 from sqlalchemy.exc import IntegrityError
 
-from api.dependency import DbSession, PasswordHasher, JWTAccessService, JWTRefreshService
+from api.dependency import (
+    DbSession,
+    PasswordHasher,
+    JWTAccessService,
+    JWTRefreshService,
+)
 from api.auth.schema import UserRegistration, AddressRegistration, TokenData
 from api.utils import get_user
 from api.exceptions import HTTPConflit, HTTPInternalServer, HTTPUnauthorized
@@ -71,6 +76,11 @@ async def create_new_account(
         raise HTTPInternalServer("C'è stato un problema con il salvataggio dei dati")
 
 
+import structlog
+
+logger = structlog.get_logger("auth")  # o il tuo logger già configurato
+
+
 @auth_router.post("/sign-in", status_code=status.HTTP_200_OK)
 async def get_access_token(
     response: Response,
@@ -79,10 +89,28 @@ async def get_access_token(
     jwt_access: JWTAccessService,
     jwt_refresh: JWTRefreshService,
     form_data: OAuth2PasswordRequestForm = Depends(),
+    remember_me: Annotated[str, Form()] = "off",
 ) -> TokenData:
+    logger.info("login.attempt", username=form_data.username, remember_me=remember_me)
+
     user = get_user(db, hasher, form_data.username, form_data.password)
-    access_token = jwt_access.encode(str(user.id))
-    refresh_token = jwt_refresh.encode(str(user.id))
+    logger.info("login.user_found", user_id=user.id)
+
+    if remember_me == "off":
+        access_token = jwt_access.encode(str(user.id), hours=6)
+        logger.info(
+            "login.access_token_generated", token_preview=access_token[:10] + "..."
+        )
+        return TokenData(access_token=access_token, type="Bearer")
+
+    # remember_me == on
+    access_token = jwt_access.encode(str(user.id), minutes=15)
+    refresh_token = jwt_refresh.encode(str(user.id), days=7)
+    logger.info(
+        "login.tokens_generated",
+        access_token_preview=access_token[:10] + "...",
+        refresh_token_preview=refresh_token[:10] + "...",
+    )
 
     response.set_cookie(
         key="refresh_token",
@@ -90,13 +118,11 @@ async def get_access_token(
         httponly=True,
         secure=True,
         samesite="strict",
-        max_age=60 * 60 * 24 * 30,
+        max_age=60 * 60 * 24 * 30,  # 30 giorni
     )
+    logger.info("login.refresh_cookie_set", username=user.username)
 
-    token = TokenData(
-        access_token=access_token, type="Bearer"
-    )
-    return token
+    return TokenData(access_token=access_token, type="Bearer")
 
 
 @auth_router.post("/refresh", status_code=status.HTTP_200_OK)

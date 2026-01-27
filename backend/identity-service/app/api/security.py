@@ -43,16 +43,22 @@ class IJWTService(Protocol):
     @abstractmethod
     def decode(self, token: str) -> Token: ...
     @abstractmethod
-    def encode(self, user_id: str) -> str: ...
+    def encode(
+        self, user_id: str, days: int = 0, hours: int = 0, minutes: int = 0
+    ) -> str: ...
 
 
 class AccessTokenBearer(IJWTService):
     ALGHORITM: str = "HS256"
     SECRET_KEY: str = get_secret_key()
 
-    def encode(self, user_id: str) -> str:
+    def encode(
+        self, user_id: str, days: int = 0, hours: int = 0, minutes: int = 0
+    ) -> str:
 
-        expire = datetime.now(timezone.utc) + timedelta(minutes=15)
+        expire = datetime.now(timezone.utc) + timedelta(
+            days=days, hours=hours, minutes=minutes
+        )
         claims = {"sub": user_id, "type": "access", "exp": expire.timestamp()}
         return jwt.encode(claims=claims, key=self.SECRET_KEY, algorithm=self.ALGHORITM)
 
@@ -70,8 +76,12 @@ class RefreshTokenBearer(IJWTService):
     ALGHORITM = "HS256"
     SECRET_KEY = get_secret_key()
 
-    def encode(self, user_id: str) -> str:
-        expire = datetime.now(timezone.utc) + timedelta(days=7)
+    def encode(
+        self, user_id: str, days: int = 0, hours: int = 0, minutes: int = 0
+    ) -> str:
+        expire = datetime.now(timezone.utc) + timedelta(
+            days=days, hours=hours, minutes=minutes
+        )
         claims = {"sub": user_id, "type": "refresh", "exp": expire.timestamp()}
         return jwt.encode(claims=claims, key=self.SECRET_KEY, algorithm=self.ALGHORITM)
 
