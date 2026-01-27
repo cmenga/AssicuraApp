@@ -13,7 +13,7 @@ type FormInputEmailProps = {
 
 export default function FormInputEmail(props: FormInputEmailProps) {
   const { previous, isRequired = false, children, ..._props } = props;
-  const [value, setValue] = useState<string | undefined>(previous);
+  const [value, setValue] = useState<string | undefined>(previous ?? "");
 
   return (
     <div>

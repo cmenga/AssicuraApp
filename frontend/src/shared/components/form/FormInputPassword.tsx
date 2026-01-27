@@ -14,7 +14,7 @@ export type FormInputPasswordProps = {
 export default function FormInputPassword(props: FormInputPasswordProps) {
   const { labelName, previous, isRequired, children, ..._props } = props;
   const [showPassword, setShowPassword] = useState(false);
-  const [value, setValue] = useState<string | undefined>(previous);
+  const [value, setValue] = useState<string | undefined>(previous ?? "");
 
   return (
     <div>
