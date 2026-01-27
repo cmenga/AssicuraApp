@@ -1,5 +1,6 @@
 import axios from "axios";
 import type { AccessTokenData } from "../type";
+import { store } from "../model/store";
 
 export const authApi = axios.create({
   baseURL: "http://localhost:8001/auth",
@@ -24,8 +25,7 @@ export async function refreshAccessToken(): Promise<AccessTokenData> {
 }
 
 export function forceLogout() {
-  sessionStorage.clear();
-  localStorage.removeItem("refresh_token");
-  sessionStorage.setItem("relogged", "Rilogga per completare la modifica della mail.");
+  store.dispatch("access_token", () => undefined)
+  store.set<string>("relogged", "Rilogga per completare la modifica della mail.");
   window.location.href = "/auth/login";
 }

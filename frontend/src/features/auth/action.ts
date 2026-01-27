@@ -4,9 +4,9 @@ import type {
   UserAddress,
   UserData,
   UserLicense,
-  UserLoginDTO,
 } from "./type";
 import type { ActionResponse } from "@/shared/type";
+import { store } from "@/shared/model/store";
 
 /**
  * The function `registerUser` saves user data and license data in local storage and then submits user
@@ -87,7 +87,7 @@ async function submitUserBasics(
       return conflictResponse(response.data);
   }
 
-  sessionStorage.setItem("sign-up", "true");
+  store.set<boolean>("sign-up", true);
   return { success: true, message: "Request Successfull" };
 }
 
@@ -169,9 +169,11 @@ async function conflictResponse(data: any): Promise<ActionResponse> {
  * `errors` property containing any error details.
  */
 export async function submitUserLogin(
-  data: UserLoginDTO,
-  isRemember: boolean,
+  formData: FormData
 ): Promise<ActionResponse> {
+  const data = Object.fromEntries(formData);
+  console.log(data);
+
   const response = await authApi.post("/sign-in", data, {
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
@@ -201,19 +203,6 @@ export async function submitUserLogin(
       };
   }
   const access_token = response.data.access_token;
-  const refresh_token = response.data.refresh_token;
-
-  isRemember &&
-    localStorage.setItem(
-      "refresh_token",
-      JSON.stringify({
-        refresh_token: refresh_token,
-        type: response.data.type,
-      }),
-    );
-  sessionStorage.setItem(
-    "access_token",
-    JSON.stringify({ access_token: access_token, type: response.data.type }),
-  );
+  store.set<string>("access_token", access_token);
   return { message: "Request Successfull", success: true };
 }
