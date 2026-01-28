@@ -1,7 +1,5 @@
-from fastapi.security import OAuth2PasswordBearer
 from passlib.context import CryptContext
 from jose import jwt, ExpiredSignatureError, JWTError
-from uuid import UUID
 from datetime import datetime, timezone, timedelta
 
 from typing import Protocol, TypedDict, Literal
@@ -9,8 +7,6 @@ from abc import abstractmethod
 
 from settings import get_secret_key
 from api.exceptions import HTTPUnauthorized
-
-oauth_scheme = OAuth2PasswordBearer(tokenUrl="/auth/sign-in")
 
 
 class IPasswordHasher(Protocol):

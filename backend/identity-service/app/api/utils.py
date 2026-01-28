@@ -1,7 +1,6 @@
 from sqlalchemy.orm import Session
-
-from database.models import User, Address
-from api.security import IPasswordHasher, Token
+from database.models import User, Address, Token
+from api.security import IPasswordHasher
 from api.exceptions import HTTPUnauthorized, HTTPNotFound
 from settings import logger
 
@@ -50,3 +49,11 @@ def get_addresses(db: Session, user_id: str):
     if not fetched_address:
         raise HTTPNotFound("Non esistono indirizzi per questo utente")
     return fetched_address
+
+
+
+def get_user_session_token(db: Session, user_id: str)-> Token | None:
+    fetched_token = db.query(Token).filter(Token.user_id == user_id).first()
+    if not fetched_token:
+        return None
+    return fetched_token
