@@ -1,11 +1,10 @@
 import LoginDescription from "@/features/auth/components/auth-login/LoginDescription";
 import LoginForm from "@/features/auth/components/auth-login/LoginForm";
-import { routeGuard } from "@/shared/utils/guard";
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/auth/login")({
   component: RouteComponent,
-  beforeLoad: () => routeGuard({ guestOnly: true, redirectTo: "/home" })
+
 });
 
 function RouteComponent() {

@@ -6,7 +6,7 @@ import FormInputDropdown from "@/shared/components/form/FormInputDropdown";
 import FormInputDate from "@/shared/components/form/FormInputDate";
 import FormInputPassword from "@/shared/components/form/FormInputPassword";
 import FormInputCheckbox from "@/shared/components/form/FormInputCheckbox";
-import ErrorMessage from "@/shared/components/form//ErrorMessage";
+import {ErrorMessage} from "@/shared/components/form/FormMessage";
 
 import type { DropdownOptions } from "../../type";
 import {

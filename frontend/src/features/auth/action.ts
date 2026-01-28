@@ -1,12 +1,12 @@
-import { authApi } from "@/shared/api/auth.service";
 import type {
   UserRegisterDTO,
   UserAddress,
   UserData,
   UserLicense,
 } from "./type";
-import type { AccessTokenData, ActionResponse } from "@/shared/type";
+import type { ActionResponse } from "@/shared/type";
 import { store } from "@/shared/store";
+import { authApi } from "@/shared/api/http";
 
 /**
  * The function `registerUser` saves user data and license data in local storage and then submits user
@@ -57,19 +57,7 @@ export async function registerUser(
   return await submitUserBasics(userData, userAddress);
 }
 
-/**
- * This TypeScript function submits user basic information and address details to an authentication API
- * for user registration, handling different response scenarios accordingly.
- * @param {UserData} user - The `user` parameter in the `submitUserBasics` function likely represents
- * data related to a user, such as their name, email, and other personal information. It is of type
- * `UserData`.
- * @param {UserAddress} address - The `address` parameter in the `submitUserBasics` function represents
- * the address details of a user. It typically includes fields such as street address, city, state,
- * postal code, and country. This information is used to register a new user in the system along with
- * their basic user data.
- * @returns The `submitUserBasics` function returns a Promise that resolves to an `ActionResponse`. The
- * possible return values are:
- */
+
 async function submitUserBasics(
   user: UserData,
   address: UserAddress,
@@ -91,18 +79,7 @@ async function submitUserBasics(
   return { success: true, message: "Request Successfull" };
 }
 
-/**
- * The function `validationErrorResponse` takes in data with error messages and formats them into an
- * ActionResponse object for validation errors.
- * @param {any} data - The `data` parameter in the `validationErrorResponse` function is expected to be
- * an object containing a `message` property and an `errors` property, where `errors` is an array of
- * objects. Each object in the `errors` array should have a `field` property and a `message
- * @returns The function `validationErrorResponse` returns a Promise that resolves to an
- * `ActionResponse` object. The `ActionResponse` object has properties `message`, `errors`, and
- * `success`. The `message` property is set to the value of `data["message"]`, the `errors` property is
- * an object containing error messages mapped to their corresponding fields, and the `success` property
- * is set to
- */
+
 async function validationErrorResponse(data: any): Promise<ActionResponse> {
   const returnedValue: ActionResponse = {
     message: data["message"],
@@ -139,12 +116,6 @@ async function validationErrorResponse(data: any): Promise<ActionResponse> {
   return returnedValue;
 }
 
-/**
- * The function `conflictResponse` returns a Promise that resolves to an ActionResponse object with a
- * message "409" and success set to false.
- * @returns The function `conflictResponse` is returning a Promise that resolves to an object with a
- * `message` property set to "409" and a `success` property set to false.
- */
 async function conflictResponse(data: any): Promise<ActionResponse> {
   return {
     message: "409",
@@ -153,21 +124,7 @@ async function conflictResponse(data: any): Promise<ActionResponse> {
   };
 }
 
-/**
- * The function `submitUserLogin` handles user login authentication and stores tokens in local storage
- * or session storage based on user preference.
- * @param {UserLoginDTO} data - The `data` parameter in the `submitUserLogin` function is of type
- * `UserLoginDTO`, which likely contains the user login information such as username and password
- * needed for authentication.
- * @param {boolean} isRemember - The `isRemember` parameter in the `submitUserLogin` function is a
- * boolean value that indicates whether the user has chosen to remember their login credentials. If
- * `isRemember` is `true`, the function will store the refresh token in the local storage for future
- * use. If `isRemember`
- * @returns The `submitUserLogin` function returns a Promise that resolves to an `ActionResponse`
- * object. The `ActionResponse` object contains a `message` property indicating the result of the login
- * request, a `success` property indicating whether the request was successful, and an optional
- * `errors` property containing any error details.
- */
+
 export async function submitUserLogin(
   formData: FormData
 ): Promise<ActionResponse> {
@@ -202,10 +159,5 @@ export async function submitUserLogin(
       };
   }
 
-  const accessToken: AccessTokenData = await response.data;
-  if (!response.data.access_token) {
-    return {message: "non è stato possibile accere, riprovi piu tardi", success: false}
-  }
-  store.token.set<AccessTokenData>("access-token", accessToken);
   return { message: "Request Successfull", success: true };
 }

@@ -1,33 +1,17 @@
 import FormInputEmail from "@/shared/components/form/FormInputEmail";
-import { Mail, Pencil, Save, X } from "lucide-react";
-import { useState } from "react";
+import { Mail } from "lucide-react";
+
 import BaseField from "./BaseField";
 import FormInputPhoneNumber from "@/shared/components/form/FormInputPhoneNumber";
 import { useFormStateAction } from "@/shared/hooks/useFormStateAction";
-import { submitContactAction } from "../../action";
-import ErrorMessage from "@/shared/components/form/ErrorMessage";
+import { ErrorMessage } from "@/shared/components/form/FormMessage";
 import { useNavigate } from "@tanstack/react-router";
 import { handleEmailKeyPress, handleNumberKeyPress } from "@/shared/utils/onKeyDown";
+import { UpdateCardForm, type UpdateCardFormHandle } from "@/shared/components/form/UpdateCardForm";
+import { useRef } from "react";
+import { userApi } from "@/shared/api/http";
+import type { ActionResponse, UserModel } from "@/shared/type";
 import { store } from "@/shared/store";
-import type { UserModel } from "@/shared/type";
-import { userApi } from "@/shared/api/user.service";
-
-
-
-async function updateLoggedUser(formData: FormData) {
-  const data = Object.fromEntries(formData.entries());
-  store.asyncdispatch('user', async (prev: UserModel | undefined) => {
-    if (!prev) {
-      const response = await userApi.get("/me");
-      return await response.data;
-    }
-    
-    return {
-      ...prev,
-      ...data
-    };
-  });
-}
 
 type ContactsProps = {
   email: string;
@@ -35,69 +19,59 @@ type ContactsProps = {
 };
 
 export default function Contacts({ email, phoneNumber }: ContactsProps) {
+  const cardRef = useRef<UpdateCardFormHandle | null>(null);
   const navigate = useNavigate();
-  const [editMode, setEditMode] = useState<boolean>(false);
-  const { errors, isPending, submitAction, cleanErrors } = useFormStateAction(submitContactAction, {
-    onSuccess: async (formData) => {
-      await updateLoggedUser(formData); cleanErrors(); setEditMode(false); navigate({ to: "/profile" });
-
-    }
+  const { errors, message, isPending, submitAction, cleanErrors } = useFormStateAction(submitContactAction, {
+    onSuccess: async () => { await updateContacts(); cleanErrors(); handleEdit(); navigate({ to: "/profile" }); }
   });
 
+  function handleEdit() {
+    if (cardRef.current)
+      cardRef.current.onEdit(false);
+  }
+
   return (
-    <form onSubmit={submitAction} className="relative bg-white rounded-2xl shadow-md p-6">
-      {!editMode && (
-        <Pencil
-          onClick={() => setEditMode(true)}
-          className="cursor-pointer absolute right-4 w-6 h-6 text-gray-600"
-        />
-      )}
-
-      {editMode && (
-        <div className="absolute right-4 flex gap-3">
-          <button
-            onClick={() => { setEditMode(false); cleanErrors(); }}
-            className="cursor-pointer flex items-center gap-2 bg-gray-200 text-gray-700 px-6 py-2 rounded-xl font-semibold hover:bg-gray-300 transition"
-          >
-            <X className="w-5 h-5" />
-            Annulla
-          </button>
-          <button
-            disabled={isPending}
-            type="submit"
-            className="cursor-pointer flex items-center gap-2 bg-green-600 text-white px-6 py-2 rounded-xl font-semibold hover:bg-green-700 transition"
-          >
-            <Save className="w-5 h-5" />
-            {isPending ? "Salvataggio..." : "Salva"}
-          </button>
-        </div>
-      )}
-
-      <h3 className=" text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-        <Mail className="w-6 h-6 text-blue-600" />
-        Contatti
-      </h3>
-
-      <div className="grid md:grid-cols-2 gap-6">
-        {editMode && (
-          <>
-            <FormInputEmail previous={email} name="email" onKeyDown={handleEmailKeyPress}>
-              {errors?.email && <ErrorMessage message={errors.email} />}
-            </FormInputEmail>
-            <FormInputPhoneNumber previous={phoneNumber} name="phone_number" maxLength={10} minLength={10} onKeyDown={handleNumberKeyPress}  >
-              {errors?.phone_number && <ErrorMessage message={errors.phone_number} />}
-            </FormInputPhoneNumber>
-
-          </>
-        )}
-        {!editMode && (
-          <>
-            <BaseField field={email} label="email" />
-            <BaseField field={phoneNumber} label="telefono" />
-          </>
-        )}
-      </div>
-    </form>
+    <UpdateCardForm ref={cardRef} cleanErrors={cleanErrors} isPending={isPending} onSubmit={submitAction} >
+      <UpdateCardForm.Header icon={Mail} name="Contatti" />
+      <UpdateCardForm.Errors field="body" errors={errors} />
+      <UpdateCardForm.Success message={message} />
+      <UpdateCardForm.Editable>
+        <FormInputEmail previous={email} name="email" onKeyDown={handleEmailKeyPress}>
+          {errors?.email && <ErrorMessage message={errors.email} />}
+        </FormInputEmail>
+        <FormInputPhoneNumber previous={phoneNumber} name="phone_number" maxLength={10} minLength={10} onKeyDown={handleNumberKeyPress}  >
+          {errors?.phone_number && <ErrorMessage message={errors.phone_number} />}
+        </FormInputPhoneNumber>
+      </UpdateCardForm.Editable>
+      <UpdateCardForm.Read>
+        <BaseField field={email} label="email" />
+        <BaseField field={phoneNumber} label="telefono" />
+      </UpdateCardForm.Read>
+    </UpdateCardForm>
   );
 }
 
+
+async function submitContactAction(formData: FormData): Promise<ActionResponse> {
+  const data = Object.fromEntries(formData.entries());
+  const response = await userApi.patch("/update-contact", data, {
+    headers: {
+      "Content-Type": "application/json"
+    }
+  });
+
+  switch (response.status) {
+    case 404:
+      return { errors: { body: "Risorsa non trovata" }, success: false };
+    case 422:
+      return { errors: response.data.errors, success: false };
+  }
+  return { message: "I tuoi contatti sono stati cambiati con successo", success: true };
+}
+
+async function updateContacts() {
+  const response = await userApi.get("/me");
+  if (response.status === 200) {
+    store.dispatch<UserModel>("user", (prev) => ({ ...prev, ...response.data }));
+  }
+}

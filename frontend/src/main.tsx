@@ -6,9 +6,7 @@ import { routeTree } from "./routeTree.gen.ts";
 
 import "./styles.css";
 import reportWebVitals from "./reportWebVitals.ts";
-import { authApi } from "./shared/api/auth.service.ts";
-import { store } from "./shared/store.ts";
-import type { AccessTokenData } from "./shared/type.ts";
+import { AuthProvider } from "./shared/store/AuthProvider.tsx";
 
 // Create a new router instance
 const router = createRouter({
@@ -32,18 +30,15 @@ declare module "@tanstack/react-router" {
   }
 }
 
-try {
-  const response = await authApi.post("/refresh")
-  if (response.status === 200 && response.data.access_token) {
-    store.token.set<AccessTokenData>("access-token",response.data)
-  }
-} catch { }
-
 // Render the app
 const rootElement = document.getElementById("app");
 if (rootElement && !rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement);
-  root.render(<RouterProvider router={router} />);
+  root.render(
+    <AuthProvider>
+      <RouterProvider router={router} />
+    </AuthProvider>
+  );
 }
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))

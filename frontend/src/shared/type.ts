@@ -25,7 +25,7 @@ export interface AddressModel {
 
 export interface ActionResponse {
   success: boolean;
-  message: string;
+  message?: string;
   errors?: Record<string, string>;
   data?: any;
 }
@@ -37,7 +37,7 @@ export interface DriverLicenseModel {
   issue_date: string;
   number: string;
 }
-export interface AccessTokenData {
+export interface AccessToken {
   access_token: string;
   type: string;
 }

@@ -38,22 +38,6 @@ class Store {
     return () => keyListeners?.delete(fn);
   }
 
-  token = {
-    set<T>(key: string, value: T) {
-      sessionStorage.setItem(key, JSON.stringify(value));
-    },
-    get<T>(key: string): T | undefined {
-      const token = sessionStorage.getItem(key);
-      if (!token) return undefined;
-      return JSON.parse(token);
-    },
-    dispatch<T>(key: string, updater: (prev: T | undefined) => T) {
-      const token = sessionStorage.getItem(key);
-      const prev = token ? JSON.parse(token) : undefined;
-      sessionStorage.setItem(key, JSON.stringify(updater(prev)));
-    }
-  };
-
   clear() {
     this.state.clear();
     this.listeners.clear();

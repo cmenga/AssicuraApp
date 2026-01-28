@@ -3,7 +3,7 @@ import { FileText, MapPin, User } from "lucide-react";
 import FormInputText from "@/shared/components/form/FormInputText";
 import FormInputDate from "@/shared/components/form/FormInputDate";
 import FormInputGender from "@/shared/components/form/FormInputGender";
-import ErrorMessage from "@/shared/components/form/ErrorMessage";
+import {ErrorMessage} from "@/shared/components/form/FormMessage";
 import FormHeader from "./FormHeader";
 
 import {

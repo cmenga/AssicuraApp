@@ -4,7 +4,7 @@ import FormHeader from "./FormHeader";
 import FormInputEmail from "@/shared/components/form/FormInputEmail";
 import FormInputPhoneNumber from "@/shared/components/form/FormInputPhoneNumber";
 import FormInputText from "@/shared/components/form/FormInputText";
-import ErrorMessage from "@/shared/components/form/ErrorMessage";
+import {ErrorMessage} from "@/shared/components/form/FormMessage";
 
 import {
   handleNumberKeyPress,

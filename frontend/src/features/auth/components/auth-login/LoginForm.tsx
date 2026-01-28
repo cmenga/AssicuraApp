@@ -4,11 +4,11 @@ import FormInputEmail from "@/shared/components/form/FormInputEmail";
 import FormInputPassword from "@/shared/components/form/FormInputPassword";
 
 import FormInputCheckbox from "@/shared/components/form/FormInputCheckbox";
-import ErrorMessage from "@/shared/components/form/ErrorMessage";
+import {ErrorMessage} from "@/shared/components/form/FormMessage";
 
-import { submitUserLogin } from "../../action";
 import { store } from "@/shared/store";
 import { useFormStateAction } from "@/shared/hooks/useFormStateAction";
+import { useAuth } from "@/shared/store/AuthProvider";
 
 
 function updateStore() {
@@ -17,13 +17,14 @@ function updateStore() {
 }
 
 export default function LoginForm() {
+  const {login} = useAuth()
   const confirmSignUp = store.get("sign-up") ?? undefined;
   const reloggedMessage = store.get("relogged") ?? undefined;
   const navigate = useNavigate();
-  const { errors, isPending, cleanErrors, submitAction } = useFormStateAction(submitUserLogin, {
+  const { errors, isPending, cleanErrors, submitAction } = useFormStateAction(login, {
     onSuccess: () => { cleanErrors(); updateStore(); navigate({ to: "/home" }); }
   });
-
+  
   return (
     <div className="bg-white rounded-3xl shadow-2xl p-8 md:p-10">
       <div className="mb-8">

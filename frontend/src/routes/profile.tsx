@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
 import DriverLicenses from "@/features/profile/components/driver-licenses/DriverLicenses";
 import NavigationTab from "@/features/profile/components/navigation/NavigationTab";
@@ -8,15 +8,22 @@ import PersonalData from "@/features/profile/components/personal-data/PersonalDa
 import ProfileHeader from "@/features/profile/components/ProfileHeader";
 import SecurityInfo from "@/features/profile/components/SecurityInfo";
 
-import { routeGuard } from "@/shared/utils/guard";
 import { useStoreKeyOrThrow } from "@/shared/hooks/useStoreKey";
-import { profilePageLoader } from "./loader";
-import type { UserModel } from "@/shared/type";
+import type { DriverLicenseModel, AddressModel, UserModel } from "@/shared/type";
+import { storeFetch, storeFetchThrow } from "@/shared/store";
+import { authApi, driverLicenseApi, userApi } from "@/shared/api/http";
+
 
 export const Route = createFileRoute("/profile")({
   component: RouteComponent,
-  beforeLoad: () => routeGuard({ authRequired: true }),
-  loader: profilePageLoader,
+  loader: async () => {
+    const response = await authApi.post("/protected");
+    if (response.status === 401) throw redirect({ to: "/auth/login" });
+
+    await storeFetchThrow<UserModel>("user", userApi, "/me");
+    await storeFetchThrow<AddressModel>("address", userApi, "/addresses");
+    await storeFetch<DriverLicenseModel[]>("driver-license", driverLicenseApi, "/licenses");
+  },
 });
 
 function RouteComponent() {

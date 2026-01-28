@@ -1,77 +1,63 @@
-import { useFormStateAction } from "@/shared/hooks/useFormStateAction";
+import { useRef } from "react";
+import { Lock } from "lucide-react";
+
+import type { ActionResponse } from "@/shared/type";
 import BaseField from "./BaseField";
-import { useState } from "react";
-import { Lock, Pencil, Save, X } from "lucide-react";
 import FormInputPassword from "@/shared/components/form/FormInputPassword";
 import { handlePasswordKeyPress } from "@/shared/utils/onKeyDown";
-import ErrorMessage from "@/shared/components/form/ErrorMessage";
-import { submitPasswordAction } from "../../action";
+import { ErrorMessage } from "@/shared/components/form/FormMessage";
+import { useFormStateAction } from "@/shared/hooks/useFormStateAction";
 import { useNavigate } from "@tanstack/react-router";
+import { userApi } from "@/shared/api/http";
+import { UpdateCardForm, type UpdateCardFormHandle } from "@/shared/components/form/UpdateCardForm";
 
 
 export default function ChangePassword() {
     const navigate = useNavigate();
-    const [editMode, setEditMode] = useState<boolean>();
-    const { errors, isPending, submitAction, cleanErrors } = useFormStateAction(submitPasswordAction, {
-        onSuccess: async () => { cleanErrors(); setEditMode(false); navigate({ to: "/profile" }); }
+    const cardRef = useRef<UpdateCardFormHandle | null>(null);
+    const { errors, message, isPending, submitAction, cleanErrors } = useFormStateAction(submitPasswordAction, {
+        onSuccess: async () => { cleanErrors(); handleEdit(); navigate({ to: "/profile" }); }
     });
 
+    function handleEdit() {
+        if (cardRef.current)
+            cardRef.current.onEdit(false);
+    }
     return (
-        <form onSubmit={submitAction} className="relative bg-white rounded-2xl shadow-md p-6">
-            {!editMode && (
-                <Pencil
-                    onClick={() => setEditMode(true)}
-                    className="cursor-pointer absolute right-4 w-6 h-6 text-gray-600"
-                />
-            )}
-
-            {editMode && (
-                <div className="absolute right-4 flex gap-3">
-                    <button
-                        onClick={() => { setEditMode(false); cleanErrors(); }}
-                        className="cursor-pointer flex items-center gap-2 bg-gray-200 text-gray-700 px-6 py-2 rounded-xl font-semibold hover:bg-gray-300 transition"
-                    >
-                        <X className="w-5 h-5" />
-                        Annulla
-                    </button>
-                    <button
-                        disabled={isPending}
-                        type="submit"
-                        className="cursor-pointer flex items-center gap-2 bg-green-600 text-white px-6 py-2 rounded-xl font-semibold hover:bg-green-700 transition"
-                    >
-                        <Save className="w-5 h-5" />
-                        {isPending ? "Salvataggio..." : "Salva"}
-                    </button>
+        <UpdateCardForm ref={cardRef} cleanErrors={cleanErrors} isPending={isPending} onSubmit={submitAction}>
+            <UpdateCardForm.Header icon={Lock} name="Credenziali" />
+            <UpdateCardForm.Errors field="body" errors={errors} />
+            <UpdateCardForm.Success message={message} />
+            <UpdateCardForm.Read>
+                <BaseField field={"*******"} label="Password" />
+            </UpdateCardForm.Read>
+            <UpdateCardForm.Editable>
+                <div className="col-span-2">
+                    <FormInputPassword labelName="Vecchia password" name="old_password" onKeyDown={handlePasswordKeyPress}>
+                        {errors?.old_password && <ErrorMessage message={errors.old_password} />}
+                    </FormInputPassword>
                 </div>
-            )}
-
-            <h3 className=" text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-                <Lock className="w-6 h-6 text-blue-600" />
-                Credenziali
-            </h3>
-            {errors?.change_password && <ErrorMessage message={errors?.change_password} />}
-            <div className="grid md:grid-cols-2 gap-6">
-                {editMode && (
-                    <>
-                        <div className="col-span-2">
-                            <FormInputPassword labelName="Vecchia password" name="old_password" onKeyDown={handlePasswordKeyPress}>
-                                {errors?.old_password && <ErrorMessage message={errors.old_password} />}
-                            </FormInputPassword>
-                        </div>
-                        <FormInputPassword labelName="Nuova password" name="new_password" onKeyDown={handlePasswordKeyPress}>
-                            {errors?.new_password && <ErrorMessage message={errors.new_password} />}
-                        </FormInputPassword>
-                        <FormInputPassword labelName="Conferma nuova password" name="confirm_password" onKeyDown={handlePasswordKeyPress}>
-                            {errors?.confirm_password && <ErrorMessage message={errors.confim_password} />}
-                        </FormInputPassword>
-                    </>
-                )}
-                {!editMode && (
-                    <>
-                        <BaseField field={"*******"} label="Password" />
-                    </>
-                )}
-            </div>
-        </form>
+                <FormInputPassword labelName="Nuova password" name="new_password" onKeyDown={handlePasswordKeyPress}>
+                    {errors?.new_password && <ErrorMessage message={errors.new_password} />}
+                </FormInputPassword>
+                <FormInputPassword labelName="Conferma nuova password" name="confirm_password" onKeyDown={handlePasswordKeyPress}>
+                    {errors?.confirm_password && <ErrorMessage message={errors.confim_password} />}
+                </FormInputPassword>
+            </UpdateCardForm.Editable>
+        </UpdateCardForm>
     );
+}
+
+
+async function submitPasswordAction(formData: FormData): Promise<ActionResponse> {
+    const data = Object.fromEntries(formData.entries());
+    const response = await userApi.patch("/change-password", data);
+
+    switch (response.status) {
+        case 403:
+            return { errors: { body: "Non è stato possibile cambiare passowrd" }, success: false };
+        case 422:
+            return { errors: response.data.errors, success: false };
+    }
+    return { message: "Password cambiata con successo", success: true };
 }

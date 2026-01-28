@@ -10,7 +10,7 @@ import { useStoreKey } from "@/shared/hooks/useStoreKey";
 
 export default function DriverLicenses() {
   const licenses = useStoreKey<DriverLicenseModel[]>("driver-license")
-
+  
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">

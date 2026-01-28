@@ -1,7 +1,7 @@
 import { LogOut, Settings, User } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { authApi } from "@/shared/api/auth.service";
+import { authApi } from "@/shared/api/http";
 import { store } from "@/shared/store";
 
 type ShowProfileMenuProps = {

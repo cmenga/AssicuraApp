@@ -5,7 +5,7 @@ import { CheckCircle, ChevronLeft, ChevronRight } from "lucide-react";
 import RegisterStepOne from "./RegisterStepOne";
 import RegisterStepTwo from "./RegisterStepTwo";
 import RegisterStepThree from "./RegisterStepThree";
-import ErrorMessage from "@/shared/components/form/ErrorMessage";
+import {ErrorMessage} from "@/shared/components/form/FormMessage";
 
 import type { UserRegisterForm } from "../../type";
 import type { ActionResponse } from "@/shared/type";

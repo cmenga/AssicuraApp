@@ -2,10 +2,13 @@ import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 
 import Footer from "@/shared/components/Footer";
 import AuthNavigation from "@/features/auth/components/AuthNavigation";
+import { authApi } from "@/shared/api/http";
 
 export const Route = createFileRoute("/auth")({
   component: RouteComponent,
-  loader: ({ location }) => {
+  loader: async ({ location }) => {
+    const response = await authApi.post("/protected");
+    if (response.status !== 401) throw redirect({ to: "/home" });
     if (location.pathname === "/auth") {
       throw redirect({ to: "/auth/login" });
     }

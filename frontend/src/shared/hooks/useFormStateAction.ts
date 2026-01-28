@@ -15,6 +15,7 @@ import type { ActionResponse } from "../type";
 export function useFormStateAction(action: (formData: FormData) => Promise<ActionResponse>, callbacks?: { onStart?: () => void, onEnd?: () => void; onSuccess?: (formData: FormData) => void; }) {
     const [isPending, setIsPending] = useState<boolean>(false);
     const [errors, setErrors] = useState<Record<string, string> | undefined>(undefined);
+    const [message, setMessage] = useState<string | undefined>(undefined)
 
     const submitAction = useCallback(async (event: FormEvent<HTMLFormElement>): Promise<ActionResponse> => {
         event.preventDefault();
@@ -27,6 +28,7 @@ export function useFormStateAction(action: (formData: FormData) => Promise<Actio
             await new Promise((resolve) => setTimeout(resolve, 500));
             response.errors && setErrors(response.errors);
             response.success && callbacks?.onSuccess?.(formData);
+            response.message && setMessage(response.message)
             return response;
         } finally {
             setIsPending(false);
@@ -36,5 +38,5 @@ export function useFormStateAction(action: (formData: FormData) => Promise<Actio
 
     const cleanErrors = useCallback(() => setErrors(undefined), [setErrors]);
 
-    return { errors, isPending, submitAction, cleanErrors };
+    return { errors, isPending, submitAction, cleanErrors, message };
 }

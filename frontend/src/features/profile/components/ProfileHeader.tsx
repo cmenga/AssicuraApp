@@ -1,18 +1,16 @@
-import type { UserModel } from "@/shared/type";
+import type { ActionResponse, UserModel } from "@/shared/type";
 import { Trash2 } from "lucide-react";
 import { Modal } from "@/shared/components/Modal";
 import { useRef } from "react";
-import { deleteUser } from "../action";
 import { useNavigate } from "@tanstack/react-router";
 import { useNotification } from "@/shared/hooks/useNotification";
+import { userApi } from "@/shared/api/http";
 
 type ProfileHeaderProps = {
   user: UserModel;
 };
 
 export default function ProfileHeader({ user }: ProfileHeaderProps) {
-
-
   return (
     <div className="relative bg-linear-to-r from-blue-600 to-cyan-500 rounded-3xl p-8 mb-8 text-white">
       <div className="flex flex-col md:flex-row items-center gap-6">
@@ -58,11 +56,11 @@ function ConfirmDeleteModal() {
     modalRef.current.close();
     const response = await deleteUser();
     if (response.success) {
-      setNotify({ message: response.message, type: "success" });
+      setNotify({ message: "Account cancellato con success", type: "success" });
       await new Promise((resolve) => setTimeout(resolve, 3000));
       navigate({ to: "/" });
     }
-    setNotify({ message: response.message, type: "error" });
+    setNotify({ message: response.message as string, type: "error" });
   }
 
   return (
@@ -97,4 +95,13 @@ function ConfirmDeleteModal() {
       </Modal >
     </>
   );
+}
+
+
+async function deleteUser(): Promise<ActionResponse> {
+  const response = await userApi.delete("/delete");
+  if (response.status !== 204) {
+    return { success: false, message: "Operazione non concessa" };
+  }
+  return { success: true, message: "Utente cancellato con successo" };
 }
