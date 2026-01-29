@@ -2,7 +2,7 @@ from fastapi import HTTPException, status
 from os import environ
 from lib.logger import Logger
 from json import load
-from typing import Dict, List, Any
+
 
 enviroment: str | None = environ.get("ENV")
 if enviroment == "production":
@@ -35,6 +35,18 @@ ORIGINS = [
     "http://localhost:3000"
 ]
 
+def _get_environ(name: str):
+    environ_key = environ.get(name)
+    if environ_key is None:
+        raise HTTPException(status_code=500, detail="Service not available")
+    return environ_key
+
 
 def get_secret_key():
-    return "6HM_WkvCsJ6CKJvk2OKvvkR51jU8UAaOZ-Znm4Kbpjkk0xDnI15zD9rM8SYV09KWJcUcI2ONduj5_XWpdbSkBA"
+    return _get_environ("SECRET_KEY")
+
+def get_service_name():
+    return _get_environ("SERVICE_NAME")
+
+def get_service_secret():
+    return _get_environ("SERVICE_SECRET")

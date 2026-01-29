@@ -20,28 +20,6 @@ async def add_new_driver_license(
     token: JWToken,
     item: Annotated[DriverLicenseIn, Body()],
 ):
-    """
-    Endpoint to create and associate a new driver license to the authenticated user.
-
-    The endpoint checks whether a driver license with the same code already exists
-    for the current user. If a duplicate is found, a conflict error is raised.
-    In case of database persistence issues, an internal server error is returned.
-
-    Args:
-        db (DbSession): Database session injected via dependency.
-        jwt (JWTService): Service responsible for decoding JWT access tokens.
-        token (JWToken): JWT access token of the authenticated user.
-        item (DriverLicenseIn): Driver license data to be created.
-
-    Returns:
-        None: This endpoint returns no content on success (HTTP 204).
-
-    Raises:
-        HTTPConflict: If a driver license with the same code already exists
-            for the authenticated user.
-        HTTPInternalServer: If the driver license cannot be saved due to
-            a database error.
-    """
     payload = jwt.decode_access_token(token)
 
     fetched_license = (
@@ -98,25 +76,6 @@ async def add_new_driver_license(
 
 @license_router.delete("/delete", status_code=status.HTTP_200_OK)
 async def delete_driver_license(db: DbSession, jwt: JWTService, token: JWToken):
-    """
-    Deletes all driver licenses associated with the authenticated user.
-
-    This endpoint decodes the provided JWT access token to identify
-    the current user and deletes all their driver licenses from the database.
-
-    Args:
-        db (DbSession): Database session injected via dependency.
-        jwt (JWTService): Service used to decode JWT access tokens.
-        token (JWToken): JWT access token of the authenticated user.
-
-    Returns:
-        dict: A dictionary containing:
-            - success (bool): True if the licenses were deleted successfully.
-            - message (str): Descriptive message about the deletion.
-
-    Raises:
-        HTTPInternalServer: If a database error occurs during deletion.
-    """
     payload = jwt.decode_access_token(token)
     logger.info("Deleting driver licenses", user_id=payload["sub"])
     fetched_licenses = get_driver_licenses(db, payload)

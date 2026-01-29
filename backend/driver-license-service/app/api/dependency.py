@@ -27,3 +27,4 @@ DbSession = Annotated[Session,Depends(get_db)]
 PasswordHasher = Annotated[IPasswordHasher, Depends(get_password_hasher)]
 JWToken = Annotated[str, Depends(oauth_scheme)]
 JWTService = Annotated[IJwtService, Depends(get_jwt_service)]
+
