@@ -58,10 +58,12 @@ app.add_middleware(LoggerMiddleware, logger)
 from api.health.router import health_router
 from api.auth.router import auth_router
 from api.user.router import user_router
+from api.internal.router import internal_router
 
 app.include_router(health_router)
 app.include_router(auth_router)
 app.include_router(user_router)
+app.include_router(internal_router)
 
 # Change validation error
 from fastapi.requests import Request
