@@ -10,6 +10,8 @@ FROM base AS dev
 ENV ENV=development
 
 COPY requirements.dev.txt /tmp/requirements.dev.txt
+COPY alembic /alembic
+COPY alembic.ini /alembic.ini
 RUN pip install --no-cache-dir -r /tmp/requirements.dev.txt && \
     rm /tmp/requirements.dev.txt && \
     adduser -D -H fastapi-dev-user
@@ -23,8 +25,9 @@ CMD ["uvicorn","main:app","--host","0.0.0.0","--port","8001","--log-level","warn
 FROM base AS prod
 ENV ENV=production
 
-COPY --exclude=tests app /app/  
 COPY requirements.txt /tmp/requirements.txt
+COPY alembic /alembic
+COPY alembic.ini /alembic.ini
 RUN pip install --no-cache-dir -r /tmp/requirements.txt && \
     adduser -D -H fastapi-user
 
