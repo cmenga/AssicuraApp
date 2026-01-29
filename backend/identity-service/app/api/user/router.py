@@ -133,7 +133,7 @@ async def delete_user(response: Response, auth: AuthenticatedUser, db: DbSession
             f"http://driver-license-service:8001/internal/delete-licenses/{user_id}",
             method="DELETE",
         )
-        logger.info(result)
+        
         if "deleted" not in result:
             raise
 

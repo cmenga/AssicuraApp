@@ -22,7 +22,6 @@ def create_service_token():
 
 def get_token(request:Request):
     auth_request = request.headers.get("Authorization")
-    print(auth_request, flush=True)
     if not auth_request or not auth_request.startswith("Bearer"):
         raise HTTPForbidden("Missing token")
     
