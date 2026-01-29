@@ -2,7 +2,8 @@ from fastapi.security import OAuth2PasswordBearer
 from typing import Protocol, Type, TypeVar, TypedDict
 from abc import abstractmethod
 from passlib.context import CryptContext
-
+from jose import jwt, JWTError, ExpiredSignatureError
+  
 from settings import logger, get_secret_key, get_algorithm
 from api.exceptions import HTTPUnauthorized
 
@@ -34,28 +35,21 @@ class AccessToken(TypedDict):
 
 class IJwtService(Protocol):
     @abstractmethod
-    def decode_access_token(self, token: str) -> AccessToken: ...
+    def decode(self, token: str) -> AccessToken: ...
 
 
-T = TypeVar("T")
-
-
-class JwtService(IJwtService):
+class AccessTokenBeaer(IJwtService):
     ALGORITHM: str = get_algorithm()
     SECRET_KEY: str = get_secret_key()
 
-    def decode_access_token(self, token: str) -> AccessToken:
-        return self._decode(token, model=AccessToken)
-
-    def _decode(self, token: str, model: Type[T]):
-        from jose import jwt, JWTError, ExpiredSignatureError
-
+    def decode(self, token: str) -> AccessToken:
         try:
             payload = jwt.decode(token, algorithms=self.ALGORITHM, key=self.SECRET_KEY)
-            return model(**payload)
+            return AccessToken(**payload)
         except ExpiredSignatureError as ex:
             logger.exception(ex)
             raise HTTPUnauthorized("Token expired")
         except JWTError as ex:
             logger.exception(ex)
             raise HTTPUnauthorized("Invalid token")
+        return self._decode(token, model=AccessToken)

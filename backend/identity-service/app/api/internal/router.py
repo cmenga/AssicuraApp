@@ -1,24 +1,25 @@
-from fastapi import APIRouter
-import httpx
-from typing import Optional, Dict,Any
-from api.internal.security import create_service_token
+from fastapi import APIRouter, status, Depends, Body
+from jose import jwt
 
-async def call_internal_service(
-    url: str,
-    method: str = "GET",
-    json: Optional[Dict[str, Any]] = None,
-    params: Optional[Dict[str, Any]] = None,
-    timeout: int = 10,
-) -> Dict[str, Any]:
-    token = create_service_token()
-    headers = {"Authorization": f"Bearer {token}"}
 
-    async with httpx.AsyncClient(timeout=timeout) as client:
-        response = await client.request(
-            method=method.upper(), url=url, headers=headers, json=json, params=params
-        )
-        response.raise_for_status()
-        return response.json()
-
+from api.internal.security import decode_jwt
+from api.exceptions import HTTPForbidden, HTTPUnauthorized
+from api.dependency import DbSession, JWTAccessService
+from database.models import Token
 
 internal_router = APIRouter(prefix="/internal", include_in_schema=False)
+
+@internal_router.post("/refresh",status_code=status.HTTP_200_OK)
+async def get_access_token(db: DbSession,jwt_access: JWTAccessService, _ = Depends(decode_jwt), access_token: str = Body() ):
+    payload = jwt.get_unverified_claims(access_token)
+
+    if "sub" not in payload:
+        raise HTTPForbidden("Missing user token")
+    sub = payload["sub"]
+
+    fetched_token = db.query(Token).filter(Token.user_id == sub).first()
+    if not fetched_token:
+        raise HTTPUnauthorized("Not authorized")
+
+    new_access_token = jwt_access.encode(sub,minutes=1)
+    return {"access_token": new_access_token}

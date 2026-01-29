@@ -1,7 +1,6 @@
 from fastapi import APIRouter, status, Body, Response
 from typing import Annotated, List
 from sqlalchemy.exc import SQLAlchemyError
-from requests import delete
 
 from settings import logger
 from api.dependency import (
@@ -128,7 +127,7 @@ async def delete_user(response: Response, auth: AuthenticatedUser, db: DbSession
     fetched_token = get_user_session_token(db, user_id)
 
     try:
-        from api.internal.router import call_internal_service
+        from api.internal.utils import call_internal_service
         result = await call_internal_service(
             f"http://driver-license-service:8001/internal/delete-licenses/{user_id}",
             method="DELETE",
