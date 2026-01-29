@@ -1,5 +1,6 @@
 from os import environ
 from lib.logger import Logger
+from fastapi import HTTPException
 
 enviroment: str | None = environ.get("ENV")
 if enviroment == "production":
@@ -26,15 +27,27 @@ def get_local_database_url():
         return "postgresql://admin:admin@localhost:8432/test_db"  # Example for postgres, use your local connection string
 
 
-ORIGINS = [
-    "http://localhost:8002",
-    "http://localhost:8001",
-    "http://localhost:3000"
-]
+ORIGINS = ["http://localhost:8002", "http://localhost:8001", "http://localhost:3000"]
 
 
-def get_secret_key() -> str:
-    return "6HM_WkvCsJ6CKJvk2OKvvkR51jU8UAaOZ-Znm4Kbpjkk0xDnI15zD9rM8SYV09KWJcUcI2ONduj5_XWpdbSkBA"
+def _get_environ(name: str):
+    environ_key = environ.get(name)
+    if environ_key is None:
+        raise HTTPException(status_code=500, detail="Service not available")
+    return environ_key
+
+
+def get_secret_key():
+    return _get_environ("SECRET_KEY")
+
+
+def get_service_name():
+    return _get_environ("SERVICE_NAME")
+
+
+def get_service_secret():
+    return _get_environ("SERVICE_SECRET")
+
 
 def get_algorithm() -> str:
-    return "HS256"
+    return _get_environ("ALGORITHM")

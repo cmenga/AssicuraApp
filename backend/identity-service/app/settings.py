@@ -50,3 +50,6 @@ def get_service_name():
 
 def get_service_secret():
     return _get_environ("SERVICE_SECRET")
+
+def get_algorithm():
+    return _get_environ("ALGORITHM")
