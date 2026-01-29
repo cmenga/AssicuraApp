@@ -60,10 +60,12 @@ app.add_middleware(LoggerMiddleware, logger)
 # All routers are added here
 from api.health.router import health_router
 from api.license.router import license_router
+from api.internal.router import internal_router
 
 app.include_router(health_router)
 app.include_router(license_router)
-
+app.include_router(internal_router
+                   )
 # Change validation error
 from fastapi.requests import Request
 from fastapi.responses import JSONResponse

@@ -22,7 +22,6 @@ from api.exceptions import (
     HTTPInternalServer,
     HTTPNotFound,
     HTTPForbidden,
-    HTTPBadGateway,
 )
 
 user_router = APIRouter(tags=["user"], prefix="/user")
@@ -129,7 +128,15 @@ async def delete_user(response: Response, auth: AuthenticatedUser, db: DbSession
     fetched_token = get_user_session_token(db, user_id)
 
     try:
-        # TODO da qui dobbiamo cancellare tutti i dati delle tabelle negli altri micro-servizi, serve autenticazione interna
+        from api.internal.router import call_internal_service
+        result = await call_internal_service(
+            f"http://driver-license-service:8001/internal/delete-licenses/{user_id}",
+            method="DELETE",
+        )
+        logger.info(result)
+        if "deleted" not in result:
+            raise
+
         if fetched_token:
             db.delete(fetched_token)
         db.commit()
@@ -137,7 +144,6 @@ async def delete_user(response: Response, auth: AuthenticatedUser, db: DbSession
         logger.exception(ex)
         db.rollback()
         raise HTTPInternalServer(f"Database error: {ex}")
-
 
     try:
         db.delete(fetched_user)

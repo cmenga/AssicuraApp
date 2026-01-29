@@ -14,9 +14,9 @@ SERVICES: Dict[str, str] = {
     "identity-service": "cTi4ZTSL889HBcYehMAg4HTEyCyykCoe6XXPiQGm8k8eSlcWAoTmvvFOQHJWIAIKCnNZzwO5xc2Aw4C_nTX7VQ"
 }
 
-def create_jwt():
+def create_service_token():
     expire: float = (datetime.now(timezone.utc) + timedelta(minutes=15)).timestamp()
-    claims: Dict[str,str | int] = {"service": SERVICE_NAME, "type": "service", "exp": int(expire) }
+    claims: Dict[str,str | int] = {"sub": SERVICE_NAME, "type": "service", "exp": int(expire) }
     return jwt.encode(claims, key=SERVICE_SECRET, algorithm=ALGHORITHM)
 
 

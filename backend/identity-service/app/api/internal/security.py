@@ -12,10 +12,10 @@ ALGHORITHM = get_algorithm()
 SERVICES: Dict[str, str] = {"service-name": "service-secret"}
 
 
-def create_jwt():
+def create_service_token():
     expire: float = (datetime.now(timezone.utc) + timedelta(minutes=15)).timestamp()
     claims: Dict[str, str | int] = {
-        "service": SERVICE_NAME,
+        "sub": SERVICE_NAME,
         "type": "service",
         "exp": int(expire),
     }
