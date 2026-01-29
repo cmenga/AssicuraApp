@@ -24,6 +24,7 @@ from app.settings import get_local_database_url
 TestingSessionLocal = get_session(get_local_database_url())
 
 # Clean data for testing
+@pytest.fixture(scope="session")
 def clean_data():
     from app.database.models import User
     db = TestingSessionLocal()
@@ -32,7 +33,7 @@ def clean_data():
     db.commit()
 
     db.close()
-clean_data()
+
 # App FastAPI
 from app.main import app
 
