@@ -9,7 +9,7 @@ from pydantic import (
 from typing import Literal, Annotated
 from datetime import date
 import re
-from data.cities import ITALY_CITIES
+from vendor.data.cities import ITALY_CITIES
 
 
 class UserDataOut(BaseModel):

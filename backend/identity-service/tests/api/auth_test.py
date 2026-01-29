@@ -1,9 +1,7 @@
 from tests.conftest import app, override_get_db
-from api.dependency import get_db
+from app.api.dependency import get_db
 from fastapi import status
-from scripts.run_all import run_all
 
-run_all()
 app.dependency_overrides[get_db] = override_get_db
 
 VALID_USER = {

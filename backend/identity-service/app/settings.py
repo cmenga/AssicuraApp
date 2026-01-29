@@ -1,7 +1,12 @@
-from fastapi import HTTPException, status
+from fastapi import HTTPException
 from os import environ
-from lib.logger import Logger
-from json import load
+from vendor.lib.logger import Logger
+from dotenv import load_dotenv
+
+from pathlib import Path
+root_env = Path(__file__).resolve().parents[0]
+print(root_env)
+load_dotenv(dotenv_path=root_env / ".env")
 
 
 enviroment: str | None = environ.get("ENV")
@@ -30,7 +35,6 @@ def get_local_database_url():
 
 ORIGINS = [
     "http://localhost:8001",
-    "http://identity-dev:8001",
     "http://localhost:8002",
     "http://localhost:3000"
 ]

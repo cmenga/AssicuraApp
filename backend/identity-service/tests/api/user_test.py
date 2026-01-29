@@ -1,8 +1,6 @@
-from tests.conftest import app,override_get_db, TestingSessionLocal
-from api.dependency import get_db 
-from scripts.run_all import run_all
+from tests.conftest import app,override_get_db
+from app.api.dependency import get_db 
 
-run_all()
 app.dependency_overrides[get_db] = override_get_db
 
 def get_auth_headers(client, username="test@example.com", password="Password1!"):

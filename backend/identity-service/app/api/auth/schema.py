@@ -10,7 +10,7 @@ from datetime import date, timedelta
 from typing import Literal, Annotated
 import re
 
-from data.cities import ITALY_CITIES
+from vendor.data.cities import ITALY_CITIES
 
 
 def strip_string_value(value: str):
