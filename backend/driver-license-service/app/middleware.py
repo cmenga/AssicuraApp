@@ -1,6 +1,6 @@
 from fastapi import Response, Request, status
 from fastapi.responses import JSONResponse
-from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
+from starlette.middleware.base import BaseHTTPMiddleware
 
 from settings import ORIGINS, logger
 

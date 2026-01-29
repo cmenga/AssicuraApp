@@ -1,11 +1,3 @@
-from tests.conftest import app, override_get_db
-from api.dependency import get_db
-
-
-
-app.dependency_overrides[get_db] = override_get_db
-
-
 def test_health_endpoint(client):
     """
     Testa l'endpoint /health.

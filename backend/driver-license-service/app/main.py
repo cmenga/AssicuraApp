@@ -1,40 +1,8 @@
-from fastapi import FastAPI, HTTPException, status
+from fastapi import FastAPI, status
 from fastapi.middleware.cors import CORSMiddleware
-from contextlib import asynccontextmanager
 
 from settings import logger, ORIGINS
-from database.connection import await_database_ready
-
-
-@asynccontextmanager
-async def startup(app: FastAPI):
-    try:
-        await_database_ready()
-    except Exception as ex:
-        logger.exception(ex)
-        raise HTTPException(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="The service is currently unreachable",
-        )
-
-    # Start subprocess for alembic migration
-    from subprocess import run
-
-    try:
-        # Alembic upgrade head, idempotente
-        run(["alembic", "-c", "/app/alembic.ini", "upgrade", "head"], check=True)
-    except Exception as ex:
-        logger.exception(ex)
-    # Run scripts internally instead of from the command line
-    from scripts.run_all import run_all
-
-    try:
-        run_all()
-    except Exception as ex:
-        logger.exception(ex)
-
-    logger.debug("Start server: http://localhost:8002")
-    yield
+from startup import startup
 
 
 # Create FastApi app

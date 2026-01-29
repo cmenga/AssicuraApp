@@ -1,5 +1,5 @@
 from os import environ
-from lib.logger import Logger
+from vendor.lib.logger import Logger
 from fastapi import HTTPException
 
 enviroment: str | None = environ.get("ENV")
