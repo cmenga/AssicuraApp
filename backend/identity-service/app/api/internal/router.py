@@ -12,7 +12,7 @@ internal_router = APIRouter(prefix="/internal", include_in_schema=False)
 
 
 SERVICES: dict = {
-    "driver-license": "-DZMY0hvzifPyi8Lj_GxBkvuxzxkqY3lf0U5Ckcf-pHpUX61iCjePeSWQTQeUAHtLSqqK9j1gSOc4B0wnlYZUA"
+    "driver-license-service": "-DZMY0hvzifPyi8Lj_GxBkvuxzxkqY3lf0U5Ckcf-pHpUX61iCjePeSWQTQeUAHtLSqqK9j1gSOc4B0wnlYZUA"
 }
 JWT_SECRET = get_secret_key()
 

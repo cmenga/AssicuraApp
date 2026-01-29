@@ -1,72 +1,73 @@
 services:
-  identity-dev:
+  identity-service:
     build:
       context: ./identity-service
       target: dev
-    image: identity:dev
+    image: identity-service:dev
     volumes:
       - ./identity-service/app:/app
     ports:
       - '8001:8001'
     environment:
-      - DATABASE_URL=postgresql://admin:admin@identity-db-dev:5432/users
+      - DATABASE_URL=postgresql://admin:admin@identity-db:5432/users
     networks:
-      - assicura-app-dev
+      - assicura-app
     depends_on:
-      - identity-db-dev
-  driver-license-dev:
+      - identity-db
+    
+  driver-license-service:
     build:
       context: ./driver-license-service
       target: dev
-    image: driver-license:dev
+    image: driver-license-service:dev
     volumes:
       - ./driver-license-service/app:/app
     ports:
       - '8002:8001'
     environment:
-      - DATABASE_URL=postgresql://admin:admin@driver-license-db-dev:5432/driver-license
+      - DATABASE_URL=postgresql://admin:admin@driver-license-db:5432/driver-license
     networks:
-      - assicura-app-dev
+      - assicura-app
     depends_on:
-      - driver-license-db-dev
+      - driver-license-db
 
 
-  identity-db-dev:
+  identity-db:
     image: postgres:18.1-alpine3.23
-    container_name: identity-db-dev
+    container_name: identity-db
     volumes:
-      - identity-data-dev:/var/lib/postgresql/data
+      - identity-data:/var/lib/postgresql/data
     environment:
       - POSTGRES_DB=users
       - POSTGRES_USER=admin
       - POSTGRES_PASSWORD=admin
     networks:
-      - assicura-app-dev
+      - assicura-app
     ports:
       - "5432:5432"
 
-  driver-license-db-dev:
+  driver-license-db:
     image: postgres:18.1-alpine3.23
-    container_name: driver-license-db-dev
+    container_name: driver-license-db
     volumes:
-      - driver-license-data-dev:/var/lib/postgresql/data
+      - driver-license-data:/var/lib/postgresql/data
     environment:
       - POSTGRES_DB=driver-license
       - POSTGRES_USER=admin
       - POSTGRES_PASSWORD=admin
     networks:
-      - assicura-app-dev
+      - assicura-app
     ports:
       - "5433:5432"
 
 networks:
-  assicura-app-dev:
-    name: assicura-app-dev
+  assicura-app:
+    name: assicura-app
     driver: bridge
 
 volumes:
-  driver-license-data-dev:
+  driver-license-data:
     driver: local
 
-  identity-data-dev:
+  identity-data:
     driver: local
