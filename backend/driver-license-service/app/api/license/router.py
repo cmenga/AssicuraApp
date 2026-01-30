@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Body, status
+from fastapi import APIRouter, Body, status, Path
 from typing import Annotated, List
 from sqlalchemy import or_
 from sqlalchemy.exc import IntegrityError
@@ -6,7 +6,7 @@ from sqlalchemy.exc import IntegrityError
 
 from api.dependency import DbSession, AuthenticatedUser
 from api.license.schema import DriverLicenseIn, DriverLicenseOut
-from api.exceptions import HTTPConflict, HTTPInternalServer
+from api.exceptions import HTTPConflict, HTTPInternalServer, HTTPNotFound
 from api.utils import get_driver_licenses
 from database.models import DriverLicense
 from settings import logger
@@ -71,23 +71,18 @@ async def add_new_driver_license(
     except IntegrityError as ex:
         logger.exception(ex, user_id=auth["sub"])
         db.rollback()
-        raise HTTPInternalServer("Salvataggio nel database non riuscito")
+        raise HTTPInternalServer("Save to database failed")
 
 
-@license_router.delete("/delete", status_code=status.HTTP_200_OK)
-async def delete_driver_license(db: DbSession, auth: AuthenticatedUser):
-    logger.info("Deleting driver licenses", user_id=auth["sub"])
-    fetched_licenses = get_driver_licenses(db, auth["sub"])
-
+@license_router.delete("/delete/{license_id}", status_code=status.HTTP_200_OK)
+async def delete_driver_license(db: DbSession, auth: AuthenticatedUser, license_id = Path()):
+    fetched_license = db.query(DriverLicense).filter(DriverLicense.id == license_id).first()
+    if not fetched_license:
+        raise HTTPNotFound("License not found")
     try:
-        for license in fetched_licenses:
-            db.delete(license)
-            logger.debug("Deleted license", license_id=str(license.id))
-
+        db.delete(fetched_license)
         db.commit()
     except Exception as ex:
-        db.rollback()
         logger.exception(ex, user_id=auth["sub"])
-        raise HTTPInternalServer("Saving to the database failed")
-
-    return {"success": True, "message": "Driver licenses removed successfully"}
+        db.rollback()
+        raise HTTPInternalServer("Save to database failed")
