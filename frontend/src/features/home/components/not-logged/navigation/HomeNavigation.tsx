@@ -20,24 +20,6 @@ export default function HomeNavigation() {
           </div>
 
           <div className="hidden md:flex items-center space-x-8">
-            <a
-              href="#prodotti"
-              className="text-gray-700 hover:text-blue-600 font-medium transition"
-            >
-              Prodotti
-            </a>
-            <a
-              href="#recensioni"
-              className="text-gray-700 hover:text-blue-600 font-medium transition"
-            >
-              Recensioni
-            </a>
-            <a
-              href="#contatti"
-              className="text-gray-700 hover:text-blue-600 font-medium transition"
-            >
-              Contatti
-            </a>
             <Link
               to="/auth/login"
               className="bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-700 transition font-medium shadow-md hover:shadow-lg"
