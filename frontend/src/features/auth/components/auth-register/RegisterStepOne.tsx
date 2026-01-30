@@ -4,7 +4,7 @@ import FormInputText from "@/shared/components/form/FormInputText";
 import FormInputDate from "@/shared/components/form/FormInputDate";
 import FormInputGender from "@/shared/components/form/FormInputGender";
 import {ErrorMessage} from "@/shared/components/form/FormMessage";
-import FormHeader from "./FormHeader";
+import FormHeader from "../../../../shared/components/form/FormHeader";
 
 import {
   getMaxRegisterDate,

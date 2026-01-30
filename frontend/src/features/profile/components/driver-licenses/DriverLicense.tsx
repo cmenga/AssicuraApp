@@ -1,4 +1,6 @@
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, Pencil, Trash2 } from "lucide-react";
+import { useRef, type RefObject } from "react";
+import DeleteModal from "./DeleteModal";
 
 
 type DriverLicenseProps = {
@@ -6,6 +8,7 @@ type DriverLicenseProps = {
     licenseNumber: string;
     issueDate: string;
     expiryDate: string;
+    id: string;
 };
 
 const getDaysUntilExpiry = (expiry: any) => {
@@ -17,13 +20,22 @@ const getDaysUntilExpiry = (expiry: any) => {
 };
 
 export default function DriverLicense(props: DriverLicenseProps) {
-    const { code, issueDate, expiryDate, licenseNumber } = props;
+    const { code, issueDate, expiryDate, licenseNumber, id } = props;
+    const deleteModalRef = useRef<HTMLDialogElement | null>(null);
     const daysLeft = getDaysUntilExpiry(expiryDate);
-    const isExpiringSoon = daysLeft < 90;
+    const isExpiringSoon = daysLeft < 60;
 
+    function handleOpen(ref: RefObject<HTMLDialogElement | null>) {
+        if (ref.current)
+            ref.current.showModal();
+    }
     return (
-        <div className="min-w-md max-w-md mx-auto bg-linear-to-br from-rose-100 to-pink-200 text-slate-800 rounded-2xl shadow-lg p-6 border border-rose-300">
-
+        <div className="min-w-md max-w-md mx-auto relative bg-linear-to-br from-rose-100 to-pink-200 text-slate-800 rounded-2xl shadow-lg p-8 border border-rose-300">
+            <div className="absolute top-2 right-4 flex gap-3">
+                <Pencil className="w-5 h-5 text-gray-500 cursor-pointer" />
+                <Trash2 className="w-5 h-5 text-red-500 cursor-pointer" onClick={() => handleOpen(deleteModalRef)} />
+            </div>
+            <DeleteModal ref={deleteModalRef} id={id} />
             <div className="flex items-center justify-between mb-5">
                 <div>
                     <h2 className="text-lg font-semibold tracking-wide uppercase">
@@ -90,3 +102,4 @@ export default function DriverLicense(props: DriverLicenseProps) {
         </div>
     );
 }
+

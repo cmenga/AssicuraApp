@@ -107,3 +107,20 @@ export function handlePasswordKeyPress(event: KeyboardEvent<HTMLInputElement>) {
     event.preventDefault();
   }
 }
+
+/**
+ * The function `handleDrivingLicenseKeyPress` restricts input on a text field to alphanumeric
+ * characters and specific allowed keys.
+ * @param event - The `event` parameter is a KeyboardEvent object that represents an event which occurs
+ * when a key is pressed while the input element is focused.
+ */
+export function handleDrivingLicenseKeyPress(
+  event: KeyboardEvent<HTMLInputElement>,
+) {
+  const key = event.key;
+  const regex = /^[A-Za-z0-9]$/;
+
+  if (!regex.test(key) && !ALLOWED_KEYS.includes(key)) {
+    event.preventDefault();
+  }
+}

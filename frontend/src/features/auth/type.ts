@@ -38,7 +38,3 @@ export interface UserAddress {
   province: string;
   type: "domicile" | "residence";
 }
-export interface DropdownOptions {
-  value: string;
-  name: string;
-}

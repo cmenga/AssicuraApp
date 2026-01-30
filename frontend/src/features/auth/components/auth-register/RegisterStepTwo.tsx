@@ -1,6 +1,6 @@
 import { Home } from "lucide-react";
 
-import FormHeader from "./FormHeader";
+import FormHeader from "../../../../shared/components/form/FormHeader";
 import FormInputEmail from "@/shared/components/form/FormInputEmail";
 import FormInputPhoneNumber from "@/shared/components/form/FormInputPhoneNumber";
 import FormInputText from "@/shared/components/form/FormInputText";

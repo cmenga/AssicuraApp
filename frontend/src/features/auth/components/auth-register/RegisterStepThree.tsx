@@ -1,6 +1,6 @@
 import { FileText } from "lucide-react";
 
-import FormHeader from "./FormHeader";
+import FormHeader from "../../../../shared/components/form/FormHeader";
 import FormInputText from "@/shared/components/form/FormInputText";
 import FormInputDropdown from "@/shared/components/form/FormInputDropdown";
 import FormInputDate from "@/shared/components/form/FormInputDate";
@@ -8,12 +8,10 @@ import FormInputPassword from "@/shared/components/form/FormInputPassword";
 import FormInputCheckbox from "@/shared/components/form/FormInputCheckbox";
 import {ErrorMessage} from "@/shared/components/form/FormMessage";
 
-import type { DropdownOptions } from "../../type";
-import {
-  handleDrivingLicenseKeyPress,
-} from "../../utils";
 
-import { handlePasswordKeyPress } from "@/shared/utils/onKeyDown";
+
+import { handleDrivingLicenseKeyPress, handlePasswordKeyPress } from "@/shared/utils/onKeyDown";
+import type { DropdownOptions } from "@/shared/type";
 
 const LICENSE_OPTIONS: DropdownOptions[] = [
   { value: "A", name: "A - Moto" },

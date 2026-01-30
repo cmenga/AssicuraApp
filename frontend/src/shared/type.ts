@@ -42,3 +42,7 @@ export interface AccessToken {
   type: string;
 }
 
+export interface DropdownOptions {
+  value: string;
+  name: string;
+}

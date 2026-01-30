@@ -44,7 +44,7 @@ function RouteComponent() {
         {activeSection === "personali" && (
           <PersonalData user={user} />
         )}
-        {activeSection === "patenti" && <DriverLicenses />}
+        {activeSection === "patenti" && <DriverLicenses dateOfBirth={user.date_of_birth} />}
         <SecurityInfo />
       </div>
     </div>
