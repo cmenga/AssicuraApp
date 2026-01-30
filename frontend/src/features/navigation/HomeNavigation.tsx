@@ -1,14 +1,7 @@
-import { useState } from "react";
 import { Link } from "@tanstack/react-router";
-import MobileNavigation, { MobileMenuButton } from "./MobileHomeNavigation";
+
 
 export default function HomeNavigation() {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  function toggleMenuOpen() {
-    setMobileMenuOpen(!mobileMenuOpen);
-  }
-
   return (
     <header className="fixed top-0 w-full bg-white shadow-sm z-50">
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -19,7 +12,7 @@ export default function HomeNavigation() {
             </h1>
           </div>
 
-          <div className="hidden md:flex items-center space-x-8">
+          <div className="flex items-center space-x-8">
             <Link
               to="/auth/login"
               className="bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-700 transition font-medium shadow-md hover:shadow-lg"
@@ -28,10 +21,7 @@ export default function HomeNavigation() {
             </Link>
           </div>
 
-          <MobileMenuButton isOpen={mobileMenuOpen} onOpen={toggleMenuOpen} />
         </div>
-
-        {mobileMenuOpen && <MobileNavigation />}
       </nav>
     </header>
   );

@@ -1,6 +1,11 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
-import NotLoggedHome from "@/features/home/NotLoggedHome";
 import { authApi } from "@/shared/api/http";
+import HomeNavigation from "@/features/navigation/HomeNavigation";
+import HeroSection from "@/features/home/components/not-logged/HeroSection";
+import Benefits from "@/features/home/components/not-logged/Benefits";
+import Reviews from "@/features/home/components/not-logged/Reviews";
+import CTAButtons from "@/features/home/components/not-logged/CTAButtons";
+import HomeFooter from "@/features/home/components/not-logged/footer/HomeFooter";
 
 export const Route = createFileRoute("/")({
   component: RouteComponent,
@@ -13,7 +18,12 @@ export const Route = createFileRoute("/")({
 function RouteComponent() {
   return (
     <div className="min-h-screen bg-white">
-      <NotLoggedHome />
+      <HomeNavigation />
+      <HeroSection />
+      <Benefits />
+      <Reviews />
+      <CTAButtons />
+      <HomeFooter />
     </div>
   );
 }
