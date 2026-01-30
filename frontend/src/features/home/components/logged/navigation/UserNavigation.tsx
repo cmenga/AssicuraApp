@@ -1,6 +1,6 @@
 import type { NavigationProps, NotificationModel } from "@/features/home/type";
 import ProfileMenu from "./ProfileMenu";
-import NotificationMenu from "./NotificatinoMenu";
+
 
 type UserNavigationProps = {
   firstName: string;
@@ -22,19 +22,17 @@ export default function UserNavigation(props: UserNavigationProps) {
               AssicuraFacile
             </h1>
             <div className="hidden md:flex items-center gap-1 bg-gray-100 rounded-lg p-1">
-              {["overview", "policies", "claims", "documents"].map((tab) => (
+              {["overview", "policies", "documents"].map((tab) => (
                 <button
                   key={tab}
                   onClick={() => onActiveTab(tab)}
-                  className={`px-4 py-2 rounded-md font-medium transition ${
-                    activeTab === tab
+                  className={`px-4 py-2 rounded-md font-medium transition ${activeTab === tab
                       ? "bg-white text-blue-600 shadow-sm"
                       : "cursor-pointer text-gray-600 hover:text-gray-900"
-                  }`}
+                    }`}
                 >
                   {tab === "overview" && "Dashboard"}
                   {tab === "policies" && "Polizze"}
-                  {tab === "claims" && "Sinistri"}
                   {tab === "documents" && "Documenti"}
                 </button>
               ))}
@@ -42,7 +40,6 @@ export default function UserNavigation(props: UserNavigationProps) {
           </div>
 
           <div className="flex items-center gap-4">
-            <NotificationMenu />
             <ProfileMenu
               avatar={avatar}
               email={email}

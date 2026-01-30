@@ -1,4 +1,4 @@
-import { LogOut, Settings, User } from "lucide-react";
+import { LogOut, User } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { authApi } from "@/shared/api/http";
@@ -38,10 +38,6 @@ export default function ProfileMenu(props: ShowProfileMenuProps) {
             <User className="w-4 h-4" />
             <span className="text-sm">Profilo</span>
           </Link>
-          <button className="w-full px-4 py-2 text-left hover:bg-gray-50 flex items-center gap-2">
-            <Settings className="w-4 h-4" />
-            <span className="text-sm">Impostazioni</span>
-          </button>
           <hr className="my-2" />
           <button onClick={logout} className="cursor-pointer w-full px-4 py-2 text-left hover:bg-gray-50 flex items-center gap-2 text-red-600">
             <LogOut className="w-4 h-4" />

@@ -1,6 +1,5 @@
 import OverviewDashboard from "./components/logged/OverviewDashboard";
 import PoliciesDashboard from "./components/logged/PoliciesDashboard";
-import ClaimsDashboard from "./components/logged/ClaimsDashboard";
 import DocumentsDashBoard from "./components/logged/DocumentsDashboard";
 import type { UserModel } from "@/shared/type";
 
@@ -25,7 +24,6 @@ export default function UserDashboard({
           />
         )}
         {activeTab === "policies" && <PoliciesDashboard />}
-        {activeTab === "claims" && <ClaimsDashboard />}
         {activeTab === "documents" && <DocumentsDashBoard />}
       </div>
     </div>
