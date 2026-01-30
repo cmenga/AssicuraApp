@@ -11,7 +11,6 @@ async def call_internal_service(
 ) -> Dict[str, Any]:
     token = create_service_token()
     headers = {"Authorization": f"Bearer {token}"}
-
     async with httpx.AsyncClient(timeout=timeout) as client:
         response = await client.request(
             method=method.upper(), url=url, headers=headers, json=json, params=params

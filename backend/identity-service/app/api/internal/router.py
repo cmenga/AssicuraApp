@@ -6,17 +6,19 @@ from api.internal.security import decode_jwt
 from api.exceptions import HTTPForbidden, HTTPUnauthorized
 from api.dependency import DbSession, JWTAccessService
 from database.models import Token
+from settings import logger
 
 internal_router = APIRouter(prefix="/internal", include_in_schema=False)
 
 @internal_router.post("/refresh",status_code=status.HTTP_200_OK)
-async def get_access_token(db: DbSession,jwt_access: JWTAccessService, _ = Depends(decode_jwt), access_token: str = Body() ):
+async def get_access_token(db: DbSession,jwt_access: JWTAccessService, _ = Depends(decode_jwt), access_token: str = Body(embed=True) ):
     payload = jwt.get_unverified_claims(access_token)
-
+    
     if "sub" not in payload:
         raise HTTPForbidden("Missing user token")
     sub = payload["sub"]
 
+    logger.info("Internal request", type=payload["type"], service=payload["sub"])
     fetched_token = db.query(Token).filter(Token.user_id == sub).first()
     if not fetched_token:
         raise HTTPUnauthorized("Not authorized")

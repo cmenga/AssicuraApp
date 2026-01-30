@@ -10,7 +10,7 @@ SERVICE_NAME = get_service_name()
 ALGHORITHM = get_algorithm()
 
 SERVICES: Dict[str, str] = {
-    "device-license-service": "-DZMY0hvzifPyi8Lj_GxBkvuxzxkqY3lf0U5Ckcf-pHpUX61iCjePeSWQTQeUAHtLSqqK9j1gSOc4B0wnlYZUA"
+    "driver-license-service": "-DZMY0hvzifPyi8Lj_GxBkvuxzxkqY3lf0U5Ckcf-pHpUX61iCjePeSWQTQeUAHtLSqqK9j1gSOc4B0wnlYZUA"
 }
 
 

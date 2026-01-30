@@ -9,7 +9,7 @@ from api.security import (
     Argon2Hasher,
     IJwtService,
     AccessTokenBeaer,
-    AccessToken
+    AccessToken,
 )
 from api.exceptions import HTTPUnauthorized
 from api.internal.utils import call_internal_service
@@ -45,6 +45,7 @@ JWTAccessToken = Annotated[IJwtService, Depends(get_access_token_bearer)]
 async def get_access_token(
     jwt: JWTAccessToken, assicurapp_token: str | None = Cookie(None)
 ):
+    payload = None
     if assicurapp_token is None:
         raise HTTPUnauthorized("not authorized")
     try:
@@ -58,6 +59,10 @@ async def get_access_token(
         )
         if "access_token" not in result:
             raise HTTPUnauthorized("Not authorized")
-        return jwt.decode(result["access_token"])
+        payload = jwt.decode(result["access_token"])
+        return payload
+    finally:
+        if payload is None:
+            raise HTTPUnauthorized("not authorized")
 
-AuthenticatedUser = Annotated[AccessToken,Depends(get_access_token)]
+AuthenticatedUser = Annotated[AccessToken, Depends(get_access_token)]

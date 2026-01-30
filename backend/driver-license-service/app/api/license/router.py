@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Body, status
-from typing import Annotated, List, Dict
+from typing import Annotated, List
+from sqlalchemy import or_
 from sqlalchemy.exc import IntegrityError
 
 
@@ -13,17 +14,42 @@ from settings import logger
 license_router = APIRouter(tags=["driver license"], prefix="/driver-license")
 
 
+@license_router.get("/licenses")
+async def get_licenses(
+    db: DbSession, auth: AuthenticatedUser
+) -> List[DriverLicenseOut] | None:
+    fetched_licenses = get_driver_licenses(db, auth["sub"])
+
+    if not fetched_licenses:
+        return None
+
+    returned_license = list()
+    for license in fetched_licenses:
+        returned_license.append(
+            DriverLicenseOut(
+                code=license.code,
+                number=license.number,
+                expiry_date=license.expiry_date,
+                issue_date=license.issue_date,
+                id=str(license.id),
+            )
+        )
+    return returned_license
+
+
 @license_router.post("/add", status_code=status.HTTP_204_NO_CONTENT)
 async def add_new_driver_license(
     auth: AuthenticatedUser,
     db: DbSession,
     item: Annotated[DriverLicenseIn, Body()],
 ):
-
     fetched_license = (
         db.query(DriverLicense)
         .filter(
-            DriverLicense.code == item.license_code,
+            or_(
+                DriverLicense.code == item.license_code,
+                DriverLicense.number == item.license_number,
+            ),
             DriverLicense.user_id == auth["sub"],
         )
         .first()
@@ -65,26 +91,3 @@ async def delete_driver_license(db: DbSession, auth: AuthenticatedUser):
         raise HTTPInternalServer("Saving to the database failed")
 
     return {"success": True, "message": "Driver licenses removed successfully"}
-
-
-@license_router.get("/licenses")
-async def get_licenses(
-    db: DbSession, auth: AuthenticatedUser
-) -> List[DriverLicenseOut] | None:
-    fetched_licenses = get_driver_licenses(db, auth["sub"])
-
-    if not fetched_licenses:
-        return None
-
-    returned_license = list()
-    for license in fetched_licenses:
-        returned_license.append(
-            DriverLicenseOut(
-                code=license.code,
-                number=license.number,
-                expiry_date=license.expiry_date,
-                issue_date=license.issue_date,
-                id=str(license.id),
-            )
-        )
-    return returned_license

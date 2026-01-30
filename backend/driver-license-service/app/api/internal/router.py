@@ -15,6 +15,7 @@ internal_router = APIRouter(prefix="/internal", include_in_schema=False)
 async def delete_licenses(
     db: DbSession, payload=Depends(decode_jwt), user_id: str = Path()
 ):
+    logger.info("Internal request", type=payload["type"], service=payload["sub"])
     fetched_licenses = (
         db.query(DriverLicense).filter(DriverLicense.user_id == user_id).all()
     )
