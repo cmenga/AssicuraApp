@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Body, status
-from typing import Annotated, List
+from typing import Annotated, List, Dict
 from sqlalchemy.exc import IntegrityError
 
 
-from api.dependency import JWToken, DbSession, JWTService
+from api.dependency import DbSession, AuthenticatedUser
 from api.license.schema import DriverLicenseIn, DriverLicenseOut
 from api.exceptions import HTTPConflict, HTTPInternalServer
 from api.utils import get_driver_licenses
@@ -15,28 +15,21 @@ license_router = APIRouter(tags=["driver license"], prefix="/driver-license")
 
 @license_router.post("/add", status_code=status.HTTP_204_NO_CONTENT)
 async def add_new_driver_license(
+    auth: AuthenticatedUser,
     db: DbSession,
-    jwt: JWTService,
-    token: JWToken,
     item: Annotated[DriverLicenseIn, Body()],
 ):
-    payload = jwt.decode_access_token(token)
 
     fetched_license = (
         db.query(DriverLicense)
         .filter(
             DriverLicense.code == item.license_code,
-            DriverLicense.user_id == payload["sub"],
+            DriverLicense.user_id == auth["sub"],
         )
         .first()
     )
 
     if fetched_license:
-        logger.warning(
-            "Driver license already exists",
-            user_id=payload["sub"],
-            license_code=item.license_code,
-        )
         raise HTTPConflict("La patente inserita risulta esistente")
 
     new_license = DriverLicense(
@@ -44,41 +37,21 @@ async def add_new_driver_license(
         number=item.license_number,
         expiry_date=item.expiry_date,
         issue_date=item.issue_date,
-        user_id=payload["sub"],
-    )
-
-    logger.debug(
-        "New driver license entity created",
-        user_id=payload["sub"],
-        license_code=item.license_code,
+        user_id=auth["sub"],
     )
     db.add(new_license)
-
     try:
         db.commit()
-
-        logger.info(
-            "Driver license successfully saved",
-            user_id=payload["sub"],
-            license_code=item.license_code,
-        )
-
     except IntegrityError as ex:
-        logger.exception(
-            ex,
-            user_id=payload["sub"],
-            license_code=item.license_code,
-        )
+        logger.exception(ex, user_id=auth["sub"])
         db.rollback()
-
         raise HTTPInternalServer("Salvataggio nel database non riuscito")
 
 
 @license_router.delete("/delete", status_code=status.HTTP_200_OK)
-async def delete_driver_license(db: DbSession, jwt: JWTService, token: JWToken):
-    payload = jwt.decode_access_token(token)
-    logger.info("Deleting driver licenses", user_id=payload["sub"])
-    fetched_licenses = get_driver_licenses(db, payload)
+async def delete_driver_license(db: DbSession, auth: AuthenticatedUser):
+    logger.info("Deleting driver licenses", user_id=auth["sub"])
+    fetched_licenses = get_driver_licenses(db, auth["sub"])
 
     try:
         for license in fetched_licenses:
@@ -86,12 +59,9 @@ async def delete_driver_license(db: DbSession, jwt: JWTService, token: JWToken):
             logger.debug("Deleted license", license_id=str(license.id))
 
         db.commit()
-        logger.info("All driver licenses deleted successfully", user_id=payload["sub"])
     except Exception as ex:
         db.rollback()
-        logger.exception(
-            "Failed to delete driver licenses", user_id=payload["sub"], error=str(ex)
-        )
+        logger.exception(ex, user_id=auth["sub"])
         raise HTTPInternalServer("Saving to the database failed")
 
     return {"success": True, "message": "Driver licenses removed successfully"}
@@ -99,10 +69,12 @@ async def delete_driver_license(db: DbSession, jwt: JWTService, token: JWToken):
 
 @license_router.get("/licenses")
 async def get_licenses(
-    db: DbSession, token: JWToken, jwt: JWTService
-) -> List[DriverLicenseOut]:
-    payload = jwt.decode_access_token(token)
-    fetched_licenses = get_driver_licenses(db, payload)
+    db: DbSession, auth: AuthenticatedUser
+) -> List[DriverLicenseOut] | None:
+    fetched_licenses = get_driver_licenses(db, auth["sub"])
+
+    if not fetched_licenses:
+        return None
 
     returned_license = list()
     for license in fetched_licenses:
