@@ -17,12 +17,17 @@ import { authApi, driverLicenseApi, userApi } from "@/shared/api/http";
 export const Route = createFileRoute("/profile")({
   component: RouteComponent,
   loader: async () => {
-    const response = await authApi.post("/protected");
-    if (response.status === 401) throw redirect({ to: "/auth/login" });
+    try {
+      const response = await authApi.post("/protected");
+      if (response.status === 401) throw redirect({ to: "/auth/login" });
 
-    await storeFetchThrow<UserModel>("user", userApi, "/me");
-    await storeFetchThrow<AddressModel>("address", userApi, "/addresses");
-    await storeFetch<DriverLicenseModel[]>("driver-license", driverLicenseApi, "/licenses");
+      await storeFetchThrow<UserModel>("user", userApi, "/me");
+      await storeFetchThrow<AddressModel>("address", userApi, "/addresses");
+      await storeFetch<DriverLicenseModel[]>("driver-license", driverLicenseApi, "/licenses");
+    } catch {
+      throw redirect({to: "/"})
+    }
+    
   },
 });
 

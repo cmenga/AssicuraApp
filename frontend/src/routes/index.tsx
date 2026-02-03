@@ -10,8 +10,10 @@ import HomeFooter from "@/features/home/components/not-logged/footer/HomeFooter"
 export const Route = createFileRoute("/")({
   component: RouteComponent,
   loader: async () => {
-    const response = await authApi.post("/protected")
-    if (response.status !== 401) throw redirect({to: "/home"})
+    try {
+      const response = await authApi.post("/protected")
+      if (response.status !== 401) throw redirect({to: "/home"})  
+    } catch{}
   }
 });
 

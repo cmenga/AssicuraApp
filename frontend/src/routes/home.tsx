@@ -4,7 +4,7 @@ import { useState } from "react";
 import UserNavigation from "@/features/home/components/logged/navigation/UserNavigation";
 import UserDashboard from "@/features/home/UserDashboard";
 import MobileUserNavigation from "@/features/home/components/logged/navigation/MobileUserNavigation";
-import type {  UserModel } from "@/shared/type";
+import type { UserModel } from "@/shared/type";
 import { useStoreKeyOrThrow } from "@/shared/hooks/useStoreKey";
 import { storeFetchThrow } from "@/shared/store";
 import { authApi, userApi } from "@/shared/api/http";
@@ -15,10 +15,14 @@ import { authApi, userApi } from "@/shared/api/http";
 export const Route = createFileRoute("/home")({
   component: RouteComponent,
   loader: async () => {
-    const response = await authApi.post("/protected")
-    if (response.status === 401) throw redirect({ to: "/auth/login" })
-    
-    await storeFetchThrow<UserModel>("user", userApi, "/me");
+    try {
+      const response = await authApi.post("/protected");
+      if (response.status === 401) throw redirect({ to: "/auth/login" });
+
+      await storeFetchThrow<UserModel>("user", userApi, "/me");
+    } catch {
+      throw redirect({to: "/"})
+    }
   }
 });
 
