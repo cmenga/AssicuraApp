@@ -1,11 +1,11 @@
 services:
   identity-service:
     build:
-      context: ./identity-service
+      context: ./backend/identity-service
       target: dev
     image: identity-service:dev
     volumes:
-      - ./identity-service/app:/app
+      - ./backend/identity-service/app:/app
     ports:
       - '8001:8001'
     environment:
@@ -21,11 +21,11 @@ services:
     
   driver-license-service:
     build:
-      context: ./driver-license-service
+      context: ./backend/driver-license-service
       target: dev
     image: driver-license-service:dev
     volumes:
-      - ./driver-license-service/app:/app
+      - ./backend/driver-license-service/app:/app
     ports:
       - '8002:8001'
     environment:
@@ -39,6 +39,21 @@ services:
     depends_on:
       - driver-license-db
 
+  web-service:
+    build: 
+      context: ./frontend
+      target: dev
+    image: web-service:dev
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - '3000:3000'
+    networks:
+      - assicura-app
+    depends_on:
+      - identity-service
+      - driver-license-service
 
   identity-db:
     image: postgres:18.1-alpine3.23
