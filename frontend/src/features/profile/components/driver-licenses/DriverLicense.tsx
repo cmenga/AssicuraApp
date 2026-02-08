@@ -1,6 +1,7 @@
 import { AlertCircle, Pencil, Trash2 } from "lucide-react";
 import { useRef, type RefObject } from "react";
 import DeleteModal from "./DeleteModal";
+import { getDaysUntilExpiry } from "@/shared/utils/date";
 
 
 type DriverLicenseProps = {
@@ -11,13 +12,7 @@ type DriverLicenseProps = {
     id: string;
 };
 
-const getDaysUntilExpiry = (expiry: any) => {
-    const today: Date = new Date();
-    const expiryDate: Date = new Date(expiry);
-    const diffTime = expiryDate.getTime() - today.getTime();
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays;
-};
+
 
 export default function DriverLicense(props: DriverLicenseProps) {
     const { code, issueDate, expiryDate, licenseNumber, id } = props;

@@ -1,3 +1,4 @@
+import { getDaysUntilExpiry } from "@/shared/utils/date";
 import {
   AlertCircle,
   Bike,
@@ -47,13 +48,6 @@ const policies = [
   },
 ];
 
-const getDaysUntilExpiry = (scadenza) => {
-  const today = new Date();
-  const expiryDate = new Date(scadenza);
-  const diffTime = expiryDate - today;
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  return diffDays;
-};
 
 const getStatusColor = (stato) => {
   const colors = {

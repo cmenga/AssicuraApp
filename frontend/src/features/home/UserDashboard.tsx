@@ -20,7 +20,7 @@ export default function UserDashboard({
         {activeTab === "overview" && (
           <OverviewDashboard
             onActiveTab={onActiveTab}
-            userName={user.first_name}
+            username={user.first_name}
           />
         )}
         {activeTab === "policies" && <PoliciesDashboard />}
