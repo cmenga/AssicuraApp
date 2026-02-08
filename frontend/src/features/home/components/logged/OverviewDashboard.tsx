@@ -10,29 +10,6 @@ import {
   Activity,
 } from "lucide-react";
 
-const claims = [
-  {
-    id: 1,
-    numero: "SIN-2025-001234",
-    data: "2025-12-10",
-    tipo: "Collisione",
-    targa: "AB123CD",
-    stato: "In lavorazione",
-    descrizione: "Tamponamento in autostrada",
-    importo: "2.500",
-  },
-  {
-    id: 2,
-    numero: "SIN-2025-000987",
-    data: "2025-10-05",
-    tipo: "Furto accessori",
-    targa: "XY789ZW",
-    stato: "Approvato",
-    descrizione: "Furto specchietto retrovisore",
-    importo: "150",
-  },
-];
-
 const policies = [
   {
     id: 1,
@@ -179,15 +156,7 @@ export default function OverviewDashboard(props: OverviewDashboardProps) {
             </div>
           </button>
 
-          <button className="flex items-center gap-3 p-4 border-2 border-gray-200 rounded-xl hover:border-orange-500 hover:bg-orange-50 transition">
-            <div className="bg-orange-100 p-3 rounded-lg">
-              <AlertCircle className="w-6 h-6 text-orange-600" />
-            </div>
-            <div className="text-left">
-              <p className="font-semibold text-gray-900">Apri Sinistro</p>
-              <p className="text-sm text-gray-600">Denuncia incidente</p>
-            </div>
-          </button>
+
 
           <button className="flex items-center gap-3 p-4 border-2 border-gray-200 rounded-xl hover:border-green-500 hover:bg-green-50 transition">
             <div className="bg-green-100 p-3 rounded-lg">
@@ -265,49 +234,7 @@ export default function OverviewDashboard(props: OverviewDashboardProps) {
         </div>
       </div>
 
-      {claims.length > 0 && (
-        <div className="bg-white rounded-2xl shadow-md p-6">
-          <div className="flex justify-between items-center mb-6">
-            <h3 className="text-xl font-bold text-gray-900">
-              Sinistri Recenti
-            </h3>
-            <button
-              onClick={() => props.onActiveTab("claims")}
-              className="text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1"
-            >
-              Vedi tutti <ChevronRight className="w-4 h-4" />
-            </button>
-          </div>
-          <div className="space-y-3">
-            {claims.slice(0, 2).map((claim) => (
-              <div
-                key={claim.id}
-                className="border border-gray-200 rounded-xl p-4 hover:bg-gray-50 transition"
-              >
-                <div className="flex justify-between items-start">
-                  <div>
-                    <p className="font-semibold text-gray-900">
-                      {claim.numero}
-                    </p>
-                    <p className="text-sm text-gray-600 mt-1">
-                      {claim.descrizione}
-                    </p>
-                    <p className="text-xs text-gray-500 mt-1">
-                      Targa: {claim.targa} •{" "}
-                      {new Date(claim.data).toLocaleDateString("it-IT")}
-                    </p>
-                  </div>
-                  <span
-                    className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(claim.stato)}`}
-                  >
-                    {claim.stato}
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+  
     </div>
   );
 }
