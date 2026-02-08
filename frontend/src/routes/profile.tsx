@@ -2,8 +2,8 @@ import { useState } from "react";
 import { createFileRoute, redirect } from "@tanstack/react-router";
 
 import DriverLicenses from "@/features/profile/components/driver-licenses/DriverLicenses";
-import NavigationTab from "@/features/profile/components/navigation/NavigationTab";
-import ProfileNavigation from "@/features/profile/components/navigation/ProfileNavigation";
+import NavigationTab from "@/features/navigation/NavigationTab";
+import ProfileNavigation from "@/features/navigation/ProfileNavigation";
 import PersonalData from "@/features/profile/components/personal-data/PersonalData";
 import ProfileHeader from "@/features/profile/components/ProfileHeader";
 import SecurityInfo from "@/features/profile/components/SecurityInfo";
