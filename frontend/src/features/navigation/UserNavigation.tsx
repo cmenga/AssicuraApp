@@ -1,4 +1,4 @@
-import type { NavigationProps, NotificationModel } from "@/features/home/type";
+import type { NavigationProps } from "@/features/home/type";
 import ProfileMenu from "./ProfileMenu";
 
 
@@ -7,7 +7,6 @@ type UserNavigationProps = {
   lastName: string;
   email: string;
   avatar: string;
-  notifications?: NotificationModel[];
 } & NavigationProps;
 
 export default function UserNavigation(props: UserNavigationProps) {
