@@ -1,9 +1,9 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useState } from "react";
 
-import UserNavigation from "@/features/navigation/UserNavigation";
+import UserNavigation from "@/features/navigation/components/UserNavigation";
 import UserDashboard from "@/features/home/UserDashboard";
-import MobileUserNavigation from "@/features/navigation/MobileUserNavigation";
+import MobileUserNavigation from "@/features/navigation/components/MobileUserNavigation";
 import type { UserModel } from "@/shared/type";
 import { useStoreKeyOrThrow } from "@/shared/hooks/useStoreKey";
 import { storeFetchThrow } from "@/shared/store";

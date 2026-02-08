@@ -1,11 +1,11 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { authApi } from "@/shared/api/http";
-import HomeNavigation from "@/features/navigation/HomeNavigation";
-import HeroSection from "@/features/home/components/not-logged/HeroSection";
-import Benefits from "@/features/home/components/not-logged/Benefits";
-import Reviews from "@/features/home/components/not-logged/Reviews";
-import CTAButtons from "@/features/home/components/not-logged/CTAButtons";
-import HomeFooter from "@/features/home/components/not-logged/footer/HomeFooter";
+import HomeNavigation from "@/features/navigation/components/HomeNavigation";
+import HeroSection from "@/features/index/components/HeroSection";
+import Benefits from "@/features/index/components/Benefits";
+import Reviews from "@/features/index/components/Reviews";
+import CTAButtons from "@/features/index/components/CTAButtons";
+import HomeFooter from "@/features/index/components/footer/HomeFooter";
 
 export const Route = createFileRoute("/")({
   component: RouteComponent,

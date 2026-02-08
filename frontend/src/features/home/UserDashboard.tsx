@@ -1,6 +1,6 @@
-import OverviewDashboard from "./components/logged/OverviewDashboard";
-import PoliciesDashboard from "./components/logged/PoliciesDashboard";
-import DocumentsDashBoard from "./components/logged/DocumentsDashboard";
+import OverviewDashboard from "./components/OverviewDashboard";
+import PoliciesDashboard from "./components/PoliciesDashboard";
+import DocumentsDashBoard from "./components/DocumentsDashboard";
 import type { UserModel } from "@/shared/type";
 
 type UserDashboardProps = {

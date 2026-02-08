@@ -1,4 +1,4 @@
-import type { NavigationProps } from "@/features/home/type";
+import type { NavigationProps } from "@/features/navigation/type";
 import ProfileMenu from "./ProfileMenu";
 
 

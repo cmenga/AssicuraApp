@@ -1,5 +1,5 @@
 import { FileText, Home, Shield } from "lucide-react";
-import type { NavigationProps } from "@/features/home/type";
+import type { NavigationProps } from "@/features/navigation/type";
 
 export default function MobileUserNavigation({
   activeTab,
