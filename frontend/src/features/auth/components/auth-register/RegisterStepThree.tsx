@@ -6,11 +6,12 @@ import FormInputDropdown from "@/shared/components/form/FormInputDropdown";
 import FormInputDate from "@/shared/components/form/FormInputDate";
 import FormInputPassword from "@/shared/components/form/FormInputPassword";
 import FormInputCheckbox from "@/shared/components/form/FormInputCheckbox";
-import {ErrorMessage} from "@/shared/components/form/FormMessage";
+import { ErrorMessage } from "@/shared/components/form/FormMessage";
 
-
-
-import { handleDrivingLicenseKeyPress, handlePasswordKeyPress } from "@/shared/utils/onKeyDown";
+import {
+  handleDrivingLicenseKeyPress,
+  handlePasswordKeyPress,
+} from "@/shared/utils/onKeyDown";
 import type { DropdownOptions } from "@/shared/type";
 
 const LICENSE_OPTIONS: DropdownOptions[] = [

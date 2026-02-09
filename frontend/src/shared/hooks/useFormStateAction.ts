@@ -12,31 +12,43 @@ import type { ActionResponse } from "../type";
  * object that can contain the following callback functions:
  * @returns The function `useFormStateAction` returns an object with the following properties:
  */
-export function useFormStateAction(action: (formData: FormData) => Promise<ActionResponse>, callbacks?: { onStart?: () => void, onEnd?: () => void; onSuccess?: (formData: FormData) => void; }) {
-    const [isPending, setIsPending] = useState<boolean>(false);
-    const [errors, setErrors] = useState<Record<string, string> | undefined>(undefined);
-    const [message, setMessage] = useState<string | undefined>(undefined)
+export function useFormStateAction(
+  action: (formData: FormData) => Promise<ActionResponse>,
+  callbacks?: {
+    onStart?: () => void;
+    onEnd?: () => void;
+    onSuccess?: (formData: FormData) => void;
+  },
+) {
+  const [isPending, setIsPending] = useState<boolean>(false);
+  const [errors, setErrors] = useState<Record<string, string> | undefined>(
+    undefined,
+  );
+  const [message, setMessage] = useState<string | undefined>(undefined);
 
-    const submitAction = useCallback(async (event: FormEvent<HTMLFormElement>): Promise<ActionResponse> => {
-        event.preventDefault();
-        setIsPending(true);
-        callbacks?.onStart?.();
+  const submitAction = useCallback(
+    async (event: FormEvent<HTMLFormElement>): Promise<ActionResponse> => {
+      event.preventDefault();
+      setIsPending(true);
+      callbacks?.onStart?.();
 
-        try {
-            const formData: FormData = new FormData(event.currentTarget);
-            const response = await action(formData);
-            await new Promise((resolve) => setTimeout(resolve, 500));
-            response.errors && setErrors(response.errors);
-            response.success && callbacks?.onSuccess?.(formData);
-            response.message && setMessage(response.message)
-            return response;
-        } finally {
-            setIsPending(false);
-            callbacks?.onEnd?.();
-        }
-    }, [action]);
+      try {
+        const formData: FormData = new FormData(event.currentTarget);
+        const response = await action(formData);
+        await new Promise((resolve) => setTimeout(resolve, 500));
+        response.errors && setErrors(response.errors);
+        response.success && callbacks?.onSuccess?.(formData);
+        response.message && setMessage(response.message);
+        return response;
+      } finally {
+        setIsPending(false);
+        callbacks?.onEnd?.();
+      }
+    },
+    [action],
+  );
 
-    const cleanErrors = useCallback(() => setErrors(undefined), [setErrors]);
+  const cleanErrors = useCallback(() => setErrors(undefined), [setErrors]);
 
-    return { errors, isPending, submitAction, cleanErrors, message };
+  return { errors, isPending, submitAction, cleanErrors, message };
 }

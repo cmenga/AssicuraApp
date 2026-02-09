@@ -14,7 +14,7 @@ class Store {
     this.state.set(key, value);
 
     const keyListeners = this.listeners.get(key);
-    if (keyListeners) keyListeners.forEach(fn => fn());
+    if (keyListeners) keyListeners.forEach((fn) => fn());
   }
 
   dispatch<T>(key: string, updater: (prev: T | undefined) => T) {
@@ -22,7 +22,10 @@ class Store {
     const newValue = updater(prev);
     this.set(key, newValue);
   }
-  async asyncdispatch<T>(key: string, updater: (prev: T | undefined) => Promise<T>): Promise<void> {
+  async asyncdispatch<T>(
+    key: string,
+    updater: (prev: T | undefined) => Promise<T>,
+  ): Promise<void> {
     const prev = this.state.get(key);
     const newValue = await updater(prev);
     this.set(key, newValue);
@@ -46,11 +49,14 @@ class Store {
   }
 }
 
-
 export const store = new Store();
 
-
-export async function storeFetchThrow<T>(key: string, service: AxiosInstance, url: string, config?: AxiosRequestConfig) {
+export async function storeFetchThrow<T>(
+  key: string,
+  service: AxiosInstance,
+  url: string,
+  config?: AxiosRequestConfig,
+) {
   if (store.get<T>(key)) return;
 
   const response = await service.get<T>(url, config);
@@ -60,7 +66,12 @@ export async function storeFetchThrow<T>(key: string, service: AxiosInstance, ur
   store.set<T>(key, response.data);
 }
 
-export async function storeFetch<T>(key: string, service: AxiosInstance, url: string, config?: AxiosRequestConfig) {
+export async function storeFetch<T>(
+  key: string,
+  service: AxiosInstance,
+  url: string,
+  config?: AxiosRequestConfig,
+) {
   if (store.get<T>(key)) return;
 
   const response = await service.get(url, config);
@@ -68,4 +79,4 @@ export async function storeFetch<T>(key: string, service: AxiosInstance, url: st
     return undefined;
   }
   store.set<T>(key, response.data);
-};
+}

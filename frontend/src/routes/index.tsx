@@ -11,10 +11,10 @@ export const Route = createFileRoute("/")({
   component: RouteComponent,
   loader: async () => {
     try {
-      const response = await authApi.post("/protected")
-      if (response.status !== 401) throw redirect({to: "/home"})  
-    } catch{}
-  }
+      const response = await authApi.post("/protected");
+      if (response.status !== 401) throw redirect({ to: "/home" });
+    } catch {}
+  },
 });
 
 function RouteComponent() {
@@ -29,5 +29,3 @@ function RouteComponent() {
     </div>
   );
 }
-
-

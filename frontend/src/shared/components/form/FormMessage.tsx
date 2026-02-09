@@ -17,5 +17,3 @@ export function SuccessMessage({ message }: FormMessageProps) {
     </p>
   );
 }
-
-

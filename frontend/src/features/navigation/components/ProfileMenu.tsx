@@ -11,7 +11,6 @@ type ShowProfileMenuProps = {
   avatar: string;
 };
 
-
 export default function ProfileMenu(props: ShowProfileMenuProps) {
   const { firstName, lastName, email, avatar } = props;
   const [showProfileMenu, setShowProfileMenu] = useState(false);
@@ -24,7 +23,10 @@ export default function ProfileMenu(props: ShowProfileMenuProps) {
           </p>
           <p className="text-xs text-gray-500">{email}</p>
         </div>
-        <button onClick={() => setShowProfileMenu(!showProfileMenu)} className="cursor-pointer w-10 h-10 bg-linear-to-r from-blue-600 to-cyan-500 rounded-full flex items-center justify-center text-white font-semibold">
+        <button
+          onClick={() => setShowProfileMenu(!showProfileMenu)}
+          className="cursor-pointer w-10 h-10 bg-linear-to-r from-blue-600 to-cyan-500 rounded-full flex items-center justify-center text-white font-semibold"
+        >
           {avatar}
         </button>
       </div>
@@ -39,7 +41,10 @@ export default function ProfileMenu(props: ShowProfileMenuProps) {
             <span className="text-sm">Profilo</span>
           </Link>
           <hr className="my-2" />
-          <button onClick={logout} className="cursor-pointer w-full px-4 py-2 text-left hover:bg-gray-50 flex items-center gap-2 text-red-600">
+          <button
+            onClick={logout}
+            className="cursor-pointer w-full px-4 py-2 text-left hover:bg-gray-50 flex items-center gap-2 text-red-600"
+          >
             <LogOut className="w-4 h-4" />
             <span className="text-sm">Esci</span>
           </button>
@@ -49,9 +54,8 @@ export default function ProfileMenu(props: ShowProfileMenuProps) {
   );
 }
 
-
 async function logout() {
-  authApi.post("/sign-out")
+  authApi.post("/sign-out");
   store.clear();
   window.location.href = "/";
 }

@@ -1,7 +1,6 @@
-import {HeaderDocuments} from "./documents/HeaderDocuments";
-import {DocumentInfoBox} from "./documents/DocumentInfoBox";
+import { HeaderDocuments } from "./documents/HeaderDocuments";
+import { DocumentInfoBox } from "./documents/DocumentInfoBox";
 import DocumentTable from "./documents/DocumentTable";
-
 
 export default function DocumentsDashBoard() {
   return (

@@ -9,9 +9,6 @@ import { useStoreKeyOrThrow } from "@/shared/hooks/useStoreKey";
 import { storeFetchThrow } from "@/shared/store";
 import { authApi, userApi } from "@/shared/api/http";
 
-
-
-
 export const Route = createFileRoute("/home")({
   component: RouteComponent,
   loader: async () => {
@@ -21,9 +18,9 @@ export const Route = createFileRoute("/home")({
 
       await storeFetchThrow<UserModel>("user", userApi, "/me");
     } catch {
-      throw redirect({to: "/"})
+      throw redirect({ to: "/" });
     }
-  }
+  },
 });
 
 function RouteComponent() {
@@ -32,7 +29,6 @@ function RouteComponent() {
 
   return (
     <div className="relative min-h-screen bg-white">
-
       <UserNavigation
         activeTab={activeTab}
         onActiveTab={setActiveTab}

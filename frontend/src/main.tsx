@@ -17,10 +17,10 @@ const router = createRouter({
   defaultStructuralSharing: true,
   defaultPreloadStaleTime: 0,
   defaultErrorComponent: ({ error }) => {
-    console.table(error)
-    
+    console.table(error);
+
     return <div>Error</div>;
-  }
+  },
 });
 
 // Register the router instance for type safety
@@ -37,7 +37,7 @@ if (rootElement && !rootElement.innerHTML) {
   root.render(
     <AuthProvider>
       <RouterProvider router={router} />
-    </AuthProvider>
+    </AuthProvider>,
   );
 }
 // If you want to start measuring performance in your app, pass a function

@@ -9,7 +9,7 @@ type PersonalDataProps = {
 };
 
 export default function PersonalData({ user }: PersonalDataProps) {
-  const address = useStoreKeyOrThrow<AddressModel[]>("address")
+  const address = useStoreKeyOrThrow<AddressModel[]>("address");
   return (
     <div className="space-y-6">
       <Anagraphic user={user} />

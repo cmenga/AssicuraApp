@@ -29,7 +29,7 @@ export default function ProfileHeader({ user }: ProfileHeaderProps) {
         </div>
       </div>
       <ConfirmDeleteModal />
-    </div >
+    </div>
   );
 }
 
@@ -66,7 +66,10 @@ function ConfirmDeleteModal() {
   return (
     <>
       <Notify />
-      <button onClick={handleShowModal} className="cursor-pointer absolute top-2 right-4 bg-red-100 hover:bg-red-300 p-2 rounded-lg">
+      <button
+        onClick={handleShowModal}
+        className="cursor-pointer absolute top-2 right-4 bg-red-100 hover:bg-red-300 p-2 rounded-lg"
+      >
         <Trash2 className="w-6 h-6 text-red-600 hover:text-red-800" />
       </button>
 
@@ -92,11 +95,10 @@ function ConfirmDeleteModal() {
             </button>
           </div>
         </div>
-      </Modal >
+      </Modal>
     </>
   );
 }
-
 
 async function deleteUser(): Promise<ActionResponse> {
   const response = await userApi.delete("/delete");

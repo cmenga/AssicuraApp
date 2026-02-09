@@ -10,7 +10,10 @@ export default function CTAButtons() {
         <p className="text-xl mb-8 opacity-95">
           Ottieni un preventivo gratuito in meno di 2 minuti
         </p>
-        <Link to="/auth/login" className="bg-white text-blue-600 px-10 py-4 rounded-full text-lg font-semibold hover:shadow-2xl transition transform hover:-translate-y-1">
+        <Link
+          to="/auth/login"
+          className="bg-white text-blue-600 px-10 py-4 rounded-full text-lg font-semibold hover:shadow-2xl transition transform hover:-translate-y-1"
+        >
           Calcola il Tuo Preventivo
         </Link>
         <p className="mt-6 text-sm opacity-90">

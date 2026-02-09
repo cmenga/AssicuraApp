@@ -3,13 +3,10 @@ import { FileText, MapPin, User } from "lucide-react";
 import FormInputText from "@/shared/components/form/FormInputText";
 import FormInputDate from "@/shared/components/form/FormInputDate";
 import FormInputGender from "@/shared/components/form/FormInputGender";
-import {ErrorMessage} from "@/shared/components/form/FormMessage";
+import { ErrorMessage } from "@/shared/components/form/FormMessage";
 import FormHeader from "../../../../shared/components/form/FormHeader";
 
-import {
-  getMaxRegisterDate,
-  handleFiscalIdKeyPress,
-} from "../../utils";
+import { getMaxRegisterDate, handleFiscalIdKeyPress } from "../../utils";
 
 import { handleNameKeyPress } from "@/shared/utils/onKeyDown";
 

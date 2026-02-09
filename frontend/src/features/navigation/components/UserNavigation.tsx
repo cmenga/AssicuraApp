@@ -1,7 +1,6 @@
 import type { NavigationProps } from "@/features/navigation/type";
 import ProfileMenu from "./ProfileMenu";
 
-
 type UserNavigationProps = {
   firstName: string;
   lastName: string;
@@ -25,10 +24,11 @@ export default function UserNavigation(props: UserNavigationProps) {
                 <button
                   key={tab}
                   onClick={() => onActiveTab(tab)}
-                  className={`px-4 py-2 rounded-md font-medium transition ${activeTab === tab
+                  className={`px-4 py-2 rounded-md font-medium transition ${
+                    activeTab === tab
                       ? "bg-white text-blue-600 shadow-sm"
                       : "cursor-pointer text-gray-600 hover:text-gray-900"
-                    }`}
+                  }`}
                 >
                   {tab === "overview" && "Dashboard"}
                   {tab === "policies" && "Polizze"}

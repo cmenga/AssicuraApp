@@ -1,4 +1,3 @@
-
 import QuickActions from "./overview/QuickActions";
 import HeaderOverview from "./overview/HeaderOverview";
 import Stats from "./overview/Stats";
@@ -9,7 +8,10 @@ type OverviewDashboardProps = {
   onActiveTab: (tab: string) => void;
 };
 
-export default function OverviewDashboard({ username, onActiveTab }: OverviewDashboardProps) {
+export default function OverviewDashboard({
+  username,
+  onActiveTab,
+}: OverviewDashboardProps) {
   return (
     <div className="space-y-8">
       <HeaderOverview username={username} />

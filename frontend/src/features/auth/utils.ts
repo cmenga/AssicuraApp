@@ -14,8 +14,6 @@ export function getMaxRegisterDate() {
 
 const ALLOWED_KEYS = ["Backspace", "Delete", "ArrowLeft", "ArrowRight", "Tab"];
 
-
-
 /**
  * The function `handleFiscalIdKeyPress` restricts input on a keyboard event to alphanumeric characters
  * and a predefined list of allowed keys.

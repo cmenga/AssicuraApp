@@ -57,7 +57,6 @@ export async function registerUser(
   return await submitUserBasics(userData, userAddress);
 }
 
-
 async function submitUserBasics(
   user: UserData,
   address: UserAddress,
@@ -78,7 +77,6 @@ async function submitUserBasics(
   store.set<boolean>("sign-up", true);
   return { success: true, message: "Request Successfull" };
 }
-
 
 async function validationErrorResponse(data: any): Promise<ActionResponse> {
   const returnedValue: ActionResponse = {
@@ -124,9 +122,8 @@ async function conflictResponse(data: any): Promise<ActionResponse> {
   };
 }
 
-
 export async function submitUserLogin(
-  formData: FormData
+  formData: FormData,
 ): Promise<ActionResponse> {
   const data = Object.fromEntries(formData);
 

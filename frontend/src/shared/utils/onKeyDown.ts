@@ -1,6 +1,5 @@
 import type { KeyboardEvent } from "react";
 
-
 const ALLOWED_KEYS = ["Backspace", "Delete", "ArrowLeft", "ArrowRight", "Tab"];
 /**
  * The function `handlePhoneNumberKeyPress` restricts input to only allow numeric characters and
@@ -44,7 +43,6 @@ export function handleStreetKeyPress(event: KeyboardEvent<HTMLInputElement>) {
     event.preventDefault();
   }
 }
-
 
 /**
  * The function `handleCivicKeyPress` restricts keyboard input to alphanumeric characters and the

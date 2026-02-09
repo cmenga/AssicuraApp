@@ -4,12 +4,11 @@ import FormInputEmail from "@/shared/components/form/FormInputEmail";
 import FormInputPassword from "@/shared/components/form/FormInputPassword";
 
 import FormInputCheckbox from "@/shared/components/form/FormInputCheckbox";
-import {ErrorMessage} from "@/shared/components/form/FormMessage";
+import { ErrorMessage } from "@/shared/components/form/FormMessage";
 
 import { store } from "@/shared/store";
 import { useFormStateAction } from "@/shared/hooks/useFormStateAction";
 import { useAuth } from "@/shared/store/AuthProvider";
-
 
 function updateStore() {
   store.dispatch("sign-up", () => undefined);
@@ -17,14 +16,21 @@ function updateStore() {
 }
 
 export default function LoginForm() {
-  const {login} = useAuth()
+  const { login } = useAuth();
   const confirmSignUp = store.get("sign-up") ?? undefined;
   const reloggedMessage = store.get("relogged") ?? undefined;
   const navigate = useNavigate();
-  const { errors, isPending, cleanErrors, submitAction } = useFormStateAction(login, {
-    onSuccess: () => { cleanErrors(); updateStore(); navigate({ to: "/home" }); }
-  });
-  
+  const { errors, isPending, cleanErrors, submitAction } = useFormStateAction(
+    login,
+    {
+      onSuccess: () => {
+        cleanErrors();
+        updateStore();
+        navigate({ to: "/home" });
+      },
+    },
+  );
+
   return (
     <div className="bg-white rounded-3xl shadow-2xl p-8 md:p-10">
       <div className="mb-8">
@@ -40,7 +46,8 @@ export default function LoginForm() {
         )}
         {reloggedMessage && (
           <p className="text-green-600 text-sm bg-green-50 border-sm rounded-sm p-2 mt-2">
-            Cambio email avvenuto con successo, reinserisce le credenziali per ri-loggare
+            Cambio email avvenuto con successo, reinserisce le credenziali per
+            ri-loggare
           </p>
         )}
         {errors && <ErrorMessage message={errors.user} />}

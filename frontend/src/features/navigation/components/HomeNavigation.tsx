@@ -1,6 +1,5 @@
 import { Link } from "@tanstack/react-router";
 
-
 export default function HomeNavigation() {
   return (
     <header className="fixed top-0 w-full bg-white shadow-sm z-50">
@@ -20,7 +19,6 @@ export default function HomeNavigation() {
               Area Clienti
             </Link>
           </div>
-
         </div>
       </nav>
     </header>

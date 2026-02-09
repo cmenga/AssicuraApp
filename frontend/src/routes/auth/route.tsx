@@ -13,9 +13,7 @@ export const Route = createFileRoute("/auth")({
       if (location.pathname === "/auth") {
         throw redirect({ to: "/auth/login" });
       }
-    } catch {
-      
-    }
+    } catch {}
   },
 });
 

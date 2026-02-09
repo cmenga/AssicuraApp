@@ -9,10 +9,13 @@ import ProfileHeader from "@/features/profile/components/ProfileHeader";
 import SecurityInfo from "@/features/profile/components/SecurityInfo";
 
 import { useStoreKeyOrThrow } from "@/shared/hooks/useStoreKey";
-import type { DriverLicenseModel, AddressModel, UserModel } from "@/shared/type";
+import type {
+  DriverLicenseModel,
+  AddressModel,
+  UserModel,
+} from "@/shared/type";
 import { storeFetch, storeFetchThrow } from "@/shared/store";
 import { authApi, driverLicenseApi, userApi } from "@/shared/api/http";
-
 
 export const Route = createFileRoute("/profile")({
   component: RouteComponent,
@@ -23,11 +26,14 @@ export const Route = createFileRoute("/profile")({
 
       await storeFetchThrow<UserModel>("user", userApi, "/me");
       await storeFetchThrow<AddressModel>("address", userApi, "/addresses");
-      await storeFetch<DriverLicenseModel[]>("driver-license", driverLicenseApi, "/licenses");
+      await storeFetch<DriverLicenseModel[]>(
+        "driver-license",
+        driverLicenseApi,
+        "/licenses",
+      );
     } catch {
-      throw redirect({to: "/"})
+      throw redirect({ to: "/" });
     }
-    
   },
 });
 
@@ -46,14 +52,12 @@ function RouteComponent() {
           activeSection={activeSection}
           onActiveSection={setActiveSection}
         />
-        {activeSection === "personali" && (
-          <PersonalData user={user} />
+        {activeSection === "personali" && <PersonalData user={user} />}
+        {activeSection === "patenti" && (
+          <DriverLicenses dateOfBirth={user.date_of_birth} />
         )}
-        {activeSection === "patenti" && <DriverLicenses dateOfBirth={user.date_of_birth} />}
         <SecurityInfo />
       </div>
     </div>
   );
 }
-
-
