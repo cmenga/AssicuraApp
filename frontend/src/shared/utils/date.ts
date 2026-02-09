@@ -1,4 +1,4 @@
-export const getDaysUntilExpiry = (expiry: any) => {
+export function getDaysUntilExpiry (expiry: any) {
     const today: Date = new Date();
     const expiryDate: Date = new Date(expiry);
     const diffTime = expiryDate.getTime() - today.getTime();

@@ -1,3 +1,4 @@
+import { getStatusColor, type ColorsState } from "@/shared/utils/color";
 import { getDaysUntilExpiry } from "@/shared/utils/date";
 import { Bike, Car, ChevronRight } from "lucide-react";
 
@@ -9,7 +10,7 @@ const policies = [
     targa: "AB123CD",
     veicolo: "Fiat 500 1.2",
     piano: "RC Completa",
-    stato: "Attiva",
+    stato: "active",
     scadenza: "2026-08-15",
     premio: "280.00",
     classeBonus: 1,
@@ -21,7 +22,7 @@ const policies = [
     targa: "XY789ZW",
     veicolo: "Yamaha MT-07",
     piano: "RC Base",
-    stato: "Attiva",
+    stato: "active",
     scadenza: "2026-11-20",
     premio: "180.00",
     classeBonus: 3,
@@ -33,26 +34,13 @@ const policies = [
     targa: "CD456EF",
     veicolo: "Toyota Yaris Hybrid",
     piano: "RC Kasko",
-    stato: "In scadenza",
+    stato: "expired",
     scadenza: "2026-02-10",
     premio: "450.00",
     classeBonus: 1,
   },
 ];
 
-
-
-const getStatusColor = (stato: string) => {
-  const colors = {
-    Attiva: "bg-green-100 text-green-700",
-    "In scadenza": "bg-orange-100 text-orange-700",
-    Scaduta: "bg-red-100 text-red-700",
-    "In lavorazione": "bg-blue-100 text-blue-700",
-    Approvato: "bg-green-100 text-green-700",
-    Rifiutato: "bg-red-100 text-red-700",
-  };
-  return colors[stato] || "bg-gray-100 text-gray-700";
-};
 
 type PoliciesProps = {
     onActiveTab: (tab: string) => void
@@ -90,7 +78,7 @@ export default function Policies({onActiveTab}: PoliciesProps) {
                                                 {policy.veicolo}
                                             </h4>
                                             <span
-                                                className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(policy.stato)}`}
+                                                className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(policy.stato as ColorsState)}`}
                                             >
                                                 {policy.stato}
                                             </span>
