@@ -9,19 +9,19 @@ import { store } from "@/shared/store";
 import { authApi } from "@/shared/api/http";
 
 /**
- * The function `registerUser` saves user data and license data in local storage and then submits user
- * basics to a backend service.
- * @param formData - The `formData` parameter in the `registerUser` function contains the following
- * data:
- * @returns The `registerUser` function is returning a `Promise` that resolves to an `ActionResponse`.
- * The function first extracts the license data from the form data and saves it to the local storage.
- * Then it extracts user data and user address data from the form data and calls the `submitUserBasics`
- * function with this data. The `submitUserBasics` function likely handles the submission of user
+ * The function `registerUser` takes user data, address data, and license data, then submits it for
+ * user registration.
+ * 
+ * Args:
+ *   formData: The `formData` parameter in the `registerUser` function contains the following data:
+ * 
+ * Returns:
+ *   The `registerUser` function is returning a Promise that resolves to an `ActionResponse`.
  */
 export async function registerUser(
   formData: UserData & UserAddress & UserLicense,
 ): Promise<ActionResponse> {
-  //Salvare i dati della patente nella localstorage per poi fargli salvare i dati dentro il service delle patenti
+  
   const licenseData: UserLicense = {
     date_of_birth: formData.date_of_birth,
     license_code: formData.license_code,
@@ -53,10 +53,32 @@ export async function registerUser(
     street: formData.street,
     type: formData.type,
   };
-  return await submitUserBasics(userData, userAddress, licenseData);
+  return await submitUser(userData, userAddress, licenseData);
 }
 
-async function submitUserBasics(
+/**
+ * The function `submitUser` sends user registration data to an API endpoint and handles different
+ * response statuses accordingly.
+ * 
+ * Args:
+ *   user (UserData): The `user` parameter in the `submitUser` function represents the data of a user,
+ *      such as their name, email, and other personal information. It is of type `UserData`.
+ *      address (UserAddress): The `address` parameter in the `submitUser` function represents the address
+ *      details of the user. It typically includes fields such as street address, city, state, postal code,
+ *      and country. This information is used to identify the physical location of the user.
+ *   license (UserLicense): The `license` parameter in the `submitUser` function likely contains
+ *      information related to the user's license details, such as license number, expiration date, issuing
+ *      authority, etc. This information is necessary for user registration or authentication purposes,
+ *      depending on the context of your application.
+ * 
+ * Returns:
+ *   The `submitUser` function returns a Promise that resolves to an `ActionResponse`. The possible
+ *   return values are:
+ * 1. If the response status is 422, it returns a validation error response.
+ * 2. If the response status is 409, it returns a conflict response.
+ * 3. If the response status is neither 422 nor 409, it sets a boolean value in the store and returns
+ */
+async function submitUser(
   user: UserData,
   address: UserAddress,
   license: UserLicense,
@@ -72,13 +94,34 @@ async function submitUserBasics(
     case 422:
       return validationErrorResponse(response.data);
     case 409:
-      return conflictResponse(response.data);
+      return {
+        message: "409",
+        success: false,
+        errors: { existing_user: response.data.detail },
+      };
   }
 
   store.set<boolean>("sign-up", true);
   return { success: true, message: "Request Successfull" };
 }
 
+/**
+ * The function `validationErrorResponse` processes error data and constructs an ActionResponse object
+ * with specific error messages based on the error fields.
+ * 
+ * Args:
+ *   data (any): The `validationErrorResponse` function takes in a `data` parameter, which is expected
+ *      to be an object containing a `message` property and an `errors` array. The function processes the
+ *      `errors` array to generate an `ActionResponse` object with error messages categorized based on
+ *      certain conditions related to
+ * 
+ * Returns:
+ *   The function `validationErrorResponse` returns a Promise that resolves to an `ActionResponse`
+ *   object. The `ActionResponse` object has the following structure:
+ *    - `message`: The message extracted from the input data.
+ *    - `errors`: An object containing specific error messages based on the conditions in the function.
+ *    - `success`: A boolean value indicating the success status, which is set to `false`.
+ */
 async function validationErrorResponse(data: any): Promise<ActionResponse> {
   const returnedValue: ActionResponse = {
     message: data["message"],
@@ -120,14 +163,23 @@ async function validationErrorResponse(data: any): Promise<ActionResponse> {
   return returnedValue;
 }
 
-async function conflictResponse(data: any): Promise<ActionResponse> {
-  return {
-    message: "409",
-    success: false,
-    errors: { existing_user: data.detail },
-  };
-}
 
+/**
+ * The function `submitUserLogin` handles user login submission and returns appropriate response based
+ * on the API call status.
+ * 
+ * Args:
+ *   formData (FormData): The `formData` parameter in the `submitUserLogin` function is expected to be
+ *      a FormData object containing user login data such as username and password. This data will be
+ *      converted into a plain JavaScript object using `Object.fromEntries(formData)` before being sent to
+ *      the server for authentication.
+ * 
+ * Returns:
+ *   The function `submitUserLogin` returns a Promise that resolves to an `ActionResponse` object. The
+ *   `ActionResponse` object contains a `message` property indicating the result of the login attempt, an
+ *   optional `errors` property providing details about any errors encountered, and a `success` property
+ *   indicating whether the login was successful or not.
+ */
 export async function submitUserLogin(
   formData: FormData,
 ): Promise<ActionResponse> {
