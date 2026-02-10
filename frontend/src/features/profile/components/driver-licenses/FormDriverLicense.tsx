@@ -5,14 +5,13 @@ import FormInputDropdown from "@/shared/components/form/FormInputDropdown";
 import FormInputText from "@/shared/components/form/FormInputText";
 import { ErrorMessage } from "@/shared/components/form/FormMessage";
 import { useFormStateAction } from "@/shared/hooks/useFormStateAction";
-import { store } from "@/shared/store";
 import type {
   ActionResponse,
-  DriverLicenseModel,
   DropdownOptions,
 } from "@/shared/type";
 import { handleDrivingLicenseKeyPress } from "@/shared/utils/onKeyDown";
 import { CheckCircle, FileText, X } from "lucide-react";
+import { updateDriverLicense } from "../../utils";
 
 const LICENSE_OPTIONS: DropdownOptions[] = [
   { value: "A", name: "A - Moto" },
@@ -30,7 +29,7 @@ export default function FromDriverLicense({
   onClose,
 }: FromDriverLicenseProps) {
   const { errors, cleanErrors, isPending, submitAction } = useFormStateAction(
-    submitLicenseAction,
+    action,
     {
       onSuccess: async () => {
         cleanErrors();
@@ -117,7 +116,7 @@ export default function FromDriverLicense({
   );
 }
 
-async function submitLicenseAction(
+async function action(
   formData: FormData,
 ): Promise<ActionResponse> {
   const data = Object.fromEntries(formData.entries());
@@ -138,17 +137,4 @@ async function submitLicenseAction(
   return { success: true };
 }
 
-async function updateDriverLicense() {
-  const response = await driverLicenseApi.get("/licenses");
-  if (response.status === 200) {
-    const newData: DriverLicenseModel[] = response.data.map(
-      (element: DriverLicenseModel) => ({ ...element }),
-    );
-    store.dispatch<DriverLicenseModel[]>("driver-license", (prev = []) => {
-      const filteredNew = newData.filter(
-        (nd) => !prev.some((p) => p.id === nd.id),
-      );
-      return [...prev, ...filteredNew];
-    });
-  }
-}
+

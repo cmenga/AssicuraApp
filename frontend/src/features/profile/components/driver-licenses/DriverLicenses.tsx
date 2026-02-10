@@ -47,6 +47,7 @@ export default function DriverLicenses({
                 expiryDate={license.expiry_date}
                 issueDate={license.issue_date}
                 licenseNumber={license.number}
+                dateOfBirth={dateOfBirth}
               />
             );
           })}

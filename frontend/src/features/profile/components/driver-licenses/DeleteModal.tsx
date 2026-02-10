@@ -6,13 +6,12 @@ import type { DriverLicenseModel } from "@/shared/type";
 import { Trash2, X } from "lucide-react";
 import { useState, type RefObject } from "react";
 
-export default function DeleteModal({
-  ref,
-  id,
-}: {
+
+type DeleteModalProps = {
   ref: RefObject<HTMLDialogElement | null>;
   id: string;
-}) {
+};
+export default function DeleteModal({ ref, id }: DeleteModalProps) {
   const [errors, setErrors] = useState<Record<string, string> | undefined>(
     undefined,
   );
