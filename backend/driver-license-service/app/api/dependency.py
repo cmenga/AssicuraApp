@@ -1,6 +1,7 @@
 from typing import Annotated
 from sqlalchemy.orm import Session
 from fastapi import Depends, Cookie
+from fastapi.responses import JSONResponse
 
 from database.session import get_session
 from api.security import (
@@ -46,23 +47,32 @@ async def get_access_token(
     jwt: JWTAccessToken, assicurapp_token: str | None = Cookie(None)
 ):
     payload = None
+
     if assicurapp_token is None:
         raise HTTPUnauthorized("not authorized")
+    
     try:
         payload = jwt.decode(assicurapp_token)
         return payload
     except HTTPUnauthorized:
-        result = await call_internal_service(
+        response = await call_internal_service(
             url="http://identity-service:8001/internal/refresh",
             method="POST",
             json={"access_token": assicurapp_token},
         )
+        if isinstance(response, JSONResponse):
+            raise HTTPUnauthorized("not authorized")
+
+        result = response.json()
         if "access_token" not in result:
-            raise HTTPUnauthorized("Not authorized")
+            raise HTTPUnauthorized("not authorized")
+
         payload = jwt.decode(result["access_token"])
         return payload
+
     finally:
         if payload is None:
             raise HTTPUnauthorized("not authorized")
+
 
 AuthenticatedUser = Annotated[AccessToken, Depends(get_access_token)]
