@@ -128,12 +128,12 @@ async def delete_user(response: Response, auth: AuthenticatedUser, db: DbSession
 
     try:
         from api.internal.utils import call_internal_service
-        result = await call_internal_service(
+        internal_response = await call_internal_service(
             f"http://driver-license-service:8001/internal/delete-licenses/{user_id}",
             method="DELETE",
         )
-        
-        if "deleted" not in result:
+
+        if internal_response.status_code != 200:
             raise
 
         if fetched_token:
