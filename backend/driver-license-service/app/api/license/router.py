@@ -75,14 +75,43 @@ async def add_new_driver_license(
 
 
 @license_router.delete("/delete/{license_id}", status_code=status.HTTP_200_OK)
-async def delete_driver_license(db: DbSession, auth: AuthenticatedUser, license_id = Path()):
-    fetched_license = db.query(DriverLicense).filter(DriverLicense.id == license_id).first()
+async def delete_driver_license(
+    db: DbSession, auth: AuthenticatedUser, license_id: Annotated[str, Path()]
+):
+    fetched_license = (
+        db.query(DriverLicense).filter(DriverLicense.id == license_id).first()
+    )
     if not fetched_license:
         raise HTTPNotFound("License not found")
     try:
         db.delete(fetched_license)
         db.commit()
     except Exception as ex:
+        logger.exception(ex, user_id=auth["sub"])
+        db.rollback()
+        raise HTTPInternalServer("Save to database failed")
+
+
+@license_router.patch("/update/{license_id}")
+async def update_driver_license(
+    auth: AuthenticatedUser,
+    db: DbSession,
+    license_id: Annotated[str, Path()],
+    license: Annotated[DriverLicenseIn, Body()],
+):
+    fetched_license = (
+        db.query(DriverLicense).filter(DriverLicense.id == license_id).first()
+    )
+    if fetched_license is None:
+        raise HTTPNotFound("License not found")
+
+    setattr(fetched_license, "number", license.license_number)
+    setattr(fetched_license, "expiry_date", license.expiry_date)
+    setattr(fetched_license, "issue_date", license.issue_date)
+
+    try:
+        db.commit()
+    except IntegrityError as ex:
         logger.exception(ex, user_id=auth["sub"])
         db.rollback()
         raise HTTPInternalServer("Save to database failed")

@@ -24,16 +24,15 @@ class DriverLicenseIn(BaseModel):
     
     @model_validator(mode="after")
     def validate_license(self):
-        # Controllo che la data di rilascio sia minore della scadenza
         if self.issue_date >= self.expiry_date:
             raise ValueError("La data di rilascio non può essere maggiore o uguale alla data di scadenza")
         
-        # Calcolo età al momento del rilascio
+       
         age_at_issue = self.issue_date.year - self.date_of_birth.year - (
             (self.issue_date.month, self.issue_date.day) < (self.date_of_birth.month, self.date_of_birth.day)
         )
         
-        # Età minima per categoria
+
         min_age_map = {"A": 18, "B": 18, "C": 21}
         min_age = min_age_map[self.license_code.upper()]
 
@@ -42,7 +41,7 @@ class DriverLicenseIn(BaseModel):
                 f"L'utente ha {age_at_issue} anni, età minima per patente {self.license_code} è {min_age}"
             )
         
-        # Controllo scadenza: deve essere esattamente 10 anni dopo rilascio
+       
         expected_expiry = self.issue_date.replace(year=self.issue_date.year + 10)
         if self.expiry_date != expected_expiry:
             raise ValueError(
@@ -50,10 +49,11 @@ class DriverLicenseIn(BaseModel):
             )
 
         return self
-    
+
 class DriverLicenseOut(BaseModel):
     number: str
     code: str
     expiry_date: date
     issue_date: date
     id: str
+
