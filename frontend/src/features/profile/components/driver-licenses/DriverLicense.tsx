@@ -14,7 +14,7 @@ type DriverLicenseProps = {
 };
 
 export default function DriverLicense(props: DriverLicenseProps) {
-  const { code, issueDate, expiryDate, licenseNumber, id,dateOfBirth } = props;
+  const { code, issueDate, expiryDate, licenseNumber, id, dateOfBirth } = props;
   const deleteModalRef = useRef<HTMLDialogElement | null>(null);
   const updateModalRef = useRef<HTMLDialogElement | null>(null);
   const daysLeft = getDaysUntilExpiry(expiryDate);
@@ -26,9 +26,10 @@ export default function DriverLicense(props: DriverLicenseProps) {
   return (
     <div className="min-w-md max-w-md mx-auto relative bg-linear-to-br from-rose-100 to-pink-200 text-slate-800 rounded-2xl shadow-lg p-8 border border-rose-300">
       <div className="absolute top-2 right-4 flex gap-3">
-        <Pencil
+        {isExpiringSoon && <Pencil
           className="w-5 h-5 text-gray-500 cursor-pointer"
-          onClick={() => handleOpen(updateModalRef)} />
+          onClick={() => handleOpen(updateModalRef)} />}
+
         <Trash2
           className="w-5 h-5 text-red-500 cursor-pointer"
           onClick={() => handleOpen(deleteModalRef)}
