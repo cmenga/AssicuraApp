@@ -59,7 +59,7 @@ export default function RegisterStepThree(props: RegisterStepTrheeProps) {
           calcolare il preventivo assicurativo più accurato
         </p>
       </div>
-
+      {errors?.license && <ErrorMessage message={errors.license } />}
       <FormInputText
         labelName="Numero Patente"
         icon={FileText}
@@ -80,10 +80,10 @@ export default function RegisterStepThree(props: RegisterStepTrheeProps) {
         labelName="Categoria Patente"
         options={LICENSE_OPTIONS}
         previous={licenseCategory}
-        name="license_category"
+        name="license_code"
       >
-        {errors?.license_category && (
-          <ErrorMessage message={errors.license_category} />
+        {errors?.license_code && (
+          <ErrorMessage message={errors.license_code} />
         )}
       </FormInputDropdown>
 
@@ -91,19 +91,19 @@ export default function RegisterStepThree(props: RegisterStepTrheeProps) {
         <FormInputDate
           labelName="Data Rialscio"
           previous={licenseIssueDate}
-          name="license_issue_date"
+          name="issue_date"
         >
-          {errors?.license_issue_date && (
-            <ErrorMessage message={errors.license_issue_date} />
+          {errors?.issue_date && (
+            <ErrorMessage message={errors.issue_date} />
           )}
         </FormInputDate>
         <FormInputDate
           labelName="Date Scadenza"
           previous={licenseExpiryDate}
-          name="license_expiry_date"
+          name="expiry_date"
         >
-          {errors?.license_expiry_date && (
-            <ErrorMessage message={errors.license_expiry_date} />
+          {errors?.expiry_date && (
+            <ErrorMessage message={errors.expiry_date} />
           )}
         </FormInputDate>
       </div>

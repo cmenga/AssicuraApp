@@ -20,7 +20,7 @@ function RouteComponent() {
     <div className="max-w-4xl mx-auto">
       <RegisterHeader />
       <RegisterProgressStep current={currentStep} />
-      <div className="bg-white rounded-3xl min-w-4xl shadow-2xl p-8 md:p-10">
+      <div className="bg-white rounded-3xl md:min-w-4xl shadow-2xl p-8 md:p-10">
         <RegisterForm
           currentStep={currentStep}
           onCurrentStep={setCurrentStep}

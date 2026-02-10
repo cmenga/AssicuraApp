@@ -22,9 +22,9 @@ const FORM_STATE_INIT: UserRegisterForm = {
   phone_number: "",
   password: "",
   confirm_password: "",
-  license_category: "A",
-  license_expiry_date: "",
-  license_issue_date: "",
+  license_code: "A",
+  expiry_date: "",
+  issue_date: "",
   license_number: "",
   accept_terms: true,
   accept_privacy_policy: true,
@@ -114,9 +114,9 @@ export default function RegisterForm(props: RegisterFormProps) {
           acceptPrivacyPolicy={state.accept_privacy_policy}
           acceptTerms={state.accept_terms}
           confirmPassword={state.confirm_password}
-          licenseCategory={state.license_category}
-          licenseExpiryDate={state.license_expiry_date}
-          licenseIssueDate={state.license_issue_date}
+          licenseCategory={state.license_code}
+          licenseExpiryDate={state.expiry_date}
+          licenseIssueDate={state.issue_date}
           licenseNumber={state.license_number}
           subscribeToNewsletter={state.subscribe_to_newsletter}
           password={state.password}

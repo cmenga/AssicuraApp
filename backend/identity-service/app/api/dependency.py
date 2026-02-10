@@ -86,7 +86,6 @@ def authenticated_user(
 
     if token["type"] == "access":
         return token
-    logger.info("Siamo in auhtenticade_user dopo il rientro di refresh token")
     new_access_token = jwt.encode(token["sub"], minutes=15)
     response.set_cookie(
         key="assicurapp_token",

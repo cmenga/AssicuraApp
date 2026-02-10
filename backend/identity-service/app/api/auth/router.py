@@ -11,9 +11,9 @@ from api.dependency import (
     JWTRefreshService,
     AuthenticatedUser,
 )
-from api.auth.schema import UserRegistration, AddressRegistration
-from api.utils import get_user, get_user_session_token
-from api.exceptions import HTTPConflit, HTTPInternalServer, HTTPUnauthorized
+from api.auth.schema import UserRegistration, AddressRegistration, DriverLicenseIn
+from api.utils import get_user
+from api.exceptions import HTTPConflit, HTTPInternalServer
 
 from database.models import User, Address, Token
 from settings import logger
@@ -28,6 +28,7 @@ async def create_new_account(
     hasher: PasswordHasher,
     user: Annotated[UserRegistration, Body()],
     address: Annotated[AddressRegistration, Body()],
+    license: Annotated[DriverLicenseIn, Body()],
 ):
     existing_user = db.query(User).filter(User.fiscal_id == user.fiscal_id).first()
 
@@ -35,9 +36,8 @@ async def create_new_account(
         raise HTTPConflit("The user entered is already registered")
 
     hashed = hasher.hash(user.password)
-
-    user.__delattr__("password")
-    user.__delattr__("confirm_password")
+    delattr(user, "password")
+    delattr(user, "confirm_password")
 
     new_user = User(hashed_password=hashed, **user.model_dump())
     new_address = Address(**address.model_dump())
@@ -45,11 +45,23 @@ async def create_new_account(
 
     try:
         db.add(new_user)
+        db.flush()
+        # Service to service for license
+        from api.internal.utils import call_internal_service
+
+        response = await call_internal_service(
+            f"http://driver-license-service:8001/internal/add/{new_user.id}",
+            method="POST",
+            json=license.model_dump(mode="json")
+        )
+        if response.status_code >= 400:
+            return response
         db.commit()
     except IntegrityError as ex:
         logger.exception(ex)
         db.rollback()
         raise HTTPInternalServer("There was a problem saving data")
+
 
 
 @auth_router.post("/sign-in", status_code=status.HTTP_204_NO_CONTENT)
@@ -138,7 +150,7 @@ async def logout(response: Response, db: DbSession, assicurapp_session: str = Co
             secure=True,
             max_age=0,
         )
-    except Exception as ex:
+    except:
         raise HTTPInternalServer("It was not possible to log out")
     return {"message": "Logout successfully"}
 

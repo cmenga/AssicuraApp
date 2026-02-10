@@ -23,13 +23,12 @@ export async function registerUser(
 ): Promise<ActionResponse> {
   //Salvare i dati della patente nella localstorage per poi fargli salvare i dati dentro il service delle patenti
   const licenseData: UserLicense = {
-    license_category: formData.license_category,
-    license_expiry_date: formData.license_expiry_date,
-    license_issue_date: formData.license_issue_date,
+    date_of_birth: formData.date_of_birth,
+    license_code: formData.license_code,
+    expiry_date: formData.expiry_date,
+    issue_date: formData.issue_date,
     license_number: formData.license_number,
   };
-
-  localStorage.setItem("license_dto", JSON.stringify(licenseData));
 
   const userData: UserData = {
     first_name: formData.first_name,
@@ -54,19 +53,21 @@ export async function registerUser(
     street: formData.street,
     type: formData.type,
   };
-  return await submitUserBasics(userData, userAddress);
+  return await submitUserBasics(userData, userAddress, licenseData);
 }
 
 async function submitUserBasics(
   user: UserData,
   address: UserAddress,
+  license: UserLicense,
 ): Promise<ActionResponse> {
   const dto: UserRegisterDTO = {
     user: { ...user },
     address: { ...address },
+    license: {...license}
   };
   const response = await authApi.post("/sign-up", dto);
-
+  
   switch (response.status) {
     case 422:
       return validationErrorResponse(response.data);
@@ -104,6 +105,11 @@ async function validationErrorResponse(data: any): Promise<ActionResponse> {
         ...returnedValue.errors,
         fiscal_id: newForm["user"],
       };
+    } else if (newForm["body"]) {
+      returnedValue.errors = {
+        ...returnedValue.errors,
+        license: newForm["body"],
+      }
     } else {
       returnedValue.errors = {
         ...returnedValue.errors,

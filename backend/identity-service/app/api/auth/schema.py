@@ -287,3 +287,11 @@ def validate_cap(city: str, cap: str, province: str):
 class TokenData(BaseModel):
     access_token: str
     type: Literal["Bearer"]
+    
+
+class DriverLicenseIn(BaseModel):
+    date_of_birth: date
+    license_number: Annotated[str, AfterValidator(upper_value)]
+    license_code: Annotated[str, AfterValidator(upper_value)]
+    expiry_date: date
+    issue_date: date

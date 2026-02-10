@@ -1,6 +1,7 @@
 export interface UserRegisterDTO {
   user: UserData;
   address: UserAddress;
+  license: UserLicense;
 }
 
 export type UserRegisterForm = UserData & UserLicense & UserAddress;
@@ -21,10 +22,11 @@ export interface UserData {
 }
 
 export interface UserLicense {
+  date_of_birth?: string;
   license_number: string;
-  license_issue_date: string;
-  license_expiry_date: string;
-  license_category: string;
+  issue_date: string;
+  expiry_date: string;
+  license_code: string;
 }
 
 export interface UserAddress {
