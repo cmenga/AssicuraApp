@@ -1,4 +1,4 @@
-from settings import logger, get_local_database_url
+from core.settings import logger, get_local_database_url
 from database.session import get_session
 from database.models import LicenseCategory
 

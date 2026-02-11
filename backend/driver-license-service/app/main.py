@@ -1,7 +1,5 @@
 from fastapi import FastAPI, status
-from fastapi.middleware.cors import CORSMiddleware
-
-from settings import logger, ORIGINS
+from core.settings import logger, ORIGINS
 from startup import startup
 
 
@@ -12,7 +10,8 @@ app: FastAPI = FastAPI(
 
 
 # Middleware
-from middleware import LoggerMiddleware, CheckOriginMiddleware
+from fastapi.middleware.cors import CORSMiddleware
+from core.middleware import LoggerMiddleware, CheckOriginMiddleware
 
 app.add_middleware(CheckOriginMiddleware)
 app.add_middleware(
@@ -26,14 +25,15 @@ app.add_middleware(LoggerMiddleware, logger)
 
 
 # All routers are added here
-from api.health.router import health_router
-from api.license.router import license_router
-from api.internal.router import internal_router
+from api.public.health import router as health_router
+from api.public.license import router as license_router
+from api.internal.license import router as internal_license_router
 
 app.include_router(health_router)
 app.include_router(license_router)
-app.include_router(internal_router
-                   )
+app.include_router(internal_license_router)
+
+
 # Change validation error
 from fastapi.requests import Request
 from fastapi.responses import JSONResponse
@@ -52,7 +52,7 @@ async def validation_exception_handler(
             "errors": [
                 {
                     "field": err["loc"][-1],
-                    "message": err["msg"].replace("Value error,","").strip(),
+                    "message": err["msg"].replace("Value error,", "").strip(),
                 }
                 for err in exc.errors()
             ],

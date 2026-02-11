@@ -1,20 +1,26 @@
-from fastapi import APIRouter, Body, status, Path
-from typing import Annotated, List
+from fastapi import APIRouter, status, Body, Path
+from typing import List, Annotated
+from sqlalchemy.orm import Session 
 from sqlalchemy import or_
 from sqlalchemy.exc import IntegrityError
 
-
-from api.dependency import DbSession, AuthenticatedUser
-from api.license.schema import DriverLicenseIn, DriverLicenseOut
-from api.exceptions import HTTPConflict, HTTPInternalServer, HTTPNotFound
-from api.utils import get_driver_licenses
+from core.settings import logger
+from core.dependencies import DbSession, AuthenticatedUser
+from core.exceptions import HTTPConflict, HTTPInternalServerError, HTTPNotFound
 from database.models import DriverLicense
-from settings import logger
-
-license_router = APIRouter(tags=["driver license"], prefix="/driver-license")
+from api.public.schema import DriverLicenseIn, DriverLicenseOut
 
 
-@license_router.get("/licenses")
+router = APIRouter(tags=["driver license"],prefix="/driver-license")
+
+
+# Internal utils
+def get_driver_licenses(db: Session, user_id: str):
+    licenses = db.query(DriverLicense).filter(DriverLicense.user_id == user_id).all()
+    return licenses
+
+
+@router.get("/licenses")
 async def get_licenses(
     db: DbSession, auth: AuthenticatedUser
 ) -> List[DriverLicenseOut] | None:
@@ -37,7 +43,7 @@ async def get_licenses(
     return returned_license
 
 
-@license_router.post("/add", status_code=status.HTTP_204_NO_CONTENT)
+@router.post("/add", status_code=status.HTTP_204_NO_CONTENT)
 async def add_new_driver_license(
     auth: AuthenticatedUser,
     db: DbSession,
@@ -71,10 +77,10 @@ async def add_new_driver_license(
     except IntegrityError as ex:
         logger.exception(ex, user_id=auth["sub"])
         db.rollback()
-        raise HTTPInternalServer("Save to database failed")
+        raise HTTPInternalServerError("Save to database failed")
 
 
-@license_router.delete("/delete/{license_id}", status_code=status.HTTP_200_OK)
+@router.delete("/delete/{license_id}", status_code=status.HTTP_200_OK)
 async def delete_driver_license(
     db: DbSession, auth: AuthenticatedUser, license_id: Annotated[str, Path()]
 ):
@@ -89,10 +95,10 @@ async def delete_driver_license(
     except Exception as ex:
         logger.exception(ex, user_id=auth["sub"])
         db.rollback()
-        raise HTTPInternalServer("Save to database failed")
+        raise HTTPInternalServerError("Save to database failed")
 
 
-@license_router.patch("/update/{license_id}")
+@router.patch("/update/{license_id}")
 async def update_driver_license(
     auth: AuthenticatedUser,
     db: DbSession,
@@ -114,4 +120,4 @@ async def update_driver_license(
     except IntegrityError as ex:
         logger.exception(ex, user_id=auth["sub"])
         db.rollback()
-        raise HTTPInternalServer("Save to database failed")
+        raise HTTPInternalServerError("Save to database failed")

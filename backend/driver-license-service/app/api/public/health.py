@@ -1,23 +1,22 @@
-from datetime import datetime, timezone
 from fastapi.routing import APIRouter
-from fastapi.exceptions import HTTPException
 from sqlalchemy import text
+from datetime import datetime, timezone
 
-from api.dependency import DbSession
+from core.exceptions import HTTPServiceUnavailable
+from core.dependencies import DbSession
 
-health_router = APIRouter(prefix="/health", tags=["Health"])
+router = APIRouter(prefix="/health", tags=["Health"])
 
 
-@health_router.get("")
+@router.get("")
 async def health(db: DbSession):
     isDbReady: bool = False
     try:
-        # Esegue query semplice per testare connessione
         db.execute(text("SELECT 1"))
         isDbReady = True
     except Exception as e:
         isDbReady = False
-        raise HTTPException(status_code=503, detail="Database unreachable")
+        raise HTTPServiceUnavailable("Database unreachable")
 
     return {
         "status": "up/running",

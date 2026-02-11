@@ -14,7 +14,7 @@ sys.path.insert(0,str(app_path))
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 from alembic import context
-from app.settings import get_local_database_url
+from app.core.settings import get_local_database_url
 
 config = context.config
 config.set_main_option("sqlalchemy.url",get_local_database_url())

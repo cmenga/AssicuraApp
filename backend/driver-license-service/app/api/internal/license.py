@@ -1,18 +1,19 @@
-from fastapi import APIRouter, Path, Depends, status, Body
+from fastapi import APIRouter, status, Path, Depends, Body
 from typing import Annotated
 
-from api.internal.security import decode_jwt
-from api.license.schema import DriverLicenseIn
-from api.dependency import DbSession
-from api.exceptions import HTTPInternalServer, HTTPConflict
+from api.internal.schema import DriverLicenseIn
+
+from core.security import decode_jwt
+from core.dependencies import DbSession
+from core.settings import logger
+from core.exceptions import HTTPInternalServerError, HTTPConflict
+
 from database.models import DriverLicense
-from settings import logger
+
+router = APIRouter(prefix="/internal", include_in_schema=False)
 
 
-internal_router = APIRouter(prefix="/internal", include_in_schema=False)
-
-
-@internal_router.delete("/delete-licenses/{user_id}", status_code=status.HTTP_200_OK)
+@router.delete("/delete-licenses/{user_id}", status_code=status.HTTP_200_OK)
 async def delete_licenses(
     db: DbSession, payload=Depends(decode_jwt), user_id: str = Path()
 ):
@@ -30,12 +31,12 @@ async def delete_licenses(
     except Exception as ex:
         db.rollback()
         logger.exception(ex)
-        raise HTTPInternalServer("Deletion of records failed")
+        raise HTTPInternalServerError("Deletion of records failed")
 
     return {"deleted": len(fetched_licenses)}
 
 
-@internal_router.post("/add/{user_id}", status_code=status.HTTP_200_OK)
+@router.post("/add/{user_id}", status_code=status.HTTP_200_OK)
 async def add_new_license(
     db: DbSession,
     license: Annotated[DriverLicenseIn, Body()],
@@ -66,6 +67,6 @@ async def add_new_license(
     except Exception as ex:
         db.rollback()
         logger.exception(ex)
-        raise HTTPInternalServer("It was not possible to save the license")
-    
+        raise HTTPInternalServerError("It was not possible to save the license")
+
     return {"message": "request success", "status": "200"}

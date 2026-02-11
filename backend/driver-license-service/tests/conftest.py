@@ -1,50 +1,38 @@
+from dotenv import load_dotenv
 import sys
 from pathlib import Path
 import pytest
 from fastapi.testclient import TestClient
 
-
-# Fix root path and app path import
+# Fix sysy.path for testing
 root_path = Path(__file__).resolve().parents[1]
-app_path = root_path / "app"
+app_path = Path(__file__).resolve().parents[1] / "app"
 sys.path.insert(0, str(root_path))
 sys.path.insert(0, str(app_path))
+load_dotenv(dotenv_path=root_path / ".env.test")
 
-# Import test env
-from dotenv import load_dotenv
-
-test_env = root_path / ".env.test"
-load_dotenv(test_env)
+# launch all scripts
+from app.scripts.alembic_manager import main as alembic_main
+from app.scripts.populate_license_category import main as poppulate_license_category_main
 
 
-# Data cleaning for each test session
+# Engine e sessione per test in-memory
 from app.database.session import get_session
-from app.settings import get_local_database_url
+from app.core.settings import get_local_database_url
 
 TestingSessionLocal = get_session(get_local_database_url())
 
-# @pytest.fixture(autouse=True, scope="session")
-# def clean_data():
-#     from app.database.models import DriverLicense, LicenseCategory
-#     from sqlalchemy import delete
+poppulate_license_category_main()
+#alembic_main(["migrate"])
 
-#     db = TestingSessionLocal()     
-#     db.execute(delete(DriverLicense))
-#     db.execute(delete(LicenseCategory))
-#     db.commit()
-#     db.close()
-
-    
-    
-
-# Run all script
-from app.scripts.run_all import run_all
-run_all()
+# Clean data for testing
+@pytest.fixture(scope="session")
+def clean_data():
+    pass
 
 
-# Fixature for app FastAPI
+# App FastAPI
 from app.main import app
-from app.api.dependency import get_db
 
 
 # Override dependency DB
@@ -54,9 +42,6 @@ def override_get_db():
         yield db
     finally:
         db.close()
-
-
-app.dependency_overrides[get_db] = override_get_db
 
 
 # Fixture client

@@ -1,36 +1,26 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException, status
-from database.connection import await_database_ready
-from settings import logger
 from subprocess import run
 from pathlib import Path
-from scripts.run_all import run_all
+
+from database.connection import await_database_ready
+
+from core.settings import logger
+from core.exceptions import HTTPServiceUnavailable
+
+from scripts.migrate import main as migrate_db
+
+from scripts.populate_license_category import main as popolate_license_category 
 
 @asynccontextmanager
 async def startup(app: FastAPI):
     try:
         await_database_ready()
+        migrate_db()
+        popolate_license_category()
     except Exception as ex:
         logger.exception(ex)
-        raise HTTPException(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="The service is currently unreachable",
-        )
-
-    # Start subprocess for alembic migration
-
-    root_path = Path(__file__).resolve().parents[1]
-    try:
-        # Alembic upgrade head, idempotente
-        run(["alembic", "upgrade", "head"], cwd=str(root_path), check=True)
-    except Exception as ex:
-        logger.exception(ex)
-
-    # Run scripts internally instead of from the command line
-    try:
-        run_all()
-    except Exception as ex:
-        logger.exception(ex)
+        raise HTTPServiceUnavailable("The service is currently unreachable")
 
     logger.debug("Start server: http://localhost:8002")
     yield
