@@ -18,7 +18,21 @@ services:
       - assicura-app
     depends_on:
       - identity-db
-    
+
+  identity-db:
+    image: postgres:18.1-alpine3.23
+    container_name: identity-db
+    volumes:
+      - identity-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=users
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin
+    networks:
+      - assicura-app
+    ports:
+      - "5432:5432"
+
   driver-license-service:
     build:
       context: ./backend/driver-license-service
@@ -39,6 +53,48 @@ services:
     depends_on:
       - driver-license-db
 
+  driver-license-db:
+    image: postgres:18.1-alpine3.23
+    container_name: driver-license-db
+    volumes:
+      - driver-license-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=driver-license
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin
+    networks:
+      - assicura-app
+    ports:
+      - "5433:5432"
+
+  vehicle-police-service:
+    build:
+      context: ./backend/vehicle-police-service
+      target: dev
+    image: vehicle-police-service:dev
+    volumes:
+      - ./backend/vehicle-police-service/app:/app
+    ports:
+      - '8003:8001'
+    networks:
+      - assicura-app
+    depends_on:
+      - vehicle-police-db
+
+  vehicle-police-db:
+    image: postgres:18.1-alpine3.23
+    container_name: vehicle-police-db
+    volumes:
+      - vehicle-police-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=vehicle_police
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin
+    networks:
+      - assicura-app
+    ports:
+      - "5434:5432"
+
   # web-service:
   #   build: 
   #     context: ./frontend
@@ -55,34 +111,6 @@ services:
   #     - identity-service
   #     - driver-license-service
 
-  identity-db:
-    image: postgres:18.1-alpine3.23
-    container_name: identity-db
-    volumes:
-      - identity-data:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_DB=users
-      - POSTGRES_USER=admin
-      - POSTGRES_PASSWORD=admin
-    networks:
-      - assicura-app
-    ports:
-      - "5432:5432"
-
-  driver-license-db:
-    image: postgres:18.1-alpine3.23
-    container_name: driver-license-db
-    volumes:
-      - driver-license-data:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_DB=driver-license
-      - POSTGRES_USER=admin
-      - POSTGRES_PASSWORD=admin
-    networks:
-      - assicura-app
-    ports:
-      - "5433:5432"
-
 networks:
   assicura-app:
     name: assicura-app
@@ -93,4 +121,7 @@ volumes:
     driver: local
 
   identity-data:
+    driver: local
+
+  vehicle-police-data:
     driver: local
