@@ -1,5 +1,5 @@
 from tests.conftest import app,override_get_db
-from app.api.dependency import get_db 
+from app.database.session import get_db 
 
 app.dependency_overrides[get_db] = override_get_db
 

@@ -13,14 +13,11 @@ sys.path.insert(0, str(app_path))
 load_dotenv(dotenv_path=root_path / ".env.test")
 
 # launch all scripts
-from app.scripts.run_all import run_all
-
-run_all()
 
 # Engine e sessione per test in-memory
 from app.database.session import get_session
 
-from app.settings import get_local_database_url
+from app.core.settings import get_local_database_url
 TestingSessionLocal = get_session(get_local_database_url())
 
 # Clean data for testing
