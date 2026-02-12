@@ -58,7 +58,8 @@ List of allowed CORS origins.
 Used by CheckOriginMiddleware to validate incoming request origins.
 """
 ORIGINS = [
-    "http://localhost:8001",
+    "http://localhost:8002",
+    "http://localhost:3000"
 ]
 
 
