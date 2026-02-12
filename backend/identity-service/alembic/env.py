@@ -6,14 +6,12 @@ from sqlalchemy import pool
 from pathlib import Path
 import sys
 
-root_path = Path(__file__).resolve().parents[1]
-app_path = root_path / "app"
-sys.path.insert(0, str(root_path))
+app_path = Path(__file__).resolve().parents[1] / "app"
 sys.path.insert(0, str(app_path))
 
-
 from alembic import context
-from app.settings import get_local_database_url
+from app.core.settings import get_local_database_url
+
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

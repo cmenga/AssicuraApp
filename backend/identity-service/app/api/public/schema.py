@@ -221,6 +221,153 @@ class AddressRegistration(BaseModel):
         return self
 
 
+class TokenData(BaseModel):
+    access_token: str
+    type: Literal["Bearer"]
+
+
+class DriverLicenseIn(BaseModel):
+    date_of_birth: date
+    license_number: Annotated[str, AfterValidator(upper_value)]
+    license_code: Annotated[str, AfterValidator(upper_value)]
+    expiry_date: date
+    issue_date: date
+
+
+class UserDataOut(BaseModel):
+    date_of_birth: date
+    email: str
+    first_name: str
+    fiscal_id: str
+    gender: Literal["male", "female"]
+    last_name: str
+    phone_number: str
+    place_of_birth: str
+    model_config = {"from_attributes": True}
+
+
+class AddressDataOut(BaseModel):
+    cap: int
+    city: str
+    civic_number: str
+    province: str
+    street: str
+    type: str
+    model_config = {"from_attributes": True}
+
+
+class ContactDataIn(BaseModel):
+    email: EmailStr | None
+    phone_number: str | None
+
+    @field_validator("phone_number")
+    @classmethod
+    def validate_phone_number(cls, value: str | None):
+        if not value:
+            return value
+        if not value.isdigit():
+            raise ValueError(
+                "Il numero di telefono inserito deve contenere solo numeri"
+            )
+        return value
+
+
+class AddressDataIn(BaseModel):
+    street: Annotated[str, AfterValidator(upper_value), AfterValidator(strip_value)]
+    civic_number: str = Field(max_length=8)
+    city: Annotated[str, AfterValidator(upper_value), AfterValidator(strip_value)]
+    province: Annotated[str, AfterValidator(upper_value), AfterValidator(strip_value)]
+    cap: str
+
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "street": "Via Montenapoleone",
+                "civic_number": "172",
+                "city": "Milano",
+                "province": "ML",
+                "cap": "20121",
+                "type": "residence",
+            }
+        }
+    }
+
+    @field_validator("street")
+    @classmethod
+    def validate_street(cls, value: str):
+        pattern = r"^[A-Za-zÀ-ÖØ-öø-ÿ0-9\s\.'\-\/]+$"
+        if not re.match(pattern, value):
+            raise ValueError("La via contiene caratteri sbagliati")
+        return value
+
+    @field_validator("civic_number")
+    @classmethod
+    def validate_civic_number(cls, value: str):
+        pattern = r"^[0-9]+[A-Z]?([/-][0-9A-Z]+)?$"
+        if not re.match(pattern, value):
+            raise ValueError("Il civico non è valido")
+
+        return value
+
+    @field_validator("province")
+    @classmethod
+    def validate_province(cls, value: str):
+        validate_province(value)
+        return value
+
+    @field_validator("city")
+    @classmethod
+    def validate_city(cls, value: str):
+        validate_city(value)
+        return value
+
+    @field_validator("cap")
+    @classmethod
+    def validate_cap(cls, value: str):
+        if len(value) != 5:
+            raise ValueError("Il cap  italaino è formato da 5 numeri")
+        if not value.isdigit():
+            raise ValueError("Il cap non risulta valido")
+        return value
+
+    @model_validator(mode="after")
+    def validate_model(self):
+        validate_province_city(self.province, self.city)
+        validate_cap(city=self.city, province=self.province, cap=self.cap)
+        return self
+
+
+class ChangePasswordIn(BaseModel):
+    old_password: str
+    new_password: str
+    confirm_password: str
+
+    @field_validator("new_password")
+    @classmethod
+    def validate_new_password(cls, value: str):
+        from password_validator import PasswordValidator
+
+        schema = PasswordValidator()
+        schema.min(8).max(
+            64
+        ).has().uppercase().has().lowercase().has().digits().has().no().spaces()
+
+        if not schema.validate(value):
+            raise ValueError("La password non è valida")
+        if not re.search(r"[^a-zA-Z0-9]", value):
+            raise ValueError("La password non è valida")
+
+        return value
+
+    @model_validator(mode="after")
+    def validate_same_passwords(self):
+        if self.new_password != self.confirm_password:
+            raise ValueError("Le password non combaciano")
+        if self.new_password.upper() == self.old_password.upper():
+            raise ValueError("La nuova password non può essere uguale a quella vecchia")
+        return self
+
+
 def validate_province_city(province: str, city: str):
     """
     The function `validate_province_city` checks if a given city and province match in a list of
@@ -281,17 +428,3 @@ def validate_cap(city: str, cap: str, province: str):
 
     if not is_valid_cap:
         raise ValueError("Il cap inserito non è corretto")
-
-
-
-class TokenData(BaseModel):
-    access_token: str
-    type: Literal["Bearer"]
-    
-
-class DriverLicenseIn(BaseModel):
-    date_of_birth: date
-    license_number: Annotated[str, AfterValidator(upper_value)]
-    license_code: Annotated[str, AfterValidator(upper_value)]
-    expiry_date: date
-    issue_date: date

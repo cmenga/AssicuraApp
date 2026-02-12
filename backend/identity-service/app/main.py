@@ -1,7 +1,7 @@
 from fastapi import FastAPI, status
 
 from startup import startup
-from settings import logger, ORIGINS
+from core.settings import logger, ORIGINS
 
 
 # Create FastApi app
@@ -9,7 +9,7 @@ app: FastAPI = FastAPI(title="Core", version="0.0.1", lifespan=startup)
 
 
 # Middleware
-from middleware import LoggerMiddleware, CheckOriginMiddleware
+from core.middleware import LoggerMiddleware, CheckOriginMiddleware
 from fastapi.middleware.cors import CORSMiddleware
 
 app.add_middleware(CheckOriginMiddleware)
@@ -24,15 +24,15 @@ app.add_middleware(LoggerMiddleware, logger)
 
 
 # All routers are added here
-from api.health.router import health_router
-from api.auth.router import auth_router
-from api.user.router import user_router
-from api.internal.router import internal_router
+from api.public.health import router as health_router
+from api.public.auth import router as auth_router
+from api.public.user import router as user_router
+from api.internal.auth import router as internal_auth_router
 
 app.include_router(health_router)
 app.include_router(auth_router)
 app.include_router(user_router)
-app.include_router(internal_router)
+app.include_router(internal_auth_router)
 
 # Change validation error
 from fastapi.requests import Request

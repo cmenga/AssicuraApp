@@ -55,14 +55,13 @@ JWTRefreshService = Annotated[IJWTService, Depends(get_refresh_token_bearer)]
 # TOKEN vlidate
 from database.models import Token
 from datetime import datetime, timezone
-from settings import logger
 
 
 def get_access_token(jwt: JWTAccessService, assicurapp_token: str | None = Cookie(None)):
     if assicurapp_token:
         try:
             payload = jwt.decode(assicurapp_token)
-            return payload  # ok
+            return payload 
         except HTTPUnauthorized:
             return None
     return None

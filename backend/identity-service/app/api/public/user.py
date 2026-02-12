@@ -1,38 +1,24 @@
 from fastapi import APIRouter, status, Body, Response
-from typing import Annotated, List
-from sqlalchemy.exc import SQLAlchemyError
+from typing import List, Annotated
+from sqlalchemy.exc import IntegrityError
 
-from settings import logger
-from api.dependency import (
-    DbSession,
-    PasswordHasher,
-    AuthenticatedUser,
-)
+from core.dependencies import AuthenticatedUser, DbSession, PasswordHasher
+from core.exceptions import HTTPInternalServerError, HTTPNotFound, HTTPForbidden
+from core.settings import logger
 
-from api.utils import get_current_user, get_addresses, get_user_session_token
-from api.user.schema import (
-    UserDataOut,
-    AddressDataOut,
-    ContactDataIn,
-    AddressDataIn,
-    ChangePasswordIn,
-)
-from api.exceptions import (
-    HTTPInternalServer,
-    HTTPNotFound,
-    HTTPForbidden,
-)
+from api.public.utils import get_current_user, get_addresses, get_user_session_token
+from api.public.schema import UserDataOut, AddressDataOut, ContactDataIn, AddressDataIn, ChangePasswordIn
 
-user_router = APIRouter(tags=["user"], prefix="/user")
+router = APIRouter(tags=["user"], prefix="/user")
 
 
-@user_router.get("/me", status_code=status.HTTP_200_OK)
+@router.get("/me", status_code=status.HTTP_200_OK)
 async def get_logged_user(auth: AuthenticatedUser, db: DbSession) -> UserDataOut:
     user = get_current_user(db, auth["sub"])
     return UserDataOut.model_validate(user)
 
 
-@user_router.get("/addresses", status_code=status.HTTP_200_OK)
+@router.get("/addresses", status_code=status.HTTP_200_OK)
 async def get_user_address(
     auth: AuthenticatedUser, db: DbSession
 ) -> List[AddressDataOut]:
@@ -46,7 +32,7 @@ async def get_user_address(
     return addresses
 
 
-@user_router.patch("/update-contact", status_code=status.HTTP_200_OK)
+@router.patch("/update-contact", status_code=status.HTTP_200_OK)
 async def update_contact(
     auth: AuthenticatedUser,
     db: DbSession,
@@ -61,16 +47,16 @@ async def update_contact(
     try:
         db.commit()
         logger.info("update_contact_success", user_id=fetched_user.id)
-    except SQLAlchemyError as ex:
+    except IntegrityError as ex:
         db.rollback()
         logger.exception(
             ex,
             user_id=fetched_user.id,
         )
-        raise HTTPInternalServer(f"Errore database: {ex}")
+        raise HTTPInternalServerError(f"Errore database: {ex}")
 
 
-@user_router.put("/update-address", status_code=status.HTTP_204_NO_CONTENT)
+@router.put("/update-address", status_code=status.HTTP_204_NO_CONTENT)
 async def update_address(
     auth: AuthenticatedUser,
     db: DbSession,
@@ -86,13 +72,13 @@ async def update_address(
 
     try:
         db.commit()
-    except SQLAlchemyError as ex:
+    except IntegrityError as ex:
         db.rollback()
         logger.error(ex, user_id=auth["sub"])
-        raise HTTPInternalServer(f"Errore database: {ex}")
+        raise HTTPInternalServerError(f"Errore database: {ex}")
 
 
-@user_router.patch("/change-password", status_code=status.HTTP_200_OK)
+@router.patch("/change-password", status_code=status.HTTP_200_OK)
 async def change_password(
     auth: AuthenticatedUser,
     db: DbSession,
@@ -112,22 +98,23 @@ async def change_password(
 
     try:
         db.commit()
-    except SQLAlchemyError as ex:
+    except IntegrityError as ex:
         db.rollback()
         logger.exception(ex, user_id=fetched_user.id)
-        raise HTTPInternalServer(f"Errore database: {ex}")
+        raise HTTPInternalServerError(f"Errore database: {ex}")
 
     return {"success": True, "message": "Password aggiornata correttamente"}
 
 
-@user_router.delete("/delete", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/delete", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_user(response: Response, auth: AuthenticatedUser, db: DbSession):
     fetched_user = get_current_user(db, auth["sub"])
     user_id: str = str(fetched_user.id)
     fetched_token = get_user_session_token(db, user_id)
 
     try:
-        from api.internal.utils import call_internal_service
+        from core.utils import call_internal_service
+
         internal_response = await call_internal_service(
             f"http://driver-license-service:8001/internal/delete-licenses/{user_id}",
             method="DELETE",
@@ -142,15 +129,15 @@ async def delete_user(response: Response, auth: AuthenticatedUser, db: DbSession
     except Exception as ex:
         logger.exception(ex)
         db.rollback()
-        raise HTTPInternalServer(f"Database error: {ex}")
+        raise HTTPInternalServerError(f"Database error: {ex}")
 
     try:
         db.delete(fetched_user)
         db.commit()
-    except SQLAlchemyError as ex:
+    except IntegrityError as ex:
         db.rollback()
         logger.exception(ex, user_id=fetched_user.id, error=str(ex))
-        raise HTTPInternalServer(f"Database error: {ex}")
+        raise HTTPInternalServerError(f"Database error: {ex}")
 
     response.set_cookie(
         key="assicurapp_token", value="", max_age=0, httponly=True, secure=True

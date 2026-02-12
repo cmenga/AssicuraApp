@@ -8,12 +8,6 @@ services:
       - ./backend/identity-service/app:/app
     ports:
       - '8001:8001'
-    environment:
-      - SECRET_KEY=6HM_WkvCsJ6CKJvk2OKvvkR51jU8UAaOZ-Znm4Kbpjkk0xDnI15zD9rM8SYV09KWJcUcI2ONduj5_XWpdbSkBA
-      - ALGORITHM=HS256
-      - DATABASE_URL=postgresql://admin:admin@identity-db:5432/users
-      - SERVICE_NAME=identity-service
-      - SERVICE_SECRET=cTi4ZTSL889HBcYehMAg4HTEyCyykCoe6XXPiQGm8k8eSlcWAoTmvvFOQHJWIAIKCnNZzwO5xc2Aw4C_nTX7VQ
     networks:
       - assicura-app
     depends_on:

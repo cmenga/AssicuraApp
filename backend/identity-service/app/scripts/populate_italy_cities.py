@@ -1,4 +1,4 @@
-from settings import logger
+from core.settings import logger
 from vendor.data import cities
 
 def main():

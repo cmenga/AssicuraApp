@@ -2,13 +2,14 @@ from time import sleep
 from sqlalchemy import text
 
 from database.engine import get_engine
-from settings import logger
+from core.settings import logger
 
 
 def await_database_ready(timeout: int = 60) -> None:
     """
-    The function `await_database_ready` checks if the database is ready within a specified timeout
-    period and raises an error if it is unreachable.
+    Wait for the database to be ready by checking the connection.
+    @param timeout - the maximum time to wait for the database to be ready (default is 60 seconds)
+    @return None
     """
     logger.debug("startup.database_check")
     engine = get_engine()

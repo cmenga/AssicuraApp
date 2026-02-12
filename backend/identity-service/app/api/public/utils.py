@@ -1,8 +1,11 @@
 from sqlalchemy.orm import Session
+
+
+from core.security import IPasswordHasher
+from core.settings import logger
+from core.exceptions import HTTPNotFound, HTTPUnauthorized
+
 from database.models import User, Address, Token
-from api.security import IPasswordHasher
-from api.exceptions import HTTPUnauthorized, HTTPNotFound
-from settings import logger
 
 
 def get_user(db: Session, hasher: IPasswordHasher, email: str, password: str) -> User:
@@ -51,8 +54,7 @@ def get_addresses(db: Session, user_id: str):
     return fetched_address
 
 
-
-def get_user_session_token(db: Session, user_id: str)-> Token | None:
+def get_user_session_token(db: Session, user_id: str) -> Token | None:
     fetched_token = db.query(Token).filter(Token.user_id == user_id).first()
     if not fetched_token:
         return None

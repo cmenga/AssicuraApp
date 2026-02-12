@@ -21,16 +21,23 @@ from structlog.dev import ConsoleRenderer
 
 @dataclass
 class Logger:
+    """
+    A class for configuring and retrieving loggers based on the environment settings.
+    - `name`: The name of the logger.
+    - `to_prod`: A boolean indicating whether to configure for production environment.
+    """
+
     name: str
     to_prod: bool
-    
+
     def _prod_configuration(self):
         """
-        The `_prod_configuration` function configures processors and logger settings for a production
-        environment.
+        Configure the logging settings for the production environment.
+        This method sets up various processors and logger settings for logging to a file.
+        @return None
         """
         log_path = Path("/var/log/assicurapp/app.log")
-        
+
         configure(
             processors=[
                 add_log_level,
@@ -40,15 +47,16 @@ class Logger:
                 EventRenamer("message"),
                 JSONRenderer(),
             ],
-            logger_factory=WriteLoggerFactory(
-                file=log_path.open("a")
-            ),
+            logger_factory=WriteLoggerFactory(file=log_path.open("a")),
             wrapper_class=make_filtering_bound_logger(INFO),
         )
 
     def _debug_configuration(self):
         """
-        The `_debug_configuration` function configures processors for logging in Python.
+        This method configures the logging processors for the class instance.
+        It sets up various processors such as adding log level, timestamping, setting process ID,
+        renaming events, and rendering to the console with colors.
+        No parameters are passed explicitly as it operates on the instance itself.
         """
         configure(
             processors=[
@@ -61,10 +69,22 @@ class Logger:
         )
 
     def set_process_id(self, _, __, event_dict):
+        """
+        Set the process ID in the event dictionary using the `get_process_id()` function.
+        @param self - the instance of the class
+        @param _ - placeholder parameter
+        @param __ - placeholder parameter
+        @param event_dict - the dictionary containing event information
+        @return The event dictionary with the process ID added
+        """
         event_dict["process_id"] = get_process_id()
         return event_dict
 
     def get_logger(self):
+        """
+        Retrieve the logger based on the configuration set for production or debugging.
+        @return The logger object
+        """
         if self.to_prod:
             self._prod_configuration()
         else:

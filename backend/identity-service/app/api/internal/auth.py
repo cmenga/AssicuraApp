@@ -1,19 +1,25 @@
 from fastapi import APIRouter, status, Depends, Body
 from jose import jwt
 
+from core.dependencies import DbSession, JWTAccessToken
+from core.security import decode_jwt
+from core.exceptions import HTTPForbidden, HTTPUnauthorized
+from core.settings import logger
 
-from api.internal.security import decode_jwt
-from api.exceptions import HTTPForbidden, HTTPUnauthorized
-from api.dependency import DbSession, JWTAccessService
 from database.models import Token
-from settings import logger
 
-internal_router = APIRouter(prefix="/internal", include_in_schema=False)
+router = APIRouter(prefix="/internal", include_in_schema=False)
 
-@internal_router.post("/refresh",status_code=status.HTTP_200_OK)
-async def get_access_token(db: DbSession,jwt_access: JWTAccessService, _ = Depends(decode_jwt), access_token: str = Body(embed=True) ):
+
+@router.post("/refresh", status_code=status.HTTP_200_OK)
+async def get_access_token(
+    db: DbSession,
+    jwt_access: JWTAccessToken,
+    _=Depends(decode_jwt),
+    access_token: str = Body(embed=True),
+):
     payload = jwt.get_unverified_claims(access_token)
-    
+
     if "sub" not in payload:
         raise HTTPForbidden("Missing user token")
     sub = payload["sub"]
@@ -23,5 +29,5 @@ async def get_access_token(db: DbSession,jwt_access: JWTAccessService, _ = Depen
     if not fetched_token:
         raise HTTPUnauthorized("Not authorized")
 
-    new_access_token = jwt_access.encode(sub,minutes=1)
+    new_access_token = jwt_access.encode(sub, minutes=1)
     return {"access_token": new_access_token}

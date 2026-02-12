@@ -1,28 +1,22 @@
-from fastapi import APIRouter, Body, status, Depends, Response, Cookie, Form
+from fastapi import APIRouter, status, Body, Response, Depends, Form, Cookie
 from fastapi.security import OAuth2PasswordRequestForm
-from typing import Annotated
 from sqlalchemy.exc import IntegrityError
+from typing import Annotated
 from datetime import datetime, timezone, timedelta
 
-from api.dependency import (
-    DbSession,
-    PasswordHasher,
-    JWTAccessService,
-    JWTRefreshService,
-    AuthenticatedUser,
-)
-from api.auth.schema import UserRegistration, AddressRegistration, DriverLicenseIn
-from api.utils import get_user
-from api.exceptions import HTTPConflit, HTTPInternalServer
+from core.dependencies import DbSession, PasswordHasher, JWTAccessToken, JWTRefreshToken, AuthenticatedUser
+from core.exceptions import HTTPConflict, HTTPInternalServerError
+from core.settings import logger
 
 from database.models import User, Address, Token
-from settings import logger
+
+from api.public.schema import UserRegistration, AddressRegistration, DriverLicenseIn
+from api.public.utils import get_user
+
+router = APIRouter(tags=["auth"], prefix="/auth")
 
 
-auth_router = APIRouter(tags=["auth"], prefix="/auth")
-
-
-@auth_router.post("/sign-up", status_code=status.HTTP_204_NO_CONTENT)
+@router.post("/sign-up", status_code=status.HTTP_204_NO_CONTENT)
 async def create_new_account(
     db: DbSession,
     hasher: PasswordHasher,
@@ -33,7 +27,7 @@ async def create_new_account(
     existing_user = db.query(User).filter(User.fiscal_id == user.fiscal_id).first()
 
     if existing_user:
-        raise HTTPConflit("The user entered is already registered")
+        raise HTTPConflict("The user entered is already registered")
 
     hashed = hasher.hash(user.password)
     delattr(user, "password")
@@ -47,12 +41,12 @@ async def create_new_account(
         db.add(new_user)
         db.flush()
         # Service to service for license
-        from api.internal.utils import call_internal_service
-
+        from core.utils import call_internal_service
+        
         response = await call_internal_service(
             f"http://driver-license-service:8001/internal/add/{new_user.id}",
             method="POST",
-            json=license.model_dump(mode="json")
+            json=license.model_dump(mode="json"),
         )
         if response.status_code >= 400:
             return response
@@ -60,17 +54,16 @@ async def create_new_account(
     except IntegrityError as ex:
         logger.exception(ex)
         db.rollback()
-        raise HTTPInternalServer("There was a problem saving data")
+        raise HTTPInternalServerError("There was a problem saving data")
 
 
-
-@auth_router.post("/sign-in", status_code=status.HTTP_204_NO_CONTENT)
+@router.post("/sign-in", status_code=status.HTTP_204_NO_CONTENT)
 async def get_access_token(
     response: Response,
     db: DbSession,
     hasher: PasswordHasher,
-    jwt_access: JWTAccessService,
-    jwt_refresh: JWTRefreshService,
+    jwt_access: JWTAccessToken,
+    jwt_refresh: JWTRefreshToken,
     form_data: OAuth2PasswordRequestForm = Depends(),
     remember_me: Annotated[str, Form()] = "off",
 ):
@@ -126,10 +119,10 @@ async def get_access_token(
     except Exception as ex:
         logger.exception(ex)
         db.rollback()
-        raise HTTPInternalServer("Save to db failed")
+        raise HTTPInternalServerError("Save to db failed")
 
 
-@auth_router.post("/sign-out", status_code=status.HTTP_200_OK)
+@router.post("/sign-out", status_code=status.HTTP_200_OK)
 async def logout(response: Response, db: DbSession, assicurapp_session: str = Cookie()):
     fetched_session = db.query(Token).filter(Token.id == assicurapp_session).first()
 
@@ -151,10 +144,10 @@ async def logout(response: Response, db: DbSession, assicurapp_session: str = Co
             max_age=0,
         )
     except:
-        raise HTTPInternalServer("It was not possible to log out")
+        raise HTTPInternalServerError("It was not possible to log out")
     return {"message": "Logout successfully"}
 
 
-@auth_router.post("/protected", status_code=status.HTTP_204_NO_CONTENT)
+@router.post("/protected", status_code=status.HTTP_204_NO_CONTENT)
 async def verify_token(auth: AuthenticatedUser):
     return
