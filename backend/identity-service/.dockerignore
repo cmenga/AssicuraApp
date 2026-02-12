@@ -1,15 +1,15 @@
-app/__pycache__
-app/database/__pycache__
+alembic/__pycache__
+alembic/versions/__pycache__
 
+
+app/__pycache__
+app/api/internal/__pycache__
+app/api/public/__pycache__
+app/core/__pycache__
+app/database/__pycache__
+app/scripts/__pycache__
 app/vendor/lib/__pycache__
 app/vendor/data/__pycache__
 
-app/api/__pycache__
-app/api/health/__pycache__
-app/api/user/__pycache__
-app/api/auth/__pycache__
-app/api/internal/__pycache__
 
-alembic/__pycache__
-alembic/versions/__pycache__
 .pytest_cache
