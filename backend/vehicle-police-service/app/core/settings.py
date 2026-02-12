@@ -11,10 +11,10 @@ from vendor.lib.logger import Logger
 from dotenv import load_dotenv
 from pathlib import Path
 from core.exceptions import HTTPServiceUnavailable
+from json import loads
 
 root_env = Path(__file__).resolve().parents[1]
 load_dotenv(dotenv_path=root_env / ".env")
-
 
 
 """
@@ -49,8 +49,7 @@ def get_local_database_url():
     try:
         return get_database_url()
     except:
-        return "postgresql://admin:admin@localhost:8432/test_db"  
-
+        return "postgresql://admin:admin@localhost:8432/test_db"
 
 
 """
@@ -61,7 +60,6 @@ Used by CheckOriginMiddleware to validate incoming request origins.
 ORIGINS = [
     "http://localhost:8003",
 ]
-
 
 
 def _get_environ(name: str):
@@ -114,4 +112,4 @@ def get_trusted_services():
     Retrieve the trusted services from the environment variables.
     @return The trusted services.
     """
-    return _get_environ("TRUSTED_SERVICES")
+    return loads(_get_environ("TRUSTED_SERVICES"))
