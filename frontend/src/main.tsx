@@ -6,12 +6,14 @@ import { routeTree } from "./routeTree.gen.ts";
 
 import "./styles.css";
 import reportWebVitals from "./reportWebVitals.ts";
-import { AuthProvider } from "./shared/store/AuthProvider.tsx";
+import { AuthProvider, useAuth } from "./shared/store/AuthProvider.tsx";
+import { useEffect, useState } from "react";
+import Loader from "./shared/components/Loader.tsx";
 
 // Create a new router instance
 const router = createRouter({
   routeTree,
-  context: {},
+  context: { auth: { isAuthenticated: false, checkAuth: async () => { return; } } },
   defaultPreload: "intent",
   scrollRestoration: true,
   defaultStructuralSharing: true,
@@ -30,15 +32,36 @@ declare module "@tanstack/react-router" {
   }
 }
 
+
+function InnerApp() {
+  const [isLoading, setIsLoading] = useState(true);
+  const auth = useAuth();
+  
+  useEffect(() => {
+    async function authenticate() {
+      await auth.checkAuth();
+      setIsLoading(false)
+    }
+    authenticate();
+  }, []);
+  
+  return (
+    <>
+      {isLoading && (<Loader />)}
+      {!isLoading && <RouterProvider
+        router={router}
+        context={{ auth: auth }}
+      />}
+    </>
+  );
+}
 // Render the app
 const rootElement = document.getElementById("app");
 if (rootElement && !rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement);
-  root.render(
-    <AuthProvider>
-      <RouterProvider router={router} />
-    </AuthProvider>,
-  );
+  root.render(<AuthProvider>
+    <InnerApp />
+  </AuthProvider>);
 }
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))

@@ -2,6 +2,7 @@ import { useContext, useState, type ReactNode } from "react";
 import { AuthContext } from "./AuthContext";
 import { authApi } from "../api/http";
 import type { ActionResponse } from "../type";
+import { store } from "../store";
 
 type AuthProviderProps = {
   children: ReactNode;
@@ -9,6 +10,7 @@ type AuthProviderProps = {
 
 export function useAuth() {
   const context = useContext(AuthContext);
+
   if (!context) {
     throw new Error(
       "Questo contesto può essere utilizzato solo allàinterno di AuthProvider",
@@ -17,10 +19,20 @@ export function useAuth() {
   return context;
 }
 
+
+async function checkAuthenticated(): Promise<boolean> {
+  const response = await authApi.post("/protected");
+  if (response.status === 204) {
+    return true;
+  }
+  return false;
+}
+
 export function AuthProvider({ children }: AuthProviderProps) {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 
-  async function handleLogin(formData: FormData): Promise<ActionResponse> {
+
+  async function login(formData: FormData): Promise<ActionResponse> {
     const data = Object.fromEntries(formData.entries());
     const response = await authApi.post("/sign-in", data, {
       headers: {
@@ -30,20 +42,32 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const requestStatus = response.status;
     const detail = response.data.detail;
     if (requestStatus !== 204) {
-      return { message: detail, errors: { user: detail }, success: false };
+      return { errors: { user: detail }, success: false };
     }
 
     setIsAuthenticated(true);
-    return { message: "Login avvenuto con successo", success: true };
+    return { success: true };
   }
 
-  const contextValues = {
-    login: handleLogin,
-    isAuthenticated: isAuthenticated,
-  };
+  async function checkAuth() {
+    const isAuth = await checkAuthenticated();
+    if (isAuth) {
+      setIsAuthenticated(true);
+      return;
+    }
+    setIsAuthenticated(false);
+  }
+
+  async function logout() {
+    const response = await authApi.post("/sign-out");
+    if (response.status >= 300)
+      return
+    store.clear();
+    window.location.href = "/";
+  }
 
   return (
-    <AuthContext.Provider value={contextValues}>
+    <AuthContext.Provider value={{ isAuthenticated, checkAuth, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

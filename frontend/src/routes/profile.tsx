@@ -15,14 +15,13 @@ import type {
   UserModel,
 } from "@/shared/type";
 import { storeFetch, storeFetchThrow } from "@/shared/store";
-import { authApi, driverLicenseApi, userApi } from "@/shared/api/http";
+import { driverLicenseApi, userApi } from "@/shared/api/http";
 
 export const Route = createFileRoute("/profile")({
   component: RouteComponent,
-  loader: async () => {
+  loader: async ({context}) => {
+    if (!context.auth.isAuthenticated) throw redirect({to: "/auth/login"})
     try {
-      const response = await authApi.post("/protected");
-      if (response.status === 401) throw redirect({ to: "/auth/login" });
 
       await storeFetchThrow<UserModel>("user", userApi, "/me");
       await storeFetchThrow<AddressModel>("address", userApi, "/addresses");

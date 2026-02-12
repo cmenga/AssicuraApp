@@ -1,5 +1,4 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
-import { authApi } from "@/shared/api/http";
 import HomeNavigation from "@/features/navigation/components/HomeNavigation";
 import HeroSection from "@/features/index/components/HeroSection";
 import Benefits from "@/features/index/components/Benefits";
@@ -9,11 +8,8 @@ import HomeFooter from "@/features/index/components/footer/HomeFooter";
 
 export const Route = createFileRoute("/")({
   component: RouteComponent,
-  loader: async () => {
-    try {
-      const response = await authApi.post("/protected");
-      if (response.status !== 401) throw redirect({ to: "/home" });
-    } catch {}
+  loader: async ({ context }) => {
+    if (context.auth.isAuthenticated) throw redirect({ to: "/home" })
   },
 });
 

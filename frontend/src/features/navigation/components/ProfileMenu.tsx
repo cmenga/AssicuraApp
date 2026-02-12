@@ -1,8 +1,7 @@
 import { LogOut, User } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { authApi } from "@/shared/api/http";
-import { store } from "@/shared/store";
+import { useAuth } from "@/shared/store/AuthProvider";
 
 type ShowProfileMenuProps = {
   firstName: string;
@@ -12,8 +11,10 @@ type ShowProfileMenuProps = {
 };
 
 export default function ProfileMenu(props: ShowProfileMenuProps) {
+  const {logout} = useAuth()
   const { firstName, lastName, email, avatar } = props;
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+  
   return (
     <div className="relative">
       <div className="cursor-default flex items-center gap-3">
@@ -54,8 +55,3 @@ export default function ProfileMenu(props: ShowProfileMenuProps) {
   );
 }
 
-async function logout() {
-  authApi.post("/sign-out");
-  store.clear();
-  window.location.href = "/";
-}

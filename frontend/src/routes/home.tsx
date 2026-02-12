@@ -7,15 +7,14 @@ import MobileUserNavigation from "@/features/navigation/components/MobileUserNav
 import type { UserModel } from "@/shared/type";
 import { useStoreKeyOrThrow } from "@/shared/hooks/useStoreKey";
 import { storeFetchThrow } from "@/shared/store";
-import { authApi, userApi } from "@/shared/api/http";
+import { userApi } from "@/shared/api/http";
 
 export const Route = createFileRoute("/home")({
   component: RouteComponent,
-  loader: async () => {
-    try {
-      const response = await authApi.post("/protected");
-      if (response.status === 401) throw redirect({ to: "/auth/login" });
+  loader: async ({ context }) => {
+    if (!context.auth.isAuthenticated) throw redirect({to:"/auth/login"}) 
 
+    try {
       await storeFetchThrow<UserModel>("user", userApi, "/me");
     } catch {
       throw redirect({ to: "/" });
