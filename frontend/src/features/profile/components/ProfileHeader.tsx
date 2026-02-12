@@ -2,9 +2,9 @@ import type { ActionResponse, UserModel } from "@/shared/type";
 import { Trash2 } from "lucide-react";
 import { Modal } from "@/shared/components/Modal";
 import { useRef } from "react";
-import { useNavigate } from "@tanstack/react-router";
 import { useNotification } from "@/shared/hooks/useNotification";
 import { userApi } from "@/shared/api/http";
+import { useAuth } from "@/shared/store/AuthProvider";
 
 type ProfileHeaderProps = {
   user: UserModel;
@@ -34,7 +34,7 @@ export default function ProfileHeader({ user }: ProfileHeaderProps) {
 }
 
 function ConfirmDeleteModal() {
-  const navigate = useNavigate();
+  const {logout}= useAuth()
   const [Notify, setNotify] = useNotification(15000);
   const modalRef = useRef<HTMLDialogElement | null>(null);
 
@@ -58,7 +58,7 @@ function ConfirmDeleteModal() {
     if (response.success) {
       setNotify({ message: "Account cancellato con success", type: "success" });
       await new Promise((resolve) => setTimeout(resolve, 3000));
-      navigate({ to: "/" });
+      logout();
     }
     setNotify({ message: response.message as string, type: "error" });
   }
