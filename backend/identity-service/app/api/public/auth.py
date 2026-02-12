@@ -123,10 +123,11 @@ async def get_access_token(
 
 
 @router.post("/sign-out", status_code=status.HTTP_200_OK)
-async def logout(response: Response, db: DbSession, assicurapp_session: str = Cookie()):
-    fetched_session = db.query(Token).filter(Token.id == assicurapp_session).first()
-
-    db.delete(fetched_session)
+async def logout(response: Response, db: DbSession, assicurapp_session: str = Cookie(None)):
+    if assicurapp_session:
+        fetched_session = db.query(Token).filter(Token.id == assicurapp_session).first()
+        db.delete(fetched_session)
+        
     try:
         db.commit()
         response.set_cookie(
