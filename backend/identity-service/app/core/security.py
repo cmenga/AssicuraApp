@@ -1,11 +1,9 @@
-from typing import Protocol, TypedDict, Dict
+from typing import Protocol, TypedDict, Dict, Literal
 from abc import abstractmethod
 from passlib.context import CryptContext
 from jose import jwt, JWTError, ExpiredSignatureError
 from datetime import datetime, timezone, timedelta
 from fastapi import Request, Depends
-
-from database.models import Token
 
 from core.settings import (
     logger,
@@ -80,7 +78,7 @@ def get_password_hasher() -> IPasswordHasher:
 
 class AccessToken(TypedDict):
     sub: str
-    email: str
+    type: Literal["access","refresh"]
     exp: str
 
 
@@ -156,14 +154,15 @@ class RefreshTokenBearer(IJwtService):
         claims = {"sub": user_id, "type": "refresh", "exp": expire.timestamp()}
         return jwt.encode(claims=claims, key=self.secret_key, algorithm=self.algorithm)
 
-    def decode(self, token: str) -> Token:
+    def decode(self, token: str) -> AccessToken:
         try:
             payload = jwt.decode(token, key=self.secret_key, algorithms=self.algorithm)
-            return Token(**payload)
+            return AccessToken(**payload)
         except ExpiredSignatureError:
             raise HTTPUnauthorized("Token scaduto")
         except JWTError:
             raise HTTPUnauthorized("Token non valido")
+
 
 def get_jwt_refresh_token() -> IJwtService:
     return RefreshTokenBearer()
