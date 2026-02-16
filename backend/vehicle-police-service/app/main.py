@@ -14,7 +14,7 @@ from startup import startup
 
 
 # Create FastApi app
-app: FastAPI = FastAPI(title="Core", version="0.0.1", lifespan=startup)
+app: FastAPI = FastAPI(title="Vehicle police service", version="0.0.1", lifespan=startup)
 
 
 # Middleware setup
@@ -45,8 +45,11 @@ Currently included:
     - health_router: Provides health check endpoints.
 """
 from api.public.health import router as health_router
+from api.public.vehicle import router as vehicle_router
 from api.internal.router import router as internal_router
+
 app.include_router(health_router)
+app.include_router(vehicle_router)
 app.include_router(internal_router)
 
 # Change validation error

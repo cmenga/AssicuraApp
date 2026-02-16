@@ -114,7 +114,6 @@ class AccessTokenBeaer(IJwtService):
             payload = jwt.decode(token, algorithms=self.algorithm, key=self.secret_key)
             return AccessToken(**payload)
         except ExpiredSignatureError as ex:
-            logger.exception(ex)
             raise HTTPUnauthorized("Token expired")
         except JWTError as ex:
             logger.exception(ex)
