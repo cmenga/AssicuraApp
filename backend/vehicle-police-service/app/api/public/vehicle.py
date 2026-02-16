@@ -72,6 +72,7 @@ async def update_vehicle(
         raise HTTPInternalServerError("The changes could not be saved to the database")
 
 
+#TODO: deve controllare che non abbia assicurazioni a suo carico
 @router.delete('/delete/{vehicle_id}', status_code=status.HTTP_204_NO_CONTENT)
 async def delete_vehicle(db: DbSession, auth: AuthenticatedUser, vehicle_id: Annotated[str, Path()]):
     fetched_vehicle = db.query(Vehicle).filter(Vehicle.id == vehicle_id).filter(Vehicle.user_id == auth["sub"]).first()
