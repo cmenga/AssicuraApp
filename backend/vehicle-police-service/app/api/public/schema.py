@@ -1,6 +1,10 @@
 import uuid
 import re
-from pydantic import BaseModel, Field, field_validator, ConfigDict
+
+from pydantic import BaseModel
+from pydantic import Field
+from pydantic import field_validator
+
 
 
 PLATE_REGEX = re.compile(r"^[A-Z]{2}[0-9]{3}[A-Z]{2}$")

@@ -1,6 +1,10 @@
 import uuid
-from sqlalchemy import String, UUID, UniqueConstraint
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy import String
+from sqlalchemy import UUID
+from sqlalchemy import UniqueConstraint
+
+from sqlalchemy.orm import Mapped
+from sqlalchemy.orm import mapped_column
 
 from database.session import Base
 

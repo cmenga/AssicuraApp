@@ -1,12 +1,17 @@
-from fastapi import APIRouter, status, Body, Path
+from fastapi import APIRouter
+from fastapi import status
+from fastapi import Body
+from fastapi import Path
 from typing import Annotated, List
 
-from core.dependencies import DbSession, AuthenticatedUser
-from core.exceptions import HTTPConflict, HTTPInternalServerError, HTTPNotFound
-from core.settings import logger
+from core.dependencies import DbSession
+from core.dependencies import AuthenticatedUser
+
+from core.exceptions import HTTPConflict
+from core.exceptions import HTTPInternalServerError
+from core.exceptions import HTTPNotFound
 
 from database.models import Vehicle
-
 
 from api.public.schema import VehicleCreate, VehicleDetail, VehicleUpdate
 
@@ -17,6 +22,23 @@ router = APIRouter(prefix="/vehicle", tags=["vehicle"])
 async def add_vehicle(
     db: DbSession, auth: AuthenticatedUser, vehicle: Annotated[VehicleCreate, Body()]
 ) -> None:
+    """
+    This function adds a new vehicle to the database after checking if it is not already registered.
+
+    Args:
+      db (DbSession): The `db` parameter in the `add_vehicle` function is used to access the database
+    session. It is of type `DbSession`, which is likely a database session object that allows you to
+    interact with the database. In this function, the database session is used to query the database for
+    existing vehicles
+      auth (AuthenticatedUser): The `auth` parameter in the `add_vehicle` function represents the
+    authenticated user making the request. It is of type `AuthenticatedUser` and is used to identify the
+    user who is adding a new vehicle. The user's identity is typically extracted from the request
+    headers or tokens to ensure that the user
+      vehicle (Annotated[VehicleCreate, Body()]): The `vehicle` parameter in the `add_vehicle` function
+    represents the data of a new vehicle that is being added to the database. It is of type
+    `Annotated[VehicleCreate, Body()]`, which means it is expected to be in the request body and should
+    be validated against the `Vehicle
+    """
     fetched_vehicle = (
         db.query(Vehicle)
         .filter(Vehicle.user_id == auth["sub"])
@@ -31,13 +53,26 @@ async def add_vehicle(
         db.add(new_vehicle)
         db.commit()
     except Exception as ex:
-        logger.exception(ex)
         db.rollback()
         raise HTTPInternalServerError("Save to database failed")
 
 
 @router.get("/vehicles", status_code=status.HTTP_200_OK)
 async def get_vehicles(db: DbSession, auth: AuthenticatedUser) -> List[VehicleDetail]:
+    """
+    This Python function retrieves vehicles from a database based on the authenticated user and returns
+    a list of vehicle details.
+    
+    Args:
+      db (DbSession): DbSession is a database session object that allows interaction with the database.
+      auth (AuthenticatedUser): The `auth` parameter in the `get_vehicles` function is of type
+    `AuthenticatedUser`. It is used to authenticate the user and retrieve vehicles associated with the
+    authenticated user. The `auth` parameter likely contains information such as the user's ID (`sub`)
+    to filter the vehicles belonging to that
+    
+    Returns:
+      A list of `VehicleDetail` objects is being returned.
+    """
     fetched_vehicles = db.query(Vehicle).filter(Vehicle.user_id == auth["sub"]).all()
     if fetched_vehicles is None:
         return []
@@ -55,35 +90,66 @@ async def update_vehicle(
     vehicle_id: Annotated[str, Path()],
     vehicle: Annotated[VehicleUpdate, Body()],
 ):
-    fetched_vehicle = db.query(Vehicle).filter(Vehicle.id == vehicle_id).filter(Vehicle.user_id == auth["sub"]).first()
+    """
+    This Python function updates a vehicle record in a database based on the provided data.
+
+    Args:
+      db (DbSession): The `db` parameter is used to access the database session within the
+    `update_vehicle` function. It is of type `DbSession`, which likely represents a database session
+    object that allows you to interact with the database. This parameter is essential for querying and
+    updating the database with information related to the vehicles
+      auth (AuthenticatedUser): The `auth` parameter in the `update_vehicle` function represents the
+    authenticated user making the request. It is of type `AuthenticatedUser` and is used to verify the
+    user's identity and permissions before allowing them to update the vehicle information in the
+    database.
+      vehicle_id (Annotated[str, Path()]): The `vehicle_id` parameter in the code snippet represents the
+    unique identifier of the vehicle that needs to be updated. It is extracted from the path of the API
+    endpoint `/update/{vehicle_id}`. This identifier is used to locate the specific vehicle in the
+    database that the user wants to update.
+      vehicle (Annotated[VehicleUpdate, Body()]): The `vehicle` parameter in the `update_vehicle`
+    function represents the data that will be used to update a specific vehicle in the database. It is
+    expected to be of type `VehicleUpdate` and is annotated with `Body()`, indicating that the data will
+    be coming from the request body.
+    """
+    fetched_vehicle = (
+        db.query(Vehicle)
+        .filter(Vehicle.id == vehicle_id)
+        .filter(Vehicle.user_id == auth["sub"])
+        .first()
+    )
     if fetched_vehicle is None:
         raise HTTPNotFound("Vehicle not found")
 
     for field, value in vehicle.model_dump(exclude_unset=True).items():
-        if value is None: 
+        if value is None:
             continue
         setattr(fetched_vehicle, field, value)
 
     try:
         db.commit()
     except Exception as ex:
-        logger.exception(ex)
         db.rollback()
         raise HTTPInternalServerError("The changes could not be saved to the database")
 
 
-#TODO: deve controllare che non abbia assicurazioni a suo carico
-@router.delete('/delete/{vehicle_id}', status_code=status.HTTP_204_NO_CONTENT)
-async def delete_vehicle(db: DbSession, auth: AuthenticatedUser, vehicle_id: Annotated[str, Path()]):
-    fetched_vehicle = db.query(Vehicle).filter(Vehicle.id == vehicle_id).filter(Vehicle.user_id == auth["sub"]).first()
-    
+# TODO: deve controllare che non abbia assicurazioni a suo carico
+@router.delete("/delete/{vehicle_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_vehicle(
+    db: DbSession, auth: AuthenticatedUser, vehicle_id: Annotated[str, Path()]
+):
+    fetched_vehicle = (
+        db.query(Vehicle)
+        .filter(Vehicle.id == vehicle_id)
+        .filter(Vehicle.user_id == auth["sub"])
+        .first()
+    )
+
     if fetched_vehicle is None:
         raise HTTPNotFound("Vehicle not found")
-    
+
     try:
         db.delete(fetched_vehicle)
         db.commit()
     except Exception as ex:
-        logger.exception(ex)
         db.rollback()
         raise HTTPInternalServerError("Problem with vehicle cancellation")
