@@ -1,27 +1,28 @@
-from fastapi import Depends, Cookie, Response
-from typing import Annotated
+from fastapi import Depends
+from fastapi import Cookie
+from fastapi import Response
 from sqlalchemy.orm import Session
-from datetime import datetime, timezone
-
 from database.session import get_db
-from database.models import Token
 
-from core.security import (
-    IPasswordHasher,
-    IJwtService,
-    AccessToken,
-    get_password_hasher,
-    get_jwt_access_token,
-    get_jwt_refresh_token
-)
+from typing import Annotated
+
+from core.security import IPasswordHasher
+from core.security import IJwtService
+from core.security import AccessToken
+from core.security import get_jwt_access_token
+from core.security import get_jwt_refresh_token
+from core.security import get_password_hasher
+
 from core.exceptions import HTTPUnauthorized
+
+from database.models import Token
+from datetime import datetime
+from datetime import timezone
 
 DbSession = Annotated[Session, Depends(get_db)]
 PasswordHasher = Annotated[IPasswordHasher, Depends(get_password_hasher)]
 JWTAccessToken = Annotated[IJwtService, Depends(get_jwt_access_token)]
 JWTRefreshToken = Annotated[IJwtService, Depends(get_jwt_refresh_token)]
-
-
 def acquire_access_token(
     jwt: JWTAccessToken, assicurapp_token: str | None = Cookie(None)
 ):

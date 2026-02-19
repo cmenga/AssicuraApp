@@ -1,5 +1,5 @@
-from core.settings import logger
-from vendor.data import cities
+from core.logging import logger
+from data import cities
 
 def main():
     cities.load_from_json(__file__)

@@ -1,16 +1,17 @@
-from pydantic import (
-    BaseModel,
-    Field,
-    EmailStr,
-    field_validator,
-    model_validator,
-    AfterValidator,
-)
-from datetime import date, timedelta
-from typing import Literal, Annotated
+from pydantic import BaseModel
+from pydantic import Field
+from pydantic import EmailStr
+from pydantic import field_validator
+from pydantic import model_validator
+from pydantic import AfterValidator
+
+from datetime import date
+from datetime import timedelta
+from typing import Literal
+from typing import Annotated
 import re
 
-from vendor.data.cities import ITALY_CITIES
+from data.cities import ITALY_CITIES
 
 
 def strip_string_value(value: str):

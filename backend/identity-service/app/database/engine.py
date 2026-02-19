@@ -1,17 +1,29 @@
 from sqlalchemy import create_engine
-from typing import Dict, Any
+from typing import Dict
+from typing import Any
 
 _engines:  Dict[str,Any] = {}
 
 def get_engine(db_url: str | None = None):
     """
-    Create or retrieve a database engine based on the provided URL. If no URL is provided, it will get the URL from the settings. The engine is stored in a global dictionary for caching purposes.
-    @param db_url - The URL of the database (optional, if not provided, it will be fetched from settings)
-    @return The database engine
+    The function `get_engine` retrieves or creates a database engine based on the provided URL or a
+    default URL.
+    
+    Args:
+      db_url (str | None): The `db_url` parameter in the `get_engine` function is a string that
+    represents the URL of the database. It has a default value of `None`, which means if no URL is
+    provided when calling the function, it will attempt to retrieve the database URL from the
+    `get_database_url`
+    
+    Returns:
+      The `get_engine` function returns the SQLAlchemy engine associated with the provided `db_url`. If
+    `db_url` is not provided, it retrieves the database URL from the configuration and then returns the
+    engine associated with that URL. If the engine for the given `db_url` does not exist in the
+    `_engines` dictionary, a new engine is created using `create_engine` function with `pool
     """
     global _engines
     if db_url is None:
-        from core.settings import get_database_url
+        from core.config import get_database_url
         db_url = get_database_url()
         
     if db_url not in _engines:

@@ -1,17 +1,20 @@
-from sqlalchemy import (
-    Boolean,
-    UUID,
-    String,
-    Date,
-    ForeignKey,
-    Integer,
-    CheckConstraint,
-    UniqueConstraint,
-)
-from sqlalchemy.orm import Mapped, mapped_column, relationship
 import uuid
-from datetime import date
+
+from sqlalchemy import Boolean
+from sqlalchemy import UUID
+from sqlalchemy import String
+from sqlalchemy import Date
+from sqlalchemy import ForeignKey
+from sqlalchemy import Integer
+from sqlalchemy import CheckConstraint
+from sqlalchemy import UniqueConstraint
+
+from sqlalchemy.orm import Mapped
+from sqlalchemy.orm import mapped_column
+from sqlalchemy.orm import  relationship
+
 from database.session import Base
+from datetime import date
 
 
 class User(Base):

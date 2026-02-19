@@ -1,7 +1,7 @@
 from typing import Dict, List
 from pathlib import Path
 from json import load
-from core.settings import logger
+from core.logging import logger
 
 ITALY_CITIES: List[Dict] = list()
 
