@@ -1,57 +1,55 @@
-from fastapi import Response, Request, status
+from fastapi import Response 
+from fastapi import Request
+from fastapi import status
 from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
 
-from core.settings import ORIGINS, logger
-
+from core.config import ORIGINS
+from time import perf_counter
 
 class LoggerMiddleware(BaseHTTPMiddleware):
-    """
-    A middleware class for logging request and response information.
-    @param BaseHTTPMiddleware - The base HTTP middleware class.
-    @method __init__ - Initializes the LoggerMiddleware with the provided app and logger.
-    @method dispatch - Dispatches requests and logs information about the request and response.
-    @param request - The incoming request object.
-    @param call_next - The next middleware or endpoint to call.
-    @return The response object.
-    """
-
-    def __init__(self, app, logger) -> None:
-        super().__init__(app)
-        self.logger = logger
-
     async def dispatch(self, request: Request, call_next) -> Response:
         """
-        A method to dispatch requests and log information about the request and response.
-        @param request - The incoming request object.
-        @param call_next - The next middleware or endpoint to call.
-        @return The response object.
+        The `dispatch` function logs information about incoming requests and their responses based on the
+        response status code.
+
+        Args:
+          request (Request): The `dispatch` function you provided is an asynchronous function that acts
+        as a middleware in a web application. It logs information about incoming requests and their
+        responses using the provided `logger` object.
+          call_next: The `call_next` parameter in the `dispatch` method is a callable that represents the
+        next middleware or endpoint in the application's request-response cycle. When `dispatch` is
+        called, it will pass the incoming request to `call_next` to continue processing the request and
+        eventually generate a response.
         """
+
+        logger = request.state.logger
         client_host = request.client.host if request.client else "unknown"
-        if request.method != "OPTIONS":
-            print("", flush=True)
-            self.logger.info(
-                "request_started",
-                method=request.method,
-                path=request.url.path,
-                client=client_host,
-            )
+
+        logger.info(
+            "request_started",
+            method=request.method,
+            path=request.url.path,
+            client=client_host,
+        )
+        start = perf_counter()
         response = await call_next(request)
+        duration = round(perf_counter() - start, 3)
 
         if request.method != "OPTIONS":
             code = response.status_code
             match code // 100:
                 case 2:
-                    level = self.logger.info
+                    level = logger.info
                     message = "request_successful"
                 case 3:
-                    level = self.logger.info
+                    level = logger.info
                     message = "request_redirect"
                 case 4:
-                    level = self.logger.warning
+                    level = logger.warning
                     message = "client_error"
                 case 5:
-                    level = self.logger.error
+                    level = logger.error
                     message = "server_error"
                 case _:
                     return response
@@ -61,31 +59,38 @@ class LoggerMiddleware(BaseHTTPMiddleware):
                 method=request.method,
                 client=client_host,
                 status=response.status_code,
+                duration=duration
             )
 
         return response
 
 
 class CheckOriginMiddleware(BaseHTTPMiddleware):
-    """
-    A middleware class to check the origin header of incoming requests against a list of allowed origins.
-    @param BaseHTTPMiddleware - The base class for HTTP middleware.
-    @method dispatch - A method to handle incoming requests by checking the origin header against a list of allowed origins. If the origin is not allowed, log an error and return a JSON response with a 403 status code. Otherwise, proceed with the request.
-    @param request - The incoming request object.
-    @param call_next - The next middleware or endpoint to call in the request chain.
-    @return The response to the request.
-    """
 
     async def dispatch(self, request: Request, call_next):
         """
-        Define a method to handle incoming requests by checking the origin header against a list of allowed origins. If the origin is not allowed, log an error and return a JSON response with a 403 status code. Otherwise, proceed with the request.
-        @param request - The incoming request object.
-        @param call_next - The next middleware or endpoint to call in the request chain.
-        @return The response to the request.
+        The `dispatch` function in the given Python code snippet checks if the request origin is allowed and
+        logs an error if not, returning a 403 Forbidden response if the origin is not allowed.
+
+        Args:
+          request (Request): The `request` parameter in the `dispatch` method is of type `Request`. It
+        represents the incoming HTTP request that the application will process. It contains information such
+        as headers, method, URL path, client IP address, etc.
+          call_next: The `call_next` parameter in the `dispatch` method is a reference to the next
+        middleware or endpoint handler in the ASGI application. When you call `await call_next(request)`,
+        you are essentially passing the request to the next middleware or endpoint in the chain for further
+        processing.
+
+        Returns:
+          The code is returning a JSONResponse with a message "Origin not allowed" and a status code of 403
+        (HTTP Forbidden) if the origin in the request headers is not in the list of allowed origins
+        (ORIGINS). If the origin is allowed, it will proceed to call the next middleware or endpoint handler
+        by awaiting call_next(request).
         """
+
         origin = request.headers.get("origin")
         if origin and origin not in ORIGINS:
-            logger.error(
+            request.state.logger.error(
                 "Request blocked: origin not allowed",
                 origin=origin,
                 method=request.method,

@@ -1,4 +1,5 @@
-from core.settings import logger, get_local_database_url
+from core.config import get_database_url
+from core.logging import logger
 from database.session import get_session
 from database.models import LicenseCategory
 
@@ -26,7 +27,7 @@ file_name =__file__.split("/")[-1]
 def main():
     global file_name
     logger.debug("script.populate_database", name="populate_license_catecory", script=file_name, status="start")
-    LocalSession = get_session(get_local_database_url())
+    LocalSession = get_session(get_database_url())
     is_add_record = False
     
     with LocalSession() as session:

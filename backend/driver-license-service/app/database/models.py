@@ -1,17 +1,19 @@
-from sqlalchemy import (
-    UUID,
-    String,
-    CheckConstraint,
-    Date,
-    UniqueConstraint,
-    SmallInteger,
-    Boolean,
-    ForeignKey,
-)
-from sqlalchemy.orm import Mapped, mapped_column, relationship
-from datetime import date
 import uuid
 
+from sqlalchemy import UUID
+from sqlalchemy import String
+from sqlalchemy import CheckConstraint
+from sqlalchemy import Date
+from sqlalchemy import UniqueConstraint
+from sqlalchemy import SmallInteger
+from sqlalchemy import Boolean
+from sqlalchemy import ForeignKey
+
+from sqlalchemy.orm import Mapped
+from sqlalchemy.orm import mapped_column
+from sqlalchemy.orm import relationship
+
+from datetime import date
 
 from database.session import Base
 

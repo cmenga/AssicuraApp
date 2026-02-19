@@ -1,5 +1,11 @@
-from pydantic import BaseModel, AfterValidator, field_validator, model_validator
-from typing import Annotated, Literal
+from pydantic import BaseModel
+from pydantic import AfterValidator
+from pydantic import field_validator
+from pydantic import model_validator
+
+from typing import Annotated
+from typing import Literal
+
 from datetime import date
 import re
 
@@ -56,4 +62,3 @@ class DriverLicenseOut(BaseModel):
     expiry_date: date
     issue_date: date
     id: str
-

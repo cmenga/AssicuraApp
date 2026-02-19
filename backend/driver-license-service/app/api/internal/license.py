@@ -5,8 +5,8 @@ from api.internal.schema import DriverLicenseIn
 
 from core.security import decode_jwt
 from core.dependencies import DbSession
-from core.settings import logger
-from core.exceptions import HTTPInternalServerError, HTTPConflict
+from core.exceptions import HTTPInternalServerError
+from core.exceptions import HTTPConflict
 
 from database.models import DriverLicense
 
@@ -15,9 +15,31 @@ router = APIRouter(prefix="/internal", include_in_schema=False)
 
 @router.delete("/delete-licenses/{user_id}", status_code=status.HTTP_200_OK)
 async def delete_licenses(
-    db: DbSession, payload=Depends(decode_jwt), user_id: str = Path()
+    db: DbSession,
+    _=Depends(decode_jwt), 
+    user_id: str = Path()
 ):
-    logger.info("Internal request", type=payload["type"], service=payload["sub"])
+    """
+    This Python function deletes driver licenses associated with a specific user ID from a database
+    session.
+
+    Args:
+      db (DbSession): The `db` parameter is an instance of a database session that is used to interact
+    with the database. It is typically used to query, insert, update, and delete records in the
+    database. In this case, it is being used to query and delete `DriverLicense` records associated with
+    a specific
+      _: The underscore (_) in the function signature is used as a placeholder variable name for the
+    dependency injection of the `decode_jwt` function. In this case, it is being used to indicate that
+    the result of the `decode_jwt` dependency is not being used within the function body.
+      user_id (str): The `user_id` parameter is a string that is expected to be provided as a path
+    parameter in the URL when calling the `delete_licenses` endpoint. This parameter is used to identify
+    the user whose driver licenses need to be deleted from the database.
+
+    Returns:
+      The function `delete_licenses` returns a dictionary with a key "deleted" indicating the number of
+    licenses that were deleted. If no licenses were found for the specified user_id, it returns
+    {"deleted": 0}.
+    """
     fetched_licenses = (
         db.query(DriverLicense).filter(DriverLicense.user_id == user_id).all()
     )
@@ -30,19 +52,38 @@ async def delete_licenses(
         db.commit()
     except Exception as ex:
         db.rollback()
-        logger.exception(ex)
         raise HTTPInternalServerError("Deletion of records failed")
 
     return {"deleted": len(fetched_licenses)}
 
 
-@router.post("/add/{user_id}", status_code=status.HTTP_200_OK)
+@router.post("/add/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def add_new_license(
     db: DbSession,
     license: Annotated[DriverLicenseIn, Body()],
     user_id: Annotated[str, Path()],
     _=Depends(decode_jwt),
 ):
+    """
+    This Python function adds a new driver's license to a database if it does not already exist for a
+    given user ID.
+
+    Args:
+      db (DbSession): The `db` parameter is an instance of the `DbSession` class, which is used to
+    interact with the database. It is typically used to query, add, update, or delete records in the
+    database within the context of the current request. In this case, it is being used to query
+      license (Annotated[DriverLicenseIn, Body()]): The `license` parameter in the `add_new_license`
+    function represents the data of a driver's license that is being added to the database. It includes
+    the following fields:
+      user_id (Annotated[str, Path()]): The `user_id` parameter in the code snippet represents the user
+    ID that is passed in the URL path when making a POST request to add a new driver's license for a
+    specific user. This ID is used to associate the new driver's license with the corresponding user in
+    the database.
+      _: The underscore (_) in the function signature is used as a placeholder variable. In this case,
+    it is used to represent the result of the `decode_jwt` dependency, which is being used for
+    authentication or authorization purposes. The actual result of `decode_jwt` is not being used in the
+    function, so
+    """
     fetched_license = (
         db.query(DriverLicense)
         .filter(DriverLicense.user_id == user_id)
@@ -66,7 +107,4 @@ async def add_new_license(
         db.commit()
     except Exception as ex:
         db.rollback()
-        logger.exception(ex)
         raise HTTPInternalServerError("It was not possible to save the license")
-
-    return {"message": "request success", "status": "200"}

@@ -2,8 +2,7 @@ from time import sleep
 from sqlalchemy import text
 
 from database.engine import get_engine
-from core.settings import logger
-
+from core.logging import logger
 
 def await_database_ready(timeout: int = 60) -> None:
     """

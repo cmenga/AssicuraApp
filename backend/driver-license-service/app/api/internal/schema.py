@@ -1,7 +1,13 @@
 import re
-from pydantic import BaseModel, AfterValidator, field_validator, model_validator
 from datetime import date
-from typing import Annotated, Literal
+
+from pydantic import BaseModel
+from pydantic import AfterValidator
+from pydantic import field_validator
+from pydantic import model_validator
+
+from typing import Annotated
+from typing import Literal
 
 LicenseCode = Literal["A", "B", "C"]
 def upper_value(value: str):

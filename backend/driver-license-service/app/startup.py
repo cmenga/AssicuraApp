@@ -1,25 +1,21 @@
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, HTTPException, status
-from subprocess import run
-from pathlib import Path
+from fastapi import FastAPI
 
 from database.connection import await_database_ready
 
-from core.settings import logger
 from core.exceptions import HTTPServiceUnavailable
+from core.logging import logger
 
-from scripts.migrate import main as migrate_db
-
-from scripts.populate_license_category import main as popolate_license_category 
+from scripts import migrate
+from scripts import populate_license_category 
 
 @asynccontextmanager
 async def startup(app: FastAPI):
     try:
         await_database_ready()
-        migrate_db()
-        popolate_license_category()
+        migrate.main()
+        populate_license_category.main()
     except Exception as ex:
-        logger.exception(ex)
         raise HTTPServiceUnavailable("The service is currently unreachable")
 
     logger.debug("Start server: http://localhost:8002")

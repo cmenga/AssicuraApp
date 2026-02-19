@@ -4,20 +4,20 @@ from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 
 
-#Fix root path
+# Fix root path
 from pathlib import Path
 import sys
-root_path = Path(__file__).resolve().parents[1]
-app_path = root_path / "app"
-sys.path.insert(0,str(app_path))
+
+app_path = Path(__file__).resolve().parents[1] / "app"
+sys.path.insert(0, str(app_path))
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 from alembic import context
-from app.core.settings import get_local_database_url
+from app.core.config import get_database_url
 
 config = context.config
-config.set_main_option("sqlalchemy.url",get_local_database_url())
+config.set_main_option("sqlalchemy.url", get_database_url())
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
 if config.config_file_name is not None:

@@ -1,15 +1,26 @@
-from fastapi import APIRouter, status, Body, Path
-from typing import List, Annotated
+from fastapi import APIRouter
+from fastapi import status
+from fastapi import Body
+from fastapi import Path
+
+from typing import List
+from typing import Annotated
+
 from sqlalchemy.orm import Session 
 from sqlalchemy import or_
 from sqlalchemy.exc import IntegrityError
 
-from core.settings import logger
-from core.dependencies import DbSession, AuthenticatedUser
-from core.exceptions import HTTPConflict, HTTPInternalServerError, HTTPNotFound
-from database.models import DriverLicense
-from api.public.schema import DriverLicenseIn, DriverLicenseOut
+from core.dependencies import DbSession
+from core.dependencies import AuthenticatedUser
 
+from core.exceptions import HTTPConflict
+from core.exceptions import HTTPInternalServerError
+from core.exceptions import HTTPNotFound
+
+from api.public.schema import DriverLicenseIn
+from api.public.schema import DriverLicenseOut
+
+from database.models import DriverLicense
 
 router = APIRouter(tags=["driver license"],prefix="/driver-license")
 
@@ -75,7 +86,6 @@ async def add_new_driver_license(
     try:
         db.commit()
     except IntegrityError as ex:
-        logger.exception(ex, user_id=auth["sub"])
         db.rollback()
         raise HTTPInternalServerError("Save to database failed")
 
@@ -93,7 +103,6 @@ async def delete_driver_license(
         db.delete(fetched_license)
         db.commit()
     except Exception as ex:
-        logger.exception(ex, user_id=auth["sub"])
         db.rollback()
         raise HTTPInternalServerError("Save to database failed")
 
@@ -106,7 +115,7 @@ async def update_driver_license(
     license: Annotated[DriverLicenseIn, Body()],
 ):
     fetched_license = (
-        db.query(DriverLicense).filter(DriverLicense.id == license_id).first()
+        db.query(DriverLicense).filter(DriverLicense.id == license_id).filter(DriverLicense.user_id == auth["sub"]).first()
     )
     if fetched_license is None:
         raise HTTPNotFound("License not found")
@@ -118,6 +127,5 @@ async def update_driver_license(
     try:
         db.commit()
     except IntegrityError as ex:
-        logger.exception(ex, user_id=auth["sub"])
         db.rollback()
         raise HTTPInternalServerError("Save to database failed")
