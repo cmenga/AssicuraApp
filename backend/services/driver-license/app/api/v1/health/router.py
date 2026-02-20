@@ -31,10 +31,10 @@ def liveness():
 
 
 @router.get("/ready")
-def readiness(db: DbSession):
+async def readiness(db: DbSession):
     checks = {}
 
-    db_ok, db_status = check_database(db)
+    db_ok, db_status = await check_database(db)
     checks["database"] = db_status
 
     overall_status = "ready" if db_ok else "not_ready"
