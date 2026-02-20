@@ -218,7 +218,7 @@ async def delete_user(response: Response, auth: AuthenticatedUser, db: DbSession
 
     try:
         internal_response = await call_internal_service(
-            f"http://driver-license-service:8001/internal/delete-licenses/{user_id}",
+            f"http://driver-license-service:8001/v1/driver-license/internal/delete-licenses/{user_id}",
             method="DELETE",
         )
 

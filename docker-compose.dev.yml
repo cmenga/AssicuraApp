@@ -51,9 +51,5 @@ networks:
     driver: bridge
 
 volumes:
-
-
-
-
   vehicle-police-data:
     driver: local
