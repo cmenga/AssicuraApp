@@ -17,7 +17,7 @@ services:
 
 
   identity-db:
-    image: postgres:18
+    image: postgres:18.2
     container_name: identity-db
     volumes:
       - identity-data:/var/lib/postgresql

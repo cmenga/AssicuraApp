@@ -1,32 +1,4 @@
 services:
-  identity-service:
-    build:
-      context: ./backend/services/identity
-      target: dev
-    image: identity-service:dev
-    volumes:
-      - ./backend/services/identity/app:/app
-    ports:
-      - '8001:8001'
-    networks:
-      - assicura-app
-    depends_on:
-      identity-db:
-        condition: service_healthy
-
-
-
-  identity-db:
-    image: postgres:18.1-alpine3.23
-    container_name: identity-db
-    volumes:
-      - identity-data:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_DB=users
-      - POSTGRES_USER=admin
-      - POSTGRES_PASSWORD=admin
-    networks:
-      - assicura-app
 
   driver-license-service:
     build:
@@ -109,8 +81,7 @@ volumes:
   driver-license-data:
     driver: local
 
-  identity-data:
-    driver: local
+
 
   vehicle-police-data:
     driver: local
