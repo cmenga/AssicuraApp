@@ -14,8 +14,6 @@ services:
       identity-db:
         condition: service_healthy
 
-
-
   identity-db:
     image: postgres:18.2
     container_name: identity-db
@@ -28,12 +26,12 @@ services:
     networks:
       - assicura-app
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      test: [ "CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}" ]
       interval: 5s
       timeout: 5s
       retries: 20
 
-######################################
+  ######################################
   driver-license-service:
     build:
       context: ./backend/services/driver-license
@@ -61,12 +59,12 @@ services:
     networks:
       - assicura-app
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      test: [ "CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}" ]
       interval: 5s
       timeout: 5s
       retries: 20
-   
-######################################
+
+  ######################################
   vehicle-police-service:
     build:
       context: ./backend/services/vehicle-police
@@ -94,7 +92,7 @@ services:
     networks:
       - assicura-app
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      test: [ "CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}" ]
       interval: 5s
       timeout: 5s
       retries: 20
