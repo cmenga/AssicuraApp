@@ -1,10 +1,11 @@
-from sqlalchemy import text
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
 
 
-def check_database(db: Session) -> tuple[bool, str]:
+async def check_database(db: AsyncSession) -> tuple[bool, str]:
     try:
-        db.execute(text("SELECT 1"))
+        statement = select(1)
+        await db.execute(statement)
         return True, "ok"
     except Exception as ex:
         return False, ex.__str__()
