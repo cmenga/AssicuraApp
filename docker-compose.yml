@@ -67,6 +67,40 @@ services:
       retries: 20
    
 ######################################
+  vehicle-police-service:
+    build:
+      context: ./backend/services/vehicle-police
+      target: dev
+    image: vehicle-police-service:dev
+    volumes:
+      - ./backend/services/vehicle-police/app:/app
+    ports:
+      - '8003:8001'
+    networks:
+      - assicura-app
+    depends_on:
+      vehicle-police-db:
+        condition: service_healthy
+
+  vehicle-police-db:
+    image: postgres:18.2
+    container_name: vehicle-police-db
+    volumes:
+      - vehicle-police-data:/var/lib/postgresql
+    environment:
+      - POSTGRES_DB=police
+      - POSTGRES_USER=police_user
+      - POSTGRES_PASSWORD=c2w;|=W692<>
+    networks:
+      - assicura-app
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+######################################
+
 networks:
   assicura-app:
     name: assicura-app
@@ -76,4 +110,6 @@ volumes:
   identity-data:
     driver: local
   driver-license-data:
+    driver: local
+  vehicle-police-data:
     driver: local
