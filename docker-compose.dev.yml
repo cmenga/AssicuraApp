@@ -1,17 +1,20 @@
 services:
   identity-service:
     build:
-      context: ./backend/identity-service
+      context: ./backend/services/identity
       target: dev
     image: identity-service:dev
     volumes:
-      - ./backend/identity-service/app:/app
+      - ./backend/services/identity/app:/app
     ports:
       - '8001:8001'
     networks:
       - assicura-app
     depends_on:
-      - identity-db
+      identity-db:
+        condition: service_healthy
+
+
 
   identity-db:
     image: postgres:18.1-alpine3.23
@@ -24,8 +27,6 @@ services:
       - POSTGRES_PASSWORD=admin
     networks:
       - assicura-app
-    ports:
-      - "5432:5432"
 
   driver-license-service:
     build:

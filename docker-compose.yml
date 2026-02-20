@@ -1,0 +1,43 @@
+services:
+  identity-service:
+    build:
+      context: ./backend/services/identity
+      target: dev
+    image: identity-service:dev
+    volumes:
+      - ./backend/services/identity/app:/app
+    ports:
+      - '8001:8001'
+    networks:
+      - assicura-app
+    depends_on:
+      identity-db:
+        condition: service_healthy
+
+
+
+  identity-db:
+    image: postgres:18
+    container_name: identity-db
+    volumes:
+      - identity-data:/var/lib/postgresql
+    environment:
+      - POSTGRES_DB=users
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin
+    networks:
+      - assicura-app
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+networks:
+  assicura-app:
+    name: assicura-app
+    driver: bridge
+
+volumes:
+  identity-data:
+    driver: local
