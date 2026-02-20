@@ -3,7 +3,7 @@ services:
     build:
       context: ./backend/services/identity
       target: dev
-    image: identity-service:dev
+    image: identity:dev
     volumes:
       - ./backend/services/identity/app:/app
     ports:
@@ -33,6 +33,40 @@ services:
       timeout: 5s
       retries: 20
 
+######################################
+  driver-license-service:
+    build:
+      context: ./backend/services/driver-license
+      target: dev
+    image: driver-license:dev
+    volumes:
+      - ./backend/services/driver-license/app:/app
+    ports:
+      - '8002:8001'
+    networks:
+      - assicura-app
+    depends_on:
+      driver-license-db:
+        condition: service_healthy
+
+  driver-license-db:
+    image: postgres:18.2
+    container_name: driver-license-db
+    volumes:
+      - driver-license-data:/var/lib/postgresql
+    environment:
+      - POSTGRES_DB=license
+      - POSTGRES_USER=license_user
+      - POSTGRES_PASSWORD=52C2V_|zg6Wz
+    networks:
+      - assicura-app
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+   
+######################################
 networks:
   assicura-app:
     name: assicura-app
@@ -40,4 +74,6 @@ networks:
 
 volumes:
   identity-data:
+    driver: local
+  driver-license-data:
     driver: local

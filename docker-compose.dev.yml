@@ -1,32 +1,5 @@
 services:
 
-  driver-license-service:
-    build:
-      context: ./backend/driver-license-service
-      target: dev
-    image: driver-license-service:dev
-    volumes:
-      - ./backend/driver-license-service/app:/app
-    ports:
-      - '8002:8001'
-    networks:
-      - assicura-app
-    depends_on:
-      - driver-license-db
-
-  driver-license-db:
-    image: postgres:18.1-alpine3.23
-    container_name: driver-license-db
-    volumes:
-      - driver-license-data:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_DB=driver-license
-      - POSTGRES_USER=admin
-      - POSTGRES_PASSWORD=admin
-    networks:
-      - assicura-app
-    ports:
-      - "5433:5432"
 
   vehicle-police-service:
     build:
@@ -78,8 +51,7 @@ networks:
     driver: bridge
 
 volumes:
-  driver-license-data:
-    driver: local
+
 
 
 
