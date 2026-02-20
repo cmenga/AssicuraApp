@@ -23,8 +23,8 @@ services:
       - identity-data:/var/lib/postgresql
     environment:
       - POSTGRES_DB=users
-      - POSTGRES_USER=admin
-      - POSTGRES_PASSWORD=admin
+      - POSTGRES_USER=assicura_user
+      - POSTGRES_PASSWORD=la0x4Tx0U!d!sb<p
     networks:
       - assicura-app
     healthcheck:
