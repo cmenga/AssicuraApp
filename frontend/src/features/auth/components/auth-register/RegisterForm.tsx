@@ -48,7 +48,6 @@ export default function RegisterForm(props: RegisterFormProps) {
   const navigate = useNavigate();
   const [state, setState] = useState<UserRegisterForm>(FORM_STATE_INIT);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  console.log(errors)
   const formRef = useRef<HTMLFormElement | null>(null);
 
   async function handleSubmit(event: any) {

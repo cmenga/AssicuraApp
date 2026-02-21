@@ -29,7 +29,7 @@ export default function ChangePassword() {
   function handleEdit() {
     if (cardRef.current) cardRef.current.onEdit(false);
   }
-  console.log(errors)
+
   return (
     <UpdateCardForm
       ref={cardRef}
@@ -83,7 +83,7 @@ async function submitPasswordAction(
 ): Promise<ActionResponse> {
   const data = Object.fromEntries(formData.entries());
   const response = await userApi.patch("/change-password", data);
-  console.log(response)
+
   switch (response.status) {
     case 403:
       return {
