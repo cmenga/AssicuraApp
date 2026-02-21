@@ -25,6 +25,7 @@ class LoggerMiddleware(BaseHTTPMiddleware):
 
         logger = request.state.logger
 
+        print("\n\n", flush=True)
         logger.info("request_started")
         start = perf_counter()
         response = await call_next(request)
@@ -48,7 +49,7 @@ class LoggerMiddleware(BaseHTTPMiddleware):
                 case _:
                     return response
 
-            level(message,duration=duration)
+            level(message,duration=duration,status_code=code)
 
         return response
 

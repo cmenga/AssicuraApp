@@ -121,6 +121,7 @@ async function action(
 ): Promise<ActionResponse> {
   const data = Object.fromEntries(formData.entries());
   const response = await driverLicenseApi.post("/add", data);
+
   switch (response.status) {
     case 422:
       let errors = {};
@@ -132,7 +133,7 @@ async function action(
       });
       return { errors: errors, success: false };
     case 409:
-      return { errors: { body: response.data.detail }, success: false };
+      return { errors: { body: response.data.message }, success: false };
   }
   return { success: true };
 }

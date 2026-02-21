@@ -1,5 +1,6 @@
 from fastapi import APIRouter
 from fastapi import status
+from fastapi import Request
 from fastapi import Body
 from fastapi import Path
 from fastapi import Depends
@@ -32,16 +33,24 @@ router = APIRouter(tags=["driver license"], prefix="/driver-license")
 
 @router.get("/licenses")
 async def get_licenses(
-    db: DbSession, auth: AuthenticatedUser
+    request: Request, db: DbSession, auth: AuthenticatedUser
 ) -> List[DriverLicenseDetail] | None:
-    fetched_licenses = await get_driver_licenses(db, auth["sub"])
+    fetched_licenses = await get_driver_licenses(request, db, auth["sub"])
 
     if not fetched_licenses:
         return None
 
     returned_license = list()
     for license in fetched_licenses:
-        returned_license.append(DriverLicenseDetail(id=str(license.id), **license))
+        returned_license.append(
+            DriverLicenseDetail(
+                id=str(license.id),
+                code=license.code,
+                expiry_date=license.expiry_date,
+                issue_date=license.issue_date,
+                number=license.number,
+            )
+        )
     return returned_license
 
 
@@ -99,8 +108,12 @@ async def update_driver_license(
     license_id: Annotated[str, Path()],
     license: Annotated[DriverLicenseCreate, Body()],
 ):
-    statement = select(DriverLicense).filter(DriverLicense.id == license_id).filter(DriverLicense.user_id == auth["sub"])
-    result = await db.execute(statement) 
+    statement = (
+        select(DriverLicense)
+        .filter(DriverLicense.id == license_id)
+        .filter(DriverLicense.user_id == auth["sub"])
+    )
+    result = await db.execute(statement)
     fetched_license = result.scalar()
     if fetched_license is None:
         raise HTTPNotFound("License not found")
@@ -116,7 +129,11 @@ async def update_driver_license(
 
 
 # internal
-@router.delete("/internal/delete-licenses/{user_id}", status_code=status.HTTP_200_OK, include_in_schema=False)
+@router.delete(
+    "/internal/delete-licenses/{user_id}",
+    status_code=status.HTTP_200_OK,
+    include_in_schema=False,
+)
 async def delete_licenses(db: DbSession, _=Depends(decode_jwt), user_id: str = Path()):
     """
     This Python function deletes driver licenses associated with a specific user ID from a database
@@ -142,7 +159,7 @@ async def delete_licenses(db: DbSession, _=Depends(decode_jwt), user_id: str = P
     statement = select(DriverLicense).filter(DriverLicense.user_id == user_id)
     result = await db.execute(statement)
     fetched_licenses = result.scalars().all()
-    
+
     if not fetched_licenses:
         return {"deleted": 0}
 
@@ -155,7 +172,11 @@ async def delete_licenses(db: DbSession, _=Depends(decode_jwt), user_id: str = P
     return {"deleted": len(fetched_licenses)}
 
 
-@router.post("/internal/add/{user_id}", status_code=status.HTTP_204_NO_CONTENT, include_in_schema=False)
+@router.post(
+    "/internal/add/{user_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    include_in_schema=False,
+)
 async def add_new_license(
     db: DbSession,
     license: Annotated[DriverLicenseCreate, Body()],
@@ -182,10 +203,15 @@ async def add_new_license(
     authentication or authorization purposes. The actual result of `decode_jwt` is not being used in the
     function, so
     """
-    statement = select(DriverLicense).filter(DriverLicense.user_id == user_id).filter(DriverLicense.code == license.license_code).filter(DriverLicense.number == license.license_number)
+    statement = (
+        select(DriverLicense)
+        .filter(DriverLicense.user_id == user_id)
+        .filter(DriverLicense.code == license.license_code)
+        .filter(DriverLicense.number == license.license_number)
+    )
     result = await db.execute(statement)
     fetched_license = result.scalar()
-    
+
     if fetched_license:
         raise HTTPConflict("The license exists in the database")
 
