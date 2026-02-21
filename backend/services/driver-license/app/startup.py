@@ -15,5 +15,5 @@ async def startup(app: FastAPI):
             await seed(session)
     except Exception:
         raise HTTPServiceUnavailable("The service is currently unreachable")
-    logger.debug("Start server: http://localhost:8001")
+    logger.debug("Start server: http://localhost:8002")
     yield

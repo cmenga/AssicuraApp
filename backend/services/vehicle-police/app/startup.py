@@ -10,5 +10,5 @@ async def startup(app: FastAPI):
         pass
     except Exception as ex:
         raise HTTPServiceUnavailable("The service is currently unreachable")
-    logger.debug("Start server: http://localhost:8001")
+    logger.debug("Start server: http://localhost:8003")
     yield
