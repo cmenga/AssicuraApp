@@ -29,6 +29,7 @@ export default function ChangePassword() {
   function handleEdit() {
     if (cardRef.current) cardRef.current.onEdit(false);
   }
+  console.log(errors)
   return (
     <UpdateCardForm
       ref={cardRef}
@@ -82,7 +83,7 @@ async function submitPasswordAction(
 ): Promise<ActionResponse> {
   const data = Object.fromEntries(formData.entries());
   const response = await userApi.patch("/change-password", data);
-
+  console.log(response)
   switch (response.status) {
     case 403:
       return {
@@ -90,7 +91,12 @@ async function submitPasswordAction(
         success: false,
       };
     case 422:
-      return { errors: response.data.errors, success: false };
+      let errors = {}
+      response.data.errors.forEach((err: Record<string, string>) => (errors = {
+        ...errors,
+        [err.field]: err.message
+      }))
+      return { errors: errors, success: false };
   }
   return { message: "Password cambiata con successo", success: true };
 }

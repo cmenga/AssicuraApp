@@ -1,7 +1,8 @@
 from fastapi import APIRouter
 from fastapi import status
-from fastapi import Body
 from fastapi import Response
+from fastapi import Request
+from fastapi import Body
 
 from typing import List
 from typing import Annotated
@@ -104,7 +105,7 @@ async def update_contact(
     request body that conforms to the `ContactUpdate` model. The `Body()` annotation indicates that the
     data should
     """
-    fetched_user = get_current_user(db, auth["sub"])
+    fetched_user = await get_current_user(db, auth["sub"])
     for key, value in item.model_dump().items():
         if value:
             setattr(fetched_user, key, value)
@@ -141,6 +142,10 @@ async def update_address(
     fecthed_address = fecthed_addresses[0]
 
     for key, value in address.model_dump().items():
+        if key == "cap" and isinstance(value, str):
+            cap = int(value)
+            setattr(fecthed_address, key, cap)
+            continue
         setattr(fecthed_address, key, value)
 
     try:
@@ -192,9 +197,9 @@ async def change_password(
         raise HTTPInternalServerError(f"There were some problems updating the password")
 
 
-#TODO ci deve essere la verifica in caso ci siano delle polize attive
+# TODO ci deve essere la verifica in caso ci siano delle polize attive
 @router.delete("/delete", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_user(response: Response, auth: AuthenticatedUser, db: DbSession):
+async def delete_user(request: Request ,response: Response, auth: AuthenticatedUser, db: DbSession):
     """
     This function deletes a user from the database, revokes their session token, and calls an internal
     service to delete related licenses.
@@ -220,6 +225,7 @@ async def delete_user(response: Response, auth: AuthenticatedUser, db: DbSession
         internal_response = await call_internal_service(
             f"http://driver-license-service:8001/v1/driver-license/internal/delete-licenses/{user_id}",
             method="DELETE",
+            correlation_id=request.state.correlation_id
         )
 
         if internal_response.status_code != 200:

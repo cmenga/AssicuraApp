@@ -35,19 +35,11 @@ class AsyncDBSession:
         try:
             if exc_type:
                 await self.session.rollback()
-                logger.error("DB rollback", type=exc_type, value=exc, traceback=tb)
             else:
                 try:
                     await self.session.commit()
-                except Exception as commit_exc:
-                    await self.session.rollback()
-                    tb_str = "".join(format_tb(commit_exc.__traceback__))
-                    logger.error(
-                        "DB rollback after commit",
-                        type=type(commit_exc).__name__,
-                        value=commit_exc.__str__(),
-                        traceback=tb_str,
-                    )
+                except:
+                    await self.session.rollback()    
                     raise
         finally:
             if self.session:
