@@ -48,7 +48,7 @@ export default function RegisterForm(props: RegisterFormProps) {
   const navigate = useNavigate();
   const [state, setState] = useState<UserRegisterForm>(FORM_STATE_INIT);
   const [errors, setErrors] = useState<Record<string, string>>({});
-
+  console.log(errors)
   const formRef = useRef<HTMLFormElement | null>(null);
 
   async function handleSubmit(event: any) {
@@ -84,7 +84,7 @@ export default function RegisterForm(props: RegisterFormProps) {
 
   return (
     <form onSubmit={handleSubmit} ref={formRef}>
-      {errors?.existing_user && <ErrorMessage message={errors.existing_user} />}
+      {errors?.error && <ErrorMessage message={errors.error} />}
       {currentStep === 1 && (
         <RegisterStepOne
           firstName={state.first_name}

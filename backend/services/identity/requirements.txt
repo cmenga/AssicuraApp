@@ -9,3 +9,5 @@ python-jose>=3.5.0
 structlog>=25.5.0
 passlib[argon2]
 pydantic-settings>=2.13.1
+password-validator>=1.0
+python-codicefiscale>=0.10.3

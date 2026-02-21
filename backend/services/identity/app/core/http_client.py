@@ -14,9 +14,10 @@ async def call_internal_service(
     params: Optional[Dict[str, Any]] = None,
     timeout: int = 10,
     circuit_breaker=None,
+    correlation_id = str | None
 ):
     token = create_service_token()
-    headers = {"Authorization": f"Bearer {token}"}
+    headers = {"Authorization": f"Bearer {token}", "X-Correlation-ID": correlation_id}
 
     if circuit_breaker and not circuit_breaker.allow_request():
         raise HTTPServiceUnavailable("Service unavailable (circuit open)")

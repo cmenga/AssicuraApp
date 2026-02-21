@@ -11,3 +11,5 @@ pytest>=8.4.1
 requests>=2.32.4
 passlib[argon2]
 pydantic-settings>=2.13.1
+password-validator>=1.0
+python-codicefiscale>=0.10.3

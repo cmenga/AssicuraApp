@@ -89,16 +89,21 @@ async function submitUser(
     license: {...license}
   };
   const response = await authApi.post("/sign-up", dto);
-  
   switch (response.status) {
     case 422:
       return validationErrorResponse(response.data);
     case 409:
       return {
-        message: "409",
+        message: response.data.message,
         success: false,
-        errors: { existing_user: response.data.detail },
+        errors: { error: "L'utente esiste già" },
       };
+    case 500:
+      return {
+        message: response.data.message,
+        success: false,
+        errors: { error: "Non è stato possibile salvare i dati, riprovi più tardi" }
+      }
   }
 
   store.set<boolean>("sign-up", true);

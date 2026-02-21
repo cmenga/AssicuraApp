@@ -74,7 +74,7 @@ from fastapi.exceptions import RequestValidationError
 
 
 @app.exception_handler(RequestValidationError)
-async def validation_exception_handler(exc: RequestValidationError):
+async def validation_exception_handler(request: Request,exc: RequestValidationError):
     """
     The function handles validation errors by returning a JSON response with details about the invalid
     input data.
@@ -98,7 +98,7 @@ async def validation_exception_handler(exc: RequestValidationError):
             "errors": [
                 {
                     "field": err["loc"][-1],
-                    "message": err["msg"],
+                    "message": err["msg"].replace("Value error, ",""),
                 }
                 for err in exc.errors()
             ],

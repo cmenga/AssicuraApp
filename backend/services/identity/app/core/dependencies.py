@@ -49,7 +49,7 @@ async def refresh_token(
     
     statement = select(Token).filter(Token.id == assicurapp_session)
     result = await db.execute(statement)
-    refresh_token = result.scalar_one()
+    refresh_token = result.scalar()
 
     if not refresh_token or refresh_token.expires_at < int(
         datetime.now(timezone.utc).timestamp()

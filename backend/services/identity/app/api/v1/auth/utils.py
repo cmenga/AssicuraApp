@@ -35,7 +35,7 @@ async def get_user(db: AsyncSession, hasher: IPasswordHasher, email: str, passwo
     """
     statement = select(User).filter(User.email == email)
     result = await db.execute(statement)
-    fetched_user = result.scalar_one()
+    fetched_user = result.scalar()
 
     if not fetched_user:
         raise HTTPNotFound("L'utente inserito non esiste")

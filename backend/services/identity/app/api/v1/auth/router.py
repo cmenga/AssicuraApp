@@ -46,6 +46,7 @@ router = APIRouter(tags=["auth"], prefix="/auth")
 
 @router.post("/sign-up", status_code=status.HTTP_204_NO_CONTENT)
 async def create_new_account(
+    request: Request,
     db: DbSession,
     hasher: PasswordHasher,
     user: Annotated[UserCreate, Body()],
@@ -95,21 +96,25 @@ async def create_new_account(
     delattr(user, "confirm_password")
 
     new_user = User(hashed_password=hashed, **user.model_dump())
-    new_address = Address(**address.model_dump())
+    cap = int(address.cap)
+    delattr(address,"cap")
+    new_address = Address(cap=cap,**address.model_dump())
     new_user.addresses.append(new_address)
 
     try:
         db.add(new_user)
         await db.flush()
+        
         # Service to service for license
         response = await call_internal_service(
             f"http://driver-license-service:8001/v1/driver-license/internal/add/{new_user.id}",
             method="POST",
             json=license.model_dump(mode="json"),
+            correlation_id=request.state.correlation_id
         )
         if response.status_code >= 400:
+            await db.rollback()
             return response
-
     except Exception:
         raise HTTPInternalServerError("There was a problem saving data")
 

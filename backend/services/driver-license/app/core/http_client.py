@@ -9,6 +9,7 @@ import httpx
 
 async def call_internal_service(
     url: str,
+    correlation_id: str,
     method: str = "GET",
     json: Optional[Dict[str, Any]] = None,
     params: Optional[Dict[str, Any]] = None,
@@ -16,7 +17,7 @@ async def call_internal_service(
     circuit_breaker=None,
 ):
     token = create_service_token()
-    headers = {"Authorization": f"Bearer {token}"}
+    headers = {"Authorization": f"Bearer {token}", "X-Correlation-ID": correlation_id}
 
     if circuit_breaker and not circuit_breaker.allow_request():
         raise HTTPServiceUnavailable("Service unavailable (circuit open)")
