@@ -1,8 +1,8 @@
-"""Add vehicle model
+"""Add vehicle table
 
-Revision ID: 88e3012139d7
+Revision ID: eae4e8c28f81
 Revises: 
-Create Date: 2026-02-16 09:35:11.497219
+Create Date: 2026-02-22 18:11:46.248207
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '88e3012139d7'
+revision: str = 'eae4e8c28f81'
 down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -27,7 +27,9 @@ def upgrade() -> None:
     sa.Column('vin', sa.String(length=50), nullable=False),
     sa.Column('brand', sa.String(length=50), nullable=False),
     sa.Column('model', sa.String(length=50), nullable=False),
+    sa.Column('type', sa.String(length=20), nullable=False),
     sa.Column('user_id', sa.UUID(), nullable=False),
+    sa.CheckConstraint("type IN ('auto','moto','autocarro')", name='ck_vehicle_type'),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('vin'),
     sa.UniqueConstraint('vin', 'user_id', name='uq_vehicle_owner')

@@ -1,5 +1,4 @@
 import uuid
-from typing import Literal
 from core.database import Base
 
 from sqlalchemy.orm import Mapped
@@ -9,8 +8,6 @@ from sqlalchemy import UUID
 from sqlalchemy import String
 from sqlalchemy import UniqueConstraint
 from sqlalchemy import CheckConstraint
-
-vehicle_type: Literal["auto", "moto", "autocarro"]
 
 
 class Vehicle(Base):
