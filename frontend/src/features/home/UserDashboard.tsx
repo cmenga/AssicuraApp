@@ -1,6 +1,6 @@
 import OverviewDashboard from "./components/OverviewDashboard";
 import PoliciesDashboard from "./components/PoliciesDashboard";
-import DocumentsDashBoard from "./components/DocumentsDashboard";
+
 import type { UserModel } from "@/shared/type";
 
 type UserDashboardProps = {
@@ -24,7 +24,6 @@ export default function UserDashboard({
           />
         )}
         {activeTab === "policies" && <PoliciesDashboard />}
-        {activeTab === "documents" && <DocumentsDashBoard />}
       </div>
     </div>
   );

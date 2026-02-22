@@ -20,7 +20,7 @@ export default function UserNavigation(props: UserNavigationProps) {
               AssicuraFacile
             </h1>
             <div className="hidden md:flex items-center gap-1 bg-gray-100 rounded-lg p-1">
-              {["overview", "policies", "documents"].map((tab) => (
+              {["overview", "policies"].map((tab) => (
                 <button
                   key={tab}
                   onClick={() => onActiveTab(tab)}
@@ -32,7 +32,6 @@ export default function UserNavigation(props: UserNavigationProps) {
                 >
                   {tab === "overview" && "Dashboard"}
                   {tab === "policies" && "Polizze"}
-                  {tab === "documents" && "Documenti"}
                 </button>
               ))}
             </div>
