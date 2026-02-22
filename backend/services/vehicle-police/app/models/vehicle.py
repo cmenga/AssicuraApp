@@ -1,4 +1,5 @@
 import uuid
+from typing import Literal
 from core.database import Base
 
 from sqlalchemy.orm import Mapped
@@ -7,6 +8,10 @@ from sqlalchemy.orm import mapped_column
 from sqlalchemy import UUID
 from sqlalchemy import String
 from sqlalchemy import UniqueConstraint
+from sqlalchemy import CheckConstraint
+
+vehicle_type: Literal["auto", "moto", "autocarro"]
+
 
 class Vehicle(Base):
     __tablename__ = "vehicles"
@@ -22,10 +27,14 @@ class Vehicle(Base):
 
     brand: Mapped[str] = mapped_column(String(50), nullable=False)
     model: Mapped[str] = mapped_column(String(50), nullable=False)
+    type: Mapped[str] = mapped_column(String(20), nullable=False)
 
     user_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True),
         nullable=False,
     )
 
-    __table_args__ = (UniqueConstraint("vin", "user_id", name="uq_vehicle_owner"),)
+    __table_args__ = (
+        UniqueConstraint("vin", "user_id", name="uq_vehicle_owner"),
+        CheckConstraint("type IN ('auto','moto','autocarro')", name="ck_vehicle_type"),
+    )
