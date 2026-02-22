@@ -55,11 +55,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
       isAuth = await checkAuthenticated();
     } catch {
       if (oldAttempt >= maxAttempt) {
-        // Redirect SPA-friendly
         window.location.href = "/unreachable";
         return;
       }
-
+      await new Promise(r => setTimeout(r, 2000))
       await checkAuth(oldAttempt + 1, maxAttempt);
       return;
     }
