@@ -19,7 +19,7 @@ from datetime import timezone
 from datetime import timedelta
 
 from typing import TYPE_CHECKING
-
+from typing import List
 if TYPE_CHECKING:
     from .vehicle import Vehicle
     from .insurance_policy import InsurancePolicy
@@ -45,7 +45,7 @@ class Contract(Base):
     is_active: Mapped[Boolean] = mapped_column(Boolean, default=True, nullable=False)
 
     vehicle: Mapped["Vehicle"] = relationship("Vehicle", back_populates="contracts")
-    policies: Mapped["InsurancePolicy"] = relationship(
+    policies: Mapped[List["InsurancePolicy"]] = relationship(
         "InsurancePolicy", secondary="contract_policies", back_populates="contracts"
     )
 
