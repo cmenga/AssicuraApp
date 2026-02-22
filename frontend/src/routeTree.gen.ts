@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as UnreachableRouteImport } from './routes/unreachable'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as HomeRouteImport } from './routes/home'
 import { Route as AuthRouteRouteImport } from './routes/auth/route'
@@ -16,6 +17,11 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthRegisterRouteImport } from './routes/auth/register'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
 
+const UnreachableRoute = UnreachableRouteImport.update({
+  id: '/unreachable',
+  path: '/unreachable',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProfileRoute = ProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
@@ -52,6 +58,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRouteRouteWithChildren
   '/home': typeof HomeRoute
   '/profile': typeof ProfileRoute
+  '/unreachable': typeof UnreachableRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
 }
@@ -60,6 +67,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRouteRouteWithChildren
   '/home': typeof HomeRoute
   '/profile': typeof ProfileRoute
+  '/unreachable': typeof UnreachableRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
 }
@@ -69,6 +77,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRouteRouteWithChildren
   '/home': typeof HomeRoute
   '/profile': typeof ProfileRoute
+  '/unreachable': typeof UnreachableRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
 }
@@ -79,16 +88,25 @@ export interface FileRouteTypes {
     | '/auth'
     | '/home'
     | '/profile'
+    | '/unreachable'
     | '/auth/login'
     | '/auth/register'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/home' | '/profile' | '/auth/login' | '/auth/register'
+  to:
+    | '/'
+    | '/auth'
+    | '/home'
+    | '/profile'
+    | '/unreachable'
+    | '/auth/login'
+    | '/auth/register'
   id:
     | '__root__'
     | '/'
     | '/auth'
     | '/home'
     | '/profile'
+    | '/unreachable'
     | '/auth/login'
     | '/auth/register'
   fileRoutesById: FileRoutesById
@@ -98,10 +116,18 @@ export interface RootRouteChildren {
   AuthRouteRoute: typeof AuthRouteRouteWithChildren
   HomeRoute: typeof HomeRoute
   ProfileRoute: typeof ProfileRoute
+  UnreachableRoute: typeof UnreachableRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/unreachable': {
+      id: '/unreachable'
+      path: '/unreachable'
+      fullPath: '/unreachable'
+      preLoaderRoute: typeof UnreachableRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/profile': {
       id: '/profile'
       path: '/profile'
@@ -166,6 +192,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRouteRoute: AuthRouteRouteWithChildren,
   HomeRoute: HomeRoute,
   ProfileRoute: ProfileRoute,
+  UnreachableRoute: UnreachableRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

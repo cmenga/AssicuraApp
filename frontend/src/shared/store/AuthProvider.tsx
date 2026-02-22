@@ -49,19 +49,34 @@ export function AuthProvider({ children }: AuthProviderProps) {
     return { success: true };
   }
 
-  async function checkAuth() {
-    const isAuth = await checkAuthenticated();
+  async function checkAuth(oldAttempt: number = 0, maxAttempt: number = 5) {
+    let isAuth: boolean = false;
+    try {
+      isAuth = await checkAuthenticated();
+    } catch {
+      if (oldAttempt >= maxAttempt) {
+        // Redirect SPA-friendly
+        window.location.href = "/unreachable";
+        return;
+      }
+
+      await checkAuth(oldAttempt + 1, maxAttempt);
+      return;
+    }
+
     if (isAuth) {
       setIsAuthenticated(true);
       return;
     }
+
     setIsAuthenticated(false);
   }
+
 
   async function logout() {
     const response = await authApi.post("/sign-out");
     if (response.status >= 300)
-      return
+      return;
     store.clear();
     window.location.href = "/";
   }

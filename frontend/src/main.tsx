@@ -36,15 +36,19 @@ declare module "@tanstack/react-router" {
 function InnerApp() {
   const [isLoading, setIsLoading] = useState(true);
   const auth = useAuth();
-  
+
   useEffect(() => {
     async function authenticate() {
       await auth.checkAuth();
-      setIsLoading(false)
+      setIsLoading(false);
+    }
+    if (window.location.pathname === "/unreachable") {
+      setIsLoading(false);
+      return;
     }
     authenticate();
   }, []);
-  
+
   return (
     <>
       {isLoading && (<Loader />)}
