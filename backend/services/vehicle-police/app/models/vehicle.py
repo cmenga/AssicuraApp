@@ -3,13 +3,16 @@ from core.database import Base
 
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
+from sqlalchemy.orm import relationship
 
 from sqlalchemy import UUID
 from sqlalchemy import String
 from sqlalchemy import UniqueConstraint
 from sqlalchemy import CheckConstraint
 
-
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from .contract import Contract
 class Vehicle(Base):
     __tablename__ = "vehicles"
 
@@ -30,6 +33,8 @@ class Vehicle(Base):
         UUID(as_uuid=True),
         nullable=False,
     )
+
+    contracts: Mapped["Contract"] = relationship("Contract", back_populates="vehicle")
 
     __table_args__ = (
         UniqueConstraint("vin", "user_id", name="uq_vehicle_owner"),
