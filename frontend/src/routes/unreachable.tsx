@@ -1,9 +1,11 @@
-import { createFileRoute } from '@tanstack/react-router'
-import { AlertCircle, Clock, Mail, Phone } from 'lucide-react';
+import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
+import { AlertCircle, Clock, Mail, Phone, Home } from 'lucide-react';
+import { useEffect, useState } from 'react';
+
 
 export const Route = createFileRoute('/unreachable')({
-  component: RouteComponent,
-})
+    component: RouteComponent,
+});
 
 function RouteComponent() {
     return (
@@ -29,8 +31,11 @@ function RouteComponent() {
                     <div className="bg-blue-50 border border-blue-200 rounded-xl p-6 mb-8">
                         <div className="flex items-center justify-center gap-3 text-blue-800">
                             <Clock className="w-6 h-6" />
-                            <p className="font-medium">Tempo stimato: pochi minuti</p>
+                            <p className="font-medium">Tempo stimato: <CountdownRedirect redirectTo='/' refreshInterval={120} /></p>
                         </div>
+                        <Link to='/' className='flex items-center gap-2 justify-center mt-2 text-blue-800'>
+                            <Home className='w-6 h-6 font-medium' /> Ricarica la pagina
+                        </Link>
                     </div>
 
 
@@ -63,5 +68,48 @@ function RouteComponent() {
                 </p>
             </div>
         </div>
-    )
+    );
 }
+
+
+interface CountdownProps {
+    refreshInterval: number;
+    redirectTo: string;
+}
+
+function CountdownRedirect({ refreshInterval, redirectTo }: CountdownProps) {
+    const [secondsLeft, setSecondsLeft] = useState(refreshInterval);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (secondsLeft <= 0) return;
+
+        const interval = setInterval(() => {
+            setSecondsLeft((prev) => {
+                if (prev <= 1) {
+                    clearInterval(interval);
+                    return 0;
+                }
+                return prev - 1;
+            });
+        }, 1000);
+
+        return () => clearInterval(interval);
+    }, [navigate]);
+
+    useEffect(() => {   
+        if (secondsLeft === 0) {
+            navigate({to: redirectTo});
+        }
+    },[secondsLeft, navigate]
+    )
+    const minutesDisplay = Math.floor(secondsLeft / 60);
+    const secondsDisplay = secondsLeft % 60;
+
+    return (
+        <>
+            {minutesDisplay}:{secondsDisplay.toString().padStart(2, "0")}
+        </>
+    );
+};
+
