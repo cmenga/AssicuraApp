@@ -57,7 +57,7 @@ async def add_vehicle(
         raise HTTPConflict("Vehicle already registered")
 
     try:
-        new_vehicle = Vehicle(**vehicle.model_dump())
+        new_vehicle = Vehicle(**vehicle.model_dump(),user_id=auth["sub"])
         db.add(new_vehicle)
         await db.flush()
     except Exception:

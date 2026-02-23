@@ -1,5 +1,6 @@
 from fastapi import Depends
 from fastapi import Cookie
+from fastapi import Request
 from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from core.database import get_db
@@ -22,8 +23,9 @@ JWTAccessToken = Annotated[IJwtService, Depends(get_jwt_access_token)]
 
 
 async def get_access_token(
+    request: Request,
     jwt: IJwtService = Depends(get_jwt_access_token),
-    token: str | None = Cookie(None),
+    assicurapp_token: str | None = Cookie(None),
 ):
     """
     This function retrieves and validates an access token, refreshing it if necessary.
@@ -44,16 +46,17 @@ async def get_access_token(
     the payload is still None, it raises an HTTPUnauthorized exception with the message "not authorized
     """
     payload = None
-    if token is None:
+    if assicurapp_token is None:
         raise HTTPUnauthorized("not authorized")
     try:
-        payload = jwt.decode(token)
+        payload = jwt.decode(assicurapp_token)
         return payload
     except HTTPUnauthorized:
         response = await call_internal_service(
             url="http://identity-service:8001/v1/auth/internal/refresh",
             method="POST",
-            json={"access_token": token},
+            json={"access_token": assicurapp_token},
+            correlation_id=request.state.correlation_id
         )
         if isinstance(response, JSONResponse):
             raise HTTPUnauthorized("not authorized")

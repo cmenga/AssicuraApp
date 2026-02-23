@@ -6,8 +6,6 @@ from sqlalchemy.ext.asyncio import async_sessionmaker
 
 from sqlalchemy.orm import declarative_base
 from core.config import settings
-from core.logging import logger
-from traceback import format_tb
 
 async_engine = create_async_engine(
     settings.db.url,
@@ -35,19 +33,11 @@ class AsyncDBSession:
         try:
             if exc_type:
                 await self.session.rollback()
-                logger.error("DB rollback", type=exc_type, value=exc, traceback=tb)
             else:
                 try:
                     await self.session.commit()
-                except Exception as commit_exc:
+                except:
                     await self.session.rollback()
-                    tb_str = "".join(format_tb(commit_exc.__traceback__))
-                    logger.error(
-                        "DB rollback after commit",
-                        type=type(commit_exc).__name__,
-                        value=commit_exc.__str__(),
-                        traceback=tb_str,
-                    )
                     raise
         finally:
             if self.session:

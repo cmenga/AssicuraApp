@@ -5,6 +5,7 @@ from pydantic import BaseModel
 from pydantic import Field
 from pydantic import field_validator
 
+from typing import Literal
 
 PLATE_REGEX = re.compile(r"^[A-Z]{2}[0-9]{3}[A-Z]{2}$")
 
@@ -12,9 +13,9 @@ PLATE_REGEX = re.compile(r"^[A-Z]{2}[0-9]{3}[A-Z]{2}$")
 class VehicleCreate(BaseModel):
     license_plate: str = Field(max_length=7)
     vin: str = Field(min_length=17, max_length=17)
+    type: Literal["auto","moto","autocarro"]
     brand: str = Field(max_length=50)
     model: str = Field(max_length=50)
-    user_id: uuid.UUID
 
     @field_validator("license_plate")
     @classmethod
@@ -28,11 +29,12 @@ class VehicleCreate(BaseModel):
 
 
 class VehicleDetail(BaseModel):
+    id: uuid.UUID
     license_plate: str
     vin: str
     brand: str
     model: str
-    user_id: uuid.UUID
+    type: str
 
     model_config = {"from_attributes": True}
 
