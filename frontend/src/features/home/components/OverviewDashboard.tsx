@@ -1,25 +1,24 @@
 import QuickActions from "./overview/QuickActions";
 import HeaderOverview from "./overview/HeaderOverview";
-import Stats from "./overview/Stats";
+import VehiclesSection from "./overview/vehicle/VehicleSections";
 import Policies from "./overview/Policies";
+
 
 type OverviewDashboardProps = {
   username: string;
-  onActiveTab: (tab: string) => void;
 };
 
 export default function OverviewDashboard({
-  username,
-  onActiveTab,
+  username
 }: OverviewDashboardProps) {
   return (
     <div className="space-y-8">
       <HeaderOverview username={username} />
       <div className="grid md:grid-cols-2 gap-6">
         <QuickActions />
-        <Stats />
+        <VehiclesSection />
       </div>
-      <Policies onActiveTab={onActiveTab} />
+      <Policies />
     </div>
   );
 }

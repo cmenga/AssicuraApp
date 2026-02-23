@@ -33,3 +33,15 @@ export function getStatusColor(state: ColorsState) {
   };
   return colors[state] || "bg-gray-100 text-gray-700";
 }
+
+
+export const getVehicolTypeColor = (type: string) => {
+  switch (type.toLowerCase()) {
+    case 'moto':
+      return 'from-purple-500 to-pink-500';
+    case 'furgone':
+      return 'from-orange-500 to-red-500';
+    default:
+      return 'from-blue-600 to-cyan-500';
+  }
+};

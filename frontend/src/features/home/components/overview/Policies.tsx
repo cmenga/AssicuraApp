@@ -1,6 +1,6 @@
 import { getStatusColor, type ColorsState } from "@/shared/utils/color";
 import { getDaysUntilExpiry } from "@/shared/utils/date";
-import { Bike, Car, ChevronRight } from "lucide-react";
+import { Bike, Car } from "lucide-react";
 
 const policies = [
   {
@@ -41,20 +41,12 @@ const policies = [
   },
 ];
 
-type PoliciesProps = {
-  onActiveTab: (tab: string) => void;
-};
-export default function Policies({ onActiveTab }: PoliciesProps) {
+
+export default function Policies() {
   return (
     <div className="bg-white rounded-2xl shadow-md p-6">
       <div className="flex justify-between items-center mb-6">
         <h3 className="text-xl font-bold text-gray-900">Le Tue Polizze</h3>
-        <button
-          onClick={() => onActiveTab("policies")}
-          className="text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1"
-        >
-          Vedi tutte <ChevronRight className="w-4 h-4" />
-        </button>
       </div>
 
       <div className="space-y-4">
