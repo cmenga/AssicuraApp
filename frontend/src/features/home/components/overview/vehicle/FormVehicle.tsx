@@ -34,8 +34,8 @@ export default function FormVehicle({ onClose }: FormVehicleProps) {
 
             <div className="space-y-6">
                 <FormHeader
-                    title="Preventivo nuova poliza"
-                    description="Per poter procedere devi inserire i dati di un veicolo se inesistenti."
+                    title="Aggiunta veicolo"
+                    description="Qui puoi inserire i dati riferenti al tuo veicolo."
                 />
                 {errors?.error && <ErrorMessage message={errors.error} />}
                 <FormInputDropdown

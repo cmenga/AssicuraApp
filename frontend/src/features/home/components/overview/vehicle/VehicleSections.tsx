@@ -1,32 +1,25 @@
-import { Car, Plus, Edit, Trash2 } from 'lucide-react';
+import { Car, Plus } from 'lucide-react';
 import { useStoreKeyOrThrow } from '@/shared/hooks/useStoreKey';
 import type { VehicleModel } from '@/shared/type';
-import { getVehicolTypeColor } from '@/shared/utils/color';
-import { getVehicleTypeIcon } from '@/shared/utils/icon';
+import VehicleDetail from './VehicleDetail';
+import { useRef } from 'react';
+import { Modal } from '@/shared/components/Modal';
+import FormVehicle from './FormVehicle';
 
 export default function VehiclesSection() {
     const storedVehicle = useStoreKeyOrThrow<VehicleModel[]>("vehicle");
+    const createModal = useRef<HTMLDialogElement | null>(null);
 
-
-
-    const handleEdit = (id: string) => {
-        console.log('Modifica veicolo:', id);
-        // Qui aprirai un modal o form di modifica
+    function handleOpen() {
+        const current = createModal.current;
+        if (current) current.showModal();
     };
 
-    const handleDelete = (id: string) => {
-        if (confirm('Sei sicuro di voler eliminare questo veicolo?')) {
-            console.log('Eliminato veicolo:', id);
-        }
-    };
-
-    const handleAdd = () => {
-        console.log('Aggiungi nuovo veicolo');
-        // Qui aprirai un modal o form per aggiungere
-    };
-
-   
-
+    function handleClose() {
+        const current = createModal.current;
+        if (current) current.close();
+    }
+    
     return (
         <div className="bg-white rounded-2xl shadow-md p-6 h-full flex flex-col">
             <div className="mb-6">
@@ -39,7 +32,6 @@ export default function VehiclesSection() {
                 </p>
             </div>
 
-
             <div className="flex-1 overflow-y-auto space-y-3 mb-4 pr-2 custom-scrollbar">
                 {storedVehicle.length === 0 ? (
                     <div className="text-center py-12">
@@ -48,68 +40,33 @@ export default function VehiclesSection() {
                         </div>
                         <p className="text-gray-600 mb-4">Nessun veicolo registrato</p>
                         <button
-                            onClick={handleAdd}
-                            className="bg-blue-600 text-white px-6 py-2 rounded-xl font-semibold hover:bg-blue-700 transition"
+                            onClick={handleOpen}
+                            className="cursor-pointer bg-blue-600 text-white px-6 py-2 rounded-xl font-semibold hover:bg-blue-700 transition"
                         >
                             Aggiungi il tuo primo veicolo
                         </button>
                     </div>
                 ) : (
                     storedVehicle.map((vehicle) => (
-                        <div
-                            key={vehicle.id}
-                            className="bg-linear-to-br from-gray-50 to-white border border-gray-200 rounded-xl p-4 hover:shadow-md transition-all group"
-                        >
-                            {/* Azioni in alto a destra */}
-                            <div className="flex items-start justify-between mb-3">
-                                <div className={`bg-linear-to-r ${getVehicolTypeColor(vehicle.type)} p-2.5 rounded-lg text-white`}>
-                                    {getVehicleTypeIcon(vehicle.type)}
-                                </div>
-                                <div className="flex gap-1">
-                                    <button
-                                        onClick={() => handleEdit(vehicle.id)}
-                                        className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition opacity-0 group-hover:opacity-100"
-                                        title="Modifica"
-                                    >
-                                        <Edit className="w-4 h-4" />
-                                    </button>
-                                    <button
-                                        onClick={() => handleDelete(vehicle.id)}
-                                        className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition opacity-0 group-hover:opacity-100"
-                                        title="Elimina"
-                                    >
-                                        <Trash2 className="w-4 h-4" />
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div>
-                                <h4 className="font-bold text-gray-900 mb-1">
-                                    {vehicle.brand} {vehicle.model}
-                                </h4>
-                                <div className="flex items-center justify-between">
-                                    <span className="inline-block bg-gray-900 text-white px-3 py-1 rounded-md text-xs font-mono font-semibold">
-                                        {vehicle.license_plate}
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
+                        <VehicleDetail vehicle={vehicle} key={vehicle.id} />
                     ))
                 )}
             </div>
 
-
             {storedVehicle.length < 3 && storedVehicle.length > 0 && (
                 <div className="flex justify-end pt-4 border-t border-gray-200">
                     <button
-                        onClick={handleAdd}
-                        className="flex items-center gap-2 bg-linear-to-r from-blue-600 to-cyan-500 text-white px-5 py-3 rounded-xl font-semibold hover:shadow-lg transition transform hover:-translate-y-0.5"
+                        onClick={handleOpen}
+                        className="cursor-pointer flex items-center gap-2 bg-linear-to-r from-blue-600 to-cyan-500 text-white px-5 py-3 rounded-xl font-semibold hover:shadow-lg transition transform hover:-translate-y-0.5"
                     >
                         <Plus className="w-5 h-5" />
                         Aggiungi Veicolo
                     </button>
                 </div>
             )}
+            <Modal ref={createModal}>
+                <FormVehicle onClose={handleClose} />
+            </Modal>
         </div>
     );
 }

@@ -35,7 +35,7 @@ export function getStatusColor(state: ColorsState) {
 }
 
 
-export const getVehicolTypeColor = (type: string) => {
+export const getVehicleTypeColor = (type: string) => {
   switch (type.toLowerCase()) {
     case 'moto':
       return 'from-purple-500 to-pink-500';
