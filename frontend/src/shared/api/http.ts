@@ -20,3 +20,13 @@ export const authApi = axios.create({
   },
   withCredentials: true,
 });
+
+
+export const vehicleApi = axios.create({
+  baseURL: "http://localhost:8003/v1/vehicle",
+  validateStatus: () => true,
+  headers: {
+    "Content-Type": "application/json"
+  },
+  withCredentials: true
+});

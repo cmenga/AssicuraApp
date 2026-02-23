@@ -46,3 +46,13 @@ export interface DropdownOptions {
   value: string;
   name: string;
 }
+
+
+export interface VehicleModel{
+  id: string;
+  license_plate: string;
+  vin: string;
+  brand: string;
+  model: string;
+  type: string;
+}

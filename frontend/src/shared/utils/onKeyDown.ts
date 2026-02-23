@@ -122,3 +122,22 @@ export function handleDrivingLicenseKeyPress(
     event.preventDefault();
   }
 }
+
+
+export function handleBrandKeyPress(event: KeyboardEvent<HTMLInputElement>) {
+  const key = event.key;
+  const regex = /^[A-Za-zÀ-ÖØ-öø-ÿ0-9' \-\.]$/;
+
+  if (!regex.test(key) && !ALLOWED_KEYS.includes(key)) {
+    event.preventDefault();
+  }
+}
+
+export function handleModelKeyPress(event: KeyboardEvent<HTMLInputElement>) {
+  const key = event.key;
+  const regex = /^[A-Za-zÀ-ÖØ-öø-ÿ0-9' \-\.\/]$/;
+
+  if (!regex.test(key) && !ALLOWED_KEYS.includes(key)) {
+    event.preventDefault();
+  }
+}

@@ -4,18 +4,19 @@ import { useState } from "react";
 import UserNavigation from "@/features/navigation/components/UserNavigation";
 import UserDashboard from "@/features/home/UserDashboard";
 import MobileUserNavigation from "@/features/navigation/components/MobileUserNavigation";
-import type { UserModel } from "@/shared/type";
+import type { UserModel, VehicleModel } from "@/shared/type";
 import { useStoreKeyOrThrow } from "@/shared/hooks/useStoreKey";
 import { storeFetchThrow } from "@/shared/store";
-import { userApi } from "@/shared/api/http";
+import { userApi, vehicleApi } from "@/shared/api/http";
 
 export const Route = createFileRoute("/home")({
   component: RouteComponent,
   loader: async ({ context }) => {
-    if (!context.auth.isAuthenticated) throw redirect({to:"/auth/login"}) 
+    if (!context.auth.isAuthenticated) throw redirect({ to: "/auth/login" });
 
     try {
       await storeFetchThrow<UserModel>("user", userApi, "/me");
+      await storeFetchThrow<VehicleModel[]>("vehicle", vehicleApi, "/vehicles");
     } catch {
       throw redirect({ to: "/" });
     }

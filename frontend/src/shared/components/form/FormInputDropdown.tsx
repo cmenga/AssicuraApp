@@ -1,5 +1,5 @@
 import type { InputProps } from "@/shared/type";
-import type { DropdownOptions } from "@/features/auth/type";
+import type { DropdownOptions } from "@/shared/type"; 
 import { useState, type InputHTMLAttributes } from "react";
 
 type FormInputDropdownProps = {
