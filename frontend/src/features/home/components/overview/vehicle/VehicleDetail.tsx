@@ -6,6 +6,7 @@ import { getVehicleTypeColor } from "@/shared/utils/color";
 import { getVehicleTypeIcon } from "@/shared/utils/icon";
 import { AlertTriangle, Edit, Trash2 } from "lucide-react";
 import { useRef, useState, type RefObject } from "react";
+import UpdateForm from "./UpdateForm";
 
 type VehicleDetailProps = {
     vehicle: VehicleModel;
@@ -50,6 +51,9 @@ export default function VehicleDetail({ vehicle }: VehicleDetailProps) {
             <Modal ref={deleteModal}>
                 <DeleteModal onClose={() => handleClose(deleteModal)} vehicleId={vehicle.id} />
             </Modal>
+            <Modal ref={editModal}>
+                <EditModal onClose={() => handleClose(editModal)} vehicle={vehicle} />
+            </Modal>
             <div>
                 <h4 className="font-bold text-gray-900 mb-1">
                     {vehicle.brand} {vehicle.model}
@@ -75,13 +79,15 @@ function DeleteModal({ onClose, vehicleId }: DeleteModalProps) {
 
     async function handleDelete() {
         setIsLoading(true);
-        await vehicleApi.delete(`/delete/${vehicleId}`);
-        store.dispatch<VehicleModel[]>("vehicle", (prev) => {
-            if (!prev) return [];
-            return prev?.filter(vehicle => vehicle.id !== vehicleId);
-        });
-        await new Promise((resolve) => setTimeout(resolve, 500));
-        onClose();
+        const response = await vehicleApi.delete(`/delete/${vehicleId}`);
+        if (response.status < 300) {
+            store.dispatch<VehicleModel[]>("vehicle", (prev) => {
+                if (!prev) return [];
+                return prev?.filter(vehicle => vehicle.id !== vehicleId);
+            });
+            await new Promise((resolve) => setTimeout(resolve, 100));
+            onClose();
+        }
         setIsLoading(false);
     }
     return (
@@ -122,5 +128,15 @@ function DeleteModal({ onClose, vehicleId }: DeleteModalProps) {
                 </div>
             </div>
         </>
+    );
+}
+
+type EidtModalProps = {
+    vehicle: VehicleModel;
+} & ModalProps;
+
+function EditModal({ onClose, vehicle }: EidtModalProps) {
+    return (
+        <UpdateForm onClose={onClose} vehicle={vehicle} />
     );
 }

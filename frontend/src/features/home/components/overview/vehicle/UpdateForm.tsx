@@ -11,27 +11,26 @@ import { handleBrandKeyPress, handleDrivingLicenseKeyPress, handleModelKeyPress 
 import { CarIcon, CheckCircle, IdCard, X } from "lucide-react";
 
 
-
-
-type FormVehicleProps = {
+type UpdateFormProps = {
     onClose: () => void;
+    vehicle: VehicleModel;
 };
 
-export default function FormVehicle({ onClose }: FormVehicleProps) {
-    const { isPending, errors, submitAction, cleanErrors } = useFormStateAction(action, {
+export default function UpdateForm({ onClose, vehicle }: UpdateFormProps) {
+
+    const { errors, isPending, cleanErrors, submitAction } = useFormStateAction(action, {
         onSuccess: async () => {
             cleanErrors();
             await dispatch();
             onClose();
         }
     });
-
     return (
         <form onSubmit={submitAction} className="max-w-4xl mx-auto p-6">
-
+            <input className="hidden" type="text" name="vehicle_id" readOnly value={vehicle.id} />
             <div className="space-y-6">
                 <FormHeader
-                    title="Aggiunta veicolo"
+                    title="Modifica veicolo"
                     description="Qui puoi inserire i dati riferenti al tuo veicolo."
                 />
                 {errors?.error && <ErrorMessage message={errors.error} />}
@@ -44,7 +43,7 @@ export default function FormVehicle({ onClose }: FormVehicleProps) {
                     <FormInputText
                         name="license_plate"
                         labelName="Targa"
-                        previous=""
+                        previous={vehicle.license_plate}
                         maxLength={7}
                         minLength={7}
                         placeholder="BB111RB"
@@ -56,7 +55,7 @@ export default function FormVehicle({ onClose }: FormVehicleProps) {
                     <FormInputText
                         labelName="Matricola"
                         name="vin"
-                        previous=""
+                        previous={vehicle.vin}
                         maxLength={17}
                         minLength={17}
                         onKeyDown={handleDrivingLicenseKeyPress}
@@ -71,7 +70,7 @@ export default function FormVehicle({ onClose }: FormVehicleProps) {
                         onKeyDown={handleBrandKeyPress}
                         maxLength={50}
                         minLength={2}
-                        previous=""
+                        previous={vehicle.brand}
                     >
                         {errors?.brand && <ErrorMessage message={errors.brand} />}
                     </FormInputText>
@@ -82,7 +81,7 @@ export default function FormVehicle({ onClose }: FormVehicleProps) {
                         onKeyDown={handleModelKeyPress}
                         maxLength={50}
                         minLength={2}
-                        previous=""
+                        previous={vehicle.model}
                         icon={CarIcon}
                     >
                         {errors?.model && <ErrorMessage message={errors.model} />}
@@ -114,39 +113,28 @@ export default function FormVehicle({ onClose }: FormVehicleProps) {
 
 async function action(formData: FormData): Promise<ActionResponse> {
     const data = Object.fromEntries(formData.entries());
-    console.table(data);
-    const response = await vehicleApi.post("/add", data);
-    switch (response.status) {
-        case 409:
-            return { success: false, errors: { error: "Il veicolo risulta esistente." } };
-        case 422:
-            let errors = {};
-            response.data.errors.forEach((err: Record<string, string>) => (
-                errors = {
-                    ...errors,
-                    [err.field]: err.message
-                }
-            ));
-            return { success: false, errors: errors };
+    const {vehicle_id, ...updateData} = data
+    const response = await vehicleApi.patch(`/update/${vehicle_id}`, updateData);
+    if (response.status == 422) {
+        let errors = {};
+        response.data.errors.forEach((err: Record<string, string>) => (
+            errors = {
+                ...errors,
+                [err.field]: err.message
+            }
+        ));
+        return { success: false, errors: errors };
     }
     if (response.status >= 500) {
-        return { success: false, errors: { error: "Il servizio attualmente non è disponibile, riprovi più tardi." } };
+        return { success: false, errors: { error: "Al momente il servizio non è disponibile" } };
     }
     return { success: true };
 }
 
-
 async function dispatch() {
     const response = await vehicleApi.get("/vehicles");
     if (response.status == 200) {
-        const newData: VehicleModel[] = response.data.map(
-            (element: VehicleModel) => ({ ...element }),
-        );
-        store.dispatch<VehicleModel[]>("vehicle", (prev = []) => {
-            const filteredNew = newData.filter(
-                (nd) => !prev.some((p) => p.id === nd.id),
-            );
-            return [...prev, ...filteredNew];
-        });
+        const newData: VehicleModel[] = response.data.map((element: VehicleModel) => ({ ...element }));
+        store.set<VehicleModel[]>("vehicle", newData);
     }
 }
