@@ -1,7 +1,7 @@
-import QuickActions from "./overview/QuickActions";
-import HeaderOverview from "./overview/HeaderOverview";
-import VehiclesSection from "./overview/vehicle/VehicleSections";
-import Policies from "./overview/Policies";
+import QuickActions from "./QuickActions";
+import HeaderOverview from "./HeaderOverview";
+import VehiclesSection from "./vehicle/VehicleSections";
+import Policies from "./Policies";
 
 
 type OverviewDashboardProps = {
