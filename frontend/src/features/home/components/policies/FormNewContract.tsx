@@ -1,7 +1,7 @@
 import { useStoreKey } from "@/shared/hooks/useStoreKey";
 import type { VehicleModel } from "@/shared/type";
-import FormVehicle from "./vehicle/FormVehicle";
-import ChoiceVehicle from "./vehicle/ChoiceVehicle";
+import FormVehicle from "../vehicle/FormVehicle";
+import ChoiceVehicle from "../vehicle/ChoiceVehicle";
 import { useState } from "react";
 import FormHeader from "@/shared/components/form/FormHeader";
 

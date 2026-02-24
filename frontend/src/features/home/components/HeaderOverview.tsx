@@ -1,6 +1,6 @@
 import { Modal } from "@/shared/components/Modal";
 import { useRef } from "react";
-import FormNewContract from "./FormNewContract";
+import FormNewContract from "./policies/FormNewContract";
 
 type HeaderOverviewProps = {
   username: string;

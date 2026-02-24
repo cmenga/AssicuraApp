@@ -1,7 +1,7 @@
 import QuickActions from "./QuickActions";
 import HeaderOverview from "./HeaderOverview";
 import VehiclesSection from "./vehicle/VehicleSections";
-import Policies from "./Policies";
+import Policies from "./policies/Policies";
 
 
 type OverviewDashboardProps = {
