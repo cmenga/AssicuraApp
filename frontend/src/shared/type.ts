@@ -48,11 +48,19 @@ export interface DropdownOptions {
 }
 
 
-export interface VehicleModel{
+export interface VehicleModel {
   id: string;
   license_plate: string;
   vin: string;
   brand: string;
   model: string;
-  type: string;
+  type: "auto" | "moto" | "autocarro";
+}
+
+export interface InsurancePoliceModel {
+  description: string;
+  name: string;
+  price: number;
+  vehicle_type: "auto" | "moto" | "autocarro";
+  id: number;
 }

@@ -30,3 +30,13 @@ export const vehicleApi = axios.create({
   },
   withCredentials: true
 });
+
+
+export const insurancePoliceApi = axios.create({
+  baseURL: "http://localhost:8003/v1/insurance",
+  validateStatus: () => true,
+  headers: {
+    "Content-Type": "application/json"
+  },
+  withCredentials: true
+});

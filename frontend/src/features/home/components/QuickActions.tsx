@@ -1,6 +1,6 @@
 import { Modal } from "@/shared/components/Modal";
 import { Plus } from "lucide-react";
-import FormNewContract from "./policies/FormNewContract";
+import FormContract from "./policies/FormContract";
 import { useRef } from "react";
 
 export default function QuickActions() {
@@ -13,7 +13,7 @@ export default function QuickActions() {
 
   function handleClose() {
     const current = modal.current;
-    if (current) current.close();
+    if (current) current.close(); 
   }
 
   return (
@@ -31,7 +31,7 @@ export default function QuickActions() {
         </button>
 
         <Modal ref={modal}>
-          <FormNewContract onClose={handleClose} />
+          <FormContract onClose={handleClose} />
         </Modal>
       </div>
     </div>
