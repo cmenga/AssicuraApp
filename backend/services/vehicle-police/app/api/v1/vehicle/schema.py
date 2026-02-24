@@ -44,6 +44,7 @@ class VehicleUpdate(BaseModel):
     vin: str | None = Field(default=None, min_length=17, max_length=17)
     brand: str | None = Field(default=None, max_length=50)
     model: str | None = Field(default=None, max_length=50)
+    type: Literal["auto","moto","autocarro"]
 
     @field_validator("license_plate")
     @classmethod
