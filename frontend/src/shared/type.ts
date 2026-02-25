@@ -64,3 +64,13 @@ export interface InsurancePolicyModel {
   vehicle_type: "auto" | "moto" | "autocarro";
   id: number;
 }
+
+export interface ContractModel {
+  id: string;
+  total_price: number;
+  expired_at: Date;
+  owner_id: string;
+  vehicle_id: string;
+  created_at: Date;
+  is_active: boolean;
+}

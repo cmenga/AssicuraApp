@@ -22,6 +22,8 @@ export default function FormContract({ onClose }: FormContractProps) {
     const { isPending, cleanErrors, submitAction } = useFormStateAction(handleAcction, {
         onSuccess: async () => {
             cleanErrors();
+            await dispacth();
+            onClose();
         },
     });
 
@@ -101,6 +103,14 @@ async function action(selectPolicies: number[], vehicleType: "auto" | "moto" | "
         insurance_ids: selectPolicies.join(','),
         vehicle_id: vehicleId
     }).toString();
-    await contractApy.post(`/add/${vehicleType}?${params}`)
-    return { success: false };
+    const response = await contractApy.post(`/add/${vehicleType}?${params}`);
+    if (response.status < 300) {
+        return { success: true };
+    }
+    return { success: false, errors: { error: response.data.message } };
+}
+
+async function dispacth() {
+    //TODO: inserire la dispatch per le polize
+    return;
 }

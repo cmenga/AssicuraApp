@@ -2,10 +2,10 @@ import { createFileRoute, redirect } from "@tanstack/react-router";
 
 import UserNavigation from "@/features/navigation/components/UserNavigation";
 import UserDashboard from "@/features/home/UserDashboard";
-import type { UserModel, VehicleModel } from "@/shared/type";
+import type { ContractModel, UserModel, VehicleModel } from "@/shared/type";
 import { useStoreKeyOrThrow } from "@/shared/hooks/useStoreKey";
 import { storeFetchThrow } from "@/shared/store";
-import { userApi, vehicleApi } from "@/shared/api/http";
+import { contractApy, userApi, vehicleApi } from "@/shared/api/http";
 
 export const Route = createFileRoute("/home")({
   component: RouteComponent,
@@ -15,6 +15,7 @@ export const Route = createFileRoute("/home")({
     try {
       await storeFetchThrow<UserModel>("user", userApi, "/me");
       await storeFetchThrow<VehicleModel[]>("vehicle", vehicleApi, "/vehicles");
+      await storeFetchThrow<ContractModel[]>("contracts", contractApy, "/all")
     } catch {
       throw redirect({ to: "/" });
     }

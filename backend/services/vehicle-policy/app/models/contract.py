@@ -30,16 +30,19 @@ class Contract(Base):
     id: Mapped[UUID] = mapped_column(
         UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
     )
+    owner_id: Mapped[UUID] = mapped_column(
+        UUID(as_uuid=True),nullable=False
+    )
     vehicle_id: Mapped[UUID] = mapped_column(
         UUID(as_uuid=True), ForeignKey("vehicles.id"), nullable=False
     )
     total_price: Mapped[float] = mapped_column(Float, nullable=False)
     created_at: Mapped[datetime] = mapped_column(
-        DateTime, default=datetime.now(timezone.utc), nullable=False
+        DateTime, default=datetime.now(), nullable=False
     )
     expired_at: Mapped[datetime] = mapped_column(
         DateTime,
-        default=lambda: datetime.now(timezone.utc) + timedelta(days=365),
+        default=lambda: datetime.now() + timedelta(days=365),
         nullable=False,
     )
     is_active: Mapped[Boolean] = mapped_column(Boolean, default=True, nullable=False)
