@@ -65,30 +65,32 @@ services:
       retries: 20
 
   ######################################
-  vehicle-police-service:
+  vehicle-policy-service:
     build:
-      context: ./backend/services/vehicle-police
+      context: ./backend/services/vehicle-policy
       target: dev
-    image: vehicle-police-service:dev
+    image: vehicle-policy-service:dev
     volumes:
-      - ./backend/services/vehicle-police/app:/app
+      - ./backend/services/vehicle-policy/app:/app
     ports:
       - '8003:8001'
     networks:
       - assicura-app
     depends_on:
-      vehicle-police-db:
+      vehicle-policy-db:
         condition: service_healthy
 
-  vehicle-police-db:
+  vehicle-policy-db:
     image: postgres:18.2
-    container_name: vehicle-police-db
+    container_name: vehicle-policy-db
     volumes:
-      - vehicle-police-data:/var/lib/postgresql
+      - vehicle-policy-data:/var/lib/postgresql
     environment:
-      - POSTGRES_DB=police
-      - POSTGRES_USER=police_user
+      - POSTGRES_DB=policy
+      - POSTGRES_USER=policy_user
       - POSTGRES_PASSWORD=c2w;|=W692<>
+    ports:
+      - 5432:5432
     networks:
       - assicura-app
     healthcheck:
@@ -126,5 +128,5 @@ volumes:
     driver: local
   driver-license-data:
     driver: local
-  vehicle-police-data:
+  vehicle-policy-data:
     driver: local

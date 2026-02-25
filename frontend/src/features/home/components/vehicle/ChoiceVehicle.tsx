@@ -10,7 +10,6 @@ type ChoiceVeicleProps = {
 };
 
 export default function ChoiceVehicle({ vehicleId, vehicles, onSelectVehicle }: ChoiceVeicleProps) {
-    console.log(vehicleId);
     return (
         <>
             {vehicles.map(vehicle => (

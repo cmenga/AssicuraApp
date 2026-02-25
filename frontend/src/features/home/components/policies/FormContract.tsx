@@ -6,7 +6,8 @@ import { useRef, useState } from "react";
 import FormHeader from "@/shared/components/form/FormHeader";
 import { CheckCircle, X } from "lucide-react";
 import { useFormStateAction } from "@/shared/hooks/useFormStateAction";
-import ChoicePolice from "./ChoicePolice";
+import ChoicePolicy from "./ChoicePolicy";
+import { contractApy } from "@/shared/api/http";
 
 
 type FormContractProps = {
@@ -18,20 +19,19 @@ export default function FormContract({ onClose }: FormContractProps) {
     const [selectVehicle, setSelectVehicle] = useState<VehicleModel | null>(null);
     const [selectPolicies, setSelectPolicies] = useState<number[]>([]);
     const formRef = useRef<HTMLFormElement | null>(null);
-    const { isPending, cleanErrors } = useFormStateAction(action, {
+    const { isPending, cleanErrors, submitAction } = useFormStateAction(handleAcction, {
         onSuccess: async () => {
             cleanErrors();
-        }
+        },
     });
 
-    console.log(selectPolicies);
     function handleClose() {
         const current = formRef.current;
         if (current) current.reset();
         onClose();
     }
 
-    function handleSelectPolice(id: number) {
+    function handleSelectPolicy(id: number) {
         if (selectPolicies.find(item => item === id)) {
             const newSelectPolicies = selectPolicies.filter(item => item !== id);
             setSelectPolicies(newSelectPolicies);
@@ -39,12 +39,16 @@ export default function FormContract({ onClose }: FormContractProps) {
         }
         setSelectPolicies((prev) => ([...prev, id]));
     }
-    
+
+    async function handleAcction(_: FormData): Promise<ActionResponse> {
+        if (selectVehicle) return await action(selectPolicies, selectVehicle.type, selectVehicle.id);
+        return { success: false };
+    }
     return (
         <>
             {storedVehicle && storedVehicle.length == 0 && <FormVehicle onClose={onClose} />}
             {storedVehicle && storedVehicle.length > 0 && (
-                <form ref={formRef} className="max-w-4xl mx-auto p-6">
+                <form ref={formRef} onSubmit={submitAction} className="max-w-4xl mx-auto p-6">
                     <div className="space-y-6">
                         <FormHeader title="Poliza assciurativa" description="Crea la tua poliza assicurativa con un click"
                         />
@@ -53,11 +57,15 @@ export default function FormContract({ onClose }: FormContractProps) {
                         </div>
                         {!selectVehicle && <div>Ciao</div>}
                         {selectVehicle && (
-                            <ChoicePolice
-                                vehicleType={selectVehicle.type}
-                                onSelectPolice={handleSelectPolice}
-                                selectPolicies={selectPolicies}
-                            />
+                            <>
+                                <FormHeader title="Scegli le polize" description="Qui trovi tutte le polize assicurative, alcune polizze se scelte andranno a sostituirne delle altre, se viene selezionata la RCA Base e poi quella completa verrà presa quela completa come RCA." />
+                                <ChoicePolicy
+                                    vehicleType={selectVehicle.type}
+                                    onSelectPolicy={handleSelectPolicy}
+                                    selectPolicies={selectPolicies}
+                                />
+                                <input type="text" className="hidden" value={selectPolicies.toString()} readOnly />
+                            </>
                         )}
 
                         <div className="flex gap-4">
@@ -86,8 +94,13 @@ export default function FormContract({ onClose }: FormContractProps) {
 }
 
 
-async function action(formData: FormData): Promise<ActionResponse> {
-    const data = Object.fromEntries(formData.entries());
-    console.log(data);
-    return { success: true };
-} 
+
+
+async function action(selectPolicies: number[], vehicleType: "auto" | "moto" | "autocarro", vehicleId: string): Promise<ActionResponse> {
+    const params = new URLSearchParams({
+        insurance_ids: selectPolicies.join(','),
+        vehicle_id: vehicleId
+    }).toString();
+    await contractApy.post(`/add/${vehicleType}?${params}`)
+    return { success: false };
+}

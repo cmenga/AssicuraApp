@@ -57,7 +57,7 @@ export interface VehicleModel {
   type: "auto" | "moto" | "autocarro";
 }
 
-export interface InsurancePoliceModel {
+export interface InsurancePolicyModel {
   description: string;
   name: string;
   price: number;

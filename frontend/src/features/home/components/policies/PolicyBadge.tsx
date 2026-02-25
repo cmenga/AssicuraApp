@@ -1,9 +1,9 @@
-import type { InsurancePoliceModel } from "@/shared/type";
+import type { InsurancePolicyModel } from "@/shared/type";
 import { CheckCircle, Shield } from "lucide-react";
 
 
 type PolicyBadgeProps = {
-    policy: InsurancePoliceModel;
+    policy: InsurancePolicyModel;
     isSelected: boolean;
     onToggle: (id: number) => void;
 };

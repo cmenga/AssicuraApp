@@ -296,17 +296,17 @@ INITIAL_POLICIES = [
 
 
 async def seed(session: AsyncSession):
-    for insurance_police in INITIAL_POLICIES:
+    for insurance_policy in INITIAL_POLICIES:
         stmt = select(InsurancePolicy).where(
-            InsurancePolicy.name == insurance_police["name"],
-            InsurancePolicy.vehicle_type == insurance_police["vehicle_type"],
+            InsurancePolicy.name == insurance_policy["name"],
+            InsurancePolicy.vehicle_type == insurance_policy["vehicle_type"],
         )
         result = await session.execute(stmt)
         is_exist = result.scalar_one_or_none()
-        
+
         if is_exist:
             continue
 
-        model = InsurancePolicy(**insurance_police)
+        model = InsurancePolicy(**insurance_policy)
         session.add(model)
         await session.flush()

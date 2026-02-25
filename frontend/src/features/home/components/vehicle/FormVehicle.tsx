@@ -114,7 +114,6 @@ export default function FormVehicle({ onClose }: FormVehicleProps) {
 
 async function action(formData: FormData): Promise<ActionResponse> {
     const data = Object.fromEntries(formData.entries());
-    console.table(data);
     const response = await vehicleApi.post("/add", data);
     switch (response.status) {
         case 409:

@@ -32,7 +32,7 @@ export const vehicleApi = axios.create({
 });
 
 
-export const insurancePoliceApi = axios.create({
+export const insurancePolicyApi = axios.create({
   baseURL: "http://localhost:8003/v1/insurance",
   validateStatus: () => true,
   headers: {
@@ -40,3 +40,9 @@ export const insurancePoliceApi = axios.create({
   },
   withCredentials: true
 });
+
+export const contractApy = axios.create({
+  baseURL: "http://localhost:8003/v1/contract",
+  validateStatus: () => true,
+  withCredentials: true
+})

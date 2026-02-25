@@ -1,9 +1,10 @@
 from pydantic import BaseModel
 
 from typing import Literal
+from typing import List
 
 
-class InsurancePoliceDetail(BaseModel):
+class InsurancePolicyDetail(BaseModel):
     description: str
     name: str
     price: float
