@@ -8,12 +8,12 @@ from typing import Literal
 from typing import Set
 from typing import List
 
-from uuid import UUID
-
 from core.dependencies import DbSession
 from core.dependencies import AuthenticatedUser
+
 from core.exceptions import HTTPInternalServerError
 from core.exceptions import HTTPNotFound
+from core.exceptions import HTTPConflict
 
 from sqlalchemy import select
 from sqlalchemy.orm import selectinload
@@ -35,8 +35,13 @@ async def check_active_polcies(
     vehicle_id: Annotated[str, Query()],
 ):
     IPolicy = InsurancePolicy
-
-    # TODO: verifica se i dati esistono gia
+    statement = select(Contract).where(Contract.vehicle_id == vehicle_id)
+    result = await db.execute(statement)
+    fetched_contract = result.scalar_one_or_none()
+    
+    if fetched_contract:
+        raise HTTPConflict("There is already a contract for this vehicle")
+    
     int_insurance_ids: List[int] = [int(value) for value in insurance_ids.split(",")]
     policy_ids: Set[int] = set(int_insurance_ids)
 
