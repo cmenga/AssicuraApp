@@ -8,6 +8,8 @@ import { CheckCircle, X } from "lucide-react";
 import { useFormStateAction } from "@/shared/hooks/useFormStateAction";
 import ChoicePolicy from "./ChoicePolicy";
 import { contractApy } from "@/shared/api/http";
+import { store } from "@/shared/store";
+import { ErrorMessage } from "@/shared/components/form/FormMessage";
 
 
 type FormContractProps = {
@@ -19,7 +21,7 @@ export default function FormContract({ onClose }: FormContractProps) {
     const [selectVehicle, setSelectVehicle] = useState<VehicleModel | null>(null);
     const [selectPolicies, setSelectPolicies] = useState<number[]>([]);
     const formRef = useRef<HTMLFormElement | null>(null);
-    const { isPending, cleanErrors, submitAction } = useFormStateAction(handleAcction, {
+    const { errors, isPending, cleanErrors, submitAction } = useFormStateAction(handleAcction, {
         onSuccess: async () => {
             cleanErrors();
             await dispacth();
@@ -54,6 +56,7 @@ export default function FormContract({ onClose }: FormContractProps) {
                     <div className="space-y-6">
                         <FormHeader title="Poliza assciurativa" description="Crea la tua poliza assicurativa con un click"
                         />
+                        {errors?.error && <ErrorMessage message={errors.error} />}
                         <div className="grid md:grid-cols-2 gap-6">
                             <ChoiceVehicle vehicleId={selectVehicle?.id} onSelectVehicle={setSelectVehicle} vehicles={storedVehicle} />
                         </div>
@@ -107,10 +110,15 @@ async function action(selectPolicies: number[], vehicleType: "auto" | "moto" | "
     if (response.status < 300) {
         return { success: true };
     }
+    if (response.status == 409) {
+        return { success: false, errors: { error: "Esiste già un'assicurazione per questo veicolo" } };
+    }
     return { success: false, errors: { error: response.data.message } };
 }
 
 async function dispacth() {
-    //TODO: inserire la dispatch per le polize
-    return;
+    const response = await contractApy.get("/policies");
+    if (response.status == 200) {
+        store.set("contracts", response.data);
+    }
 }

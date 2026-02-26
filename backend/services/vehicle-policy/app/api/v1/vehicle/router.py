@@ -16,6 +16,7 @@ from core.exceptions import HTTPInternalServerError
 from core.exceptions import HTTPNotFound
 
 from models import Vehicle
+from models import Contract
 
 from api.v1.vehicle.schema import VehicleCreate
 from api.v1.vehicle.schema import VehicleDetail
@@ -142,7 +143,6 @@ async def update_vehicle(
         raise HTTPInternalServerError("The changes could not be saved to the database")
 
 
-# TODO: deve controllare che non abbia assicurazioni a suo carico
 @router.delete("/delete/{vehicle_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_vehicle(
     db: DbSession, auth: AuthenticatedUser, vehicle_id: Annotated[str, Path()]
@@ -157,7 +157,14 @@ async def delete_vehicle(
 
     if fetched_vehicle is None:
         raise HTTPNotFound("Vehicle not found")
-
+    
+    statement = select(Contract).where(Contract.vehicle_id == fetched_vehicle.id)
+    result = await db.execute(statement)
+    fetched_contract = result.scalar()
+    
+    if fetched_contract:
+        raise HTTPConflict("There is already a contract for this vehicle.")
+    
     try:
         await db.delete(fetched_vehicle)
     except Exception:

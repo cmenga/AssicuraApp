@@ -197,7 +197,6 @@ async def change_password(
         raise HTTPInternalServerError(f"There were some problems updating the password")
 
 
-# TODO ci deve essere la verifica in caso ci siano delle polize attive
 @router.delete("/delete", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_user(request: Request ,response: Response, auth: AuthenticatedUser, db: DbSession):
     """
