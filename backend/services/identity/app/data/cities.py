@@ -11,7 +11,6 @@ def load_from_json():
     ITALY_CITIES.clear()
     with open(DATA_DIR / "cities.json", "r") as file:
         values = load(file)
-        # print(dumps(values, indent=3))
         for element in values:
             temp = {
                 "sail": element["sigla"].upper(),
