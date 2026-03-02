@@ -7,7 +7,6 @@ from sqlalchemy.orm import relationship
 
 from sqlalchemy import UUID
 from sqlalchemy import Float
-from sqlalchemy import Integer
 from sqlalchemy import DateTime
 from sqlalchemy import Boolean
 from sqlalchemy import ForeignKey
