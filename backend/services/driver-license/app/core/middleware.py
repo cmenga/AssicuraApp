@@ -4,7 +4,7 @@ from fastapi import status
 from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
 
-from core.config import settings
+from app.core.config import settings
 from time import perf_counter
 
 class LoggerMiddleware(BaseHTTPMiddleware):
@@ -25,7 +25,7 @@ class LoggerMiddleware(BaseHTTPMiddleware):
 
         logger = request.state.logger
 
-        print("\n\n", flush=True)
+        print("", flush=True)
         logger.info("request_started")
         start = perf_counter()
         response = await call_next(request)

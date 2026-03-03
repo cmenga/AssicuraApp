@@ -3,18 +3,20 @@ from fastapi import Cookie
 from fastapi import Request
 from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
-from core.database import get_db
 
 from typing import Annotated
+from typing import Callable
 
-from core.security import IPasswordHasher
-from core.security import IJwtService
-from core.security import AccessToken
-from core.security import get_jwt_access_token
-from core.security import get_password_hasher
+from app.core.database import get_db
 
-from core.http_client import call_internal_service
-from core.exceptions import HTTPUnauthorized
+from app.core.security import IPasswordHasher
+from app.core.security import IJwtService
+from app.core.security import AccessToken
+from app.core.security import get_jwt_access_token
+from app.core.security import get_password_hasher
+
+from app.core.http_client import call_internal_service
+from app.core.exceptions import HTTPUnauthorized
 
 
 DbSession = Annotated[AsyncSession, Depends(get_db)]
@@ -75,3 +77,10 @@ async def get_access_token(
 
 
 AuthenticatedUser = Annotated[AccessToken, Depends(get_access_token)]
+
+
+def internal_call() -> Callable:
+    return call_internal_service
+
+
+InternalCallable = Annotated[Callable, Depends(internal_call)]

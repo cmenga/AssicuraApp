@@ -1,5 +1,5 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from models import LicenseCategory
+from app.models import LicenseCategory
 
 categories_to_seed = [
     {"code": "AM", "description": "Ciclomotori (<50cc)", "min_age": 14},

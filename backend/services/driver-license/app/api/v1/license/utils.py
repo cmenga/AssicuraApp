@@ -1,7 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
-from models import DriverLicense
+from app.models import DriverLicense
 
 from fastapi import Request
 async def get_driver_licenses(request: Request,db: AsyncSession, user_id: str):

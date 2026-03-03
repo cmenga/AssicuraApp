@@ -12,21 +12,21 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy import or_
 from sqlalchemy import select
 
-from core.security import decode_jwt
+from app.core.security import decode_jwt
 
-from core.dependencies import DbSession
-from core.dependencies import AuthenticatedUser
+from app.core.dependencies import DbSession
+from app.core.dependencies import AuthenticatedUser
 
-from core.exceptions import HTTPConflict
-from core.exceptions import HTTPInternalServerError
-from core.exceptions import HTTPNotFound
+from app.core.exceptions import HTTPConflict
+from app.core.exceptions import HTTPInternalServerError
+from app.core.exceptions import HTTPNotFound
 
-from api.v1.license.utils import get_driver_licenses
+from app.api.v1.license.utils import get_driver_licenses
 
-from api.v1.license.schema import DriverLicenseDetail
-from api.v1.license.schema import DriverLicenseCreate
+from app.api.v1.license.schema import DriverLicenseDetail
+from app.api.v1.license.schema import DriverLicenseCreate
 
-from models import DriverLicense
+from app.models import DriverLicense
 
 router = APIRouter(tags=["driver license"], prefix="/driver-license")
 
