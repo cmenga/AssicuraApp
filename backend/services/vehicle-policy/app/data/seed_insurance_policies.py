@@ -1,7 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
-from models import InsurancePolicy
+from app.models import InsurancePolicy
 
 INITIAL_POLICIES = [
     {

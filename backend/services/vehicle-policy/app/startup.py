@@ -1,11 +1,11 @@
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
 
-from core.logging import logger
-from core.exceptions import HTTPServiceUnavailable
-from core.database import AsyncDBSession
+from app.core.logging import logger
+from app.core.exceptions import HTTPServiceUnavailable
+from app.core.database import AsyncDBSession
 
-from data.seed_insurance_policies import seed
+from app.data.seed_insurance_policies import seed
 
 @asynccontextmanager
 async def startup(app: FastAPI):

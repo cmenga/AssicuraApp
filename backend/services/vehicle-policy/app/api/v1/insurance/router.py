@@ -6,13 +6,14 @@ from typing import Annotated
 from typing import Literal
 from typing import List
 
-from core.dependencies import DbSession
-from core.dependencies import AuthenticatedUser
-
 from sqlalchemy import select
-from models import InsurancePolicy
 
-from api.v1.insurance.schema import InsurancePolicyDetail
+from app.core.dependencies import DbSession
+from app.core.dependencies import AuthenticatedUser
+
+from app.models import InsurancePolicy
+
+from app.api.v1.insurance.schema import InsurancePolicyDetail
 
 
 router = APIRouter(prefix="/insurance", tags=["insurance policy"])

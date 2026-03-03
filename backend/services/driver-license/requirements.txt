@@ -1,4 +1,4 @@
-fastapi[standard]
+fastapi[standard]>=0.115.0
 email_validator>=2.2.0
 gunicorn>=23.0.0
 sqlalchemy>=2.0.41

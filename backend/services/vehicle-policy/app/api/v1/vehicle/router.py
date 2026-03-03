@@ -8,19 +8,19 @@ from typing import List
 
 from sqlalchemy import select
 
-from core.dependencies import DbSession
-from core.dependencies import AuthenticatedUser
+from app.core.dependencies import DbSession
+from app.core.dependencies import AuthenticatedUser
 
-from core.exceptions import HTTPConflict
-from core.exceptions import HTTPInternalServerError
-from core.exceptions import HTTPNotFound
+from app.core.exceptions import HTTPConflict
+from app.core.exceptions import HTTPInternalServerError
+from app.core.exceptions import HTTPNotFound
 
-from models import Vehicle
-from models import Contract
+from app.models import Vehicle
+from app.models import Contract
 
-from api.v1.vehicle.schema import VehicleCreate
-from api.v1.vehicle.schema import VehicleDetail
-from api.v1.vehicle.schema import VehicleUpdate
+from app.api.v1.vehicle.schema import VehicleCreate
+from app.api.v1.vehicle.schema import VehicleDetail
+from app.api.v1.vehicle.schema import VehicleUpdate
 
 router = APIRouter(prefix="/vehicle", tags=["vehicle"])
 

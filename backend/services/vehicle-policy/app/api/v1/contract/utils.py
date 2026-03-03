@@ -1,6 +1,6 @@
 from typing import Sequence
 
-from models import InsurancePolicy
+from app.models import InsurancePolicy
 
 def check_insurance(insurance_policies: Sequence[InsurancePolicy], text: str):
     text = text.strip().lower()

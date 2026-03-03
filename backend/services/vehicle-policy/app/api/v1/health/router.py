@@ -2,13 +2,12 @@ from fastapi import APIRouter
 from fastapi import status
 from fastapi.responses import JSONResponse
 
-from core.config import settings
+from app.core.config import settings
+from app.core.dependencies import DbSession
 
-from core.dependencies import DbSession
+from app.api.v1.health.checks import check_database
 
-from api.v1.health.checks import check_database
-
-router = APIRouter(prefix="/health",tags=["health"])
+router = APIRouter(prefix="/health", tags=["health"])
 
 
 @router.get("", status_code=status.HTTP_200_OK)

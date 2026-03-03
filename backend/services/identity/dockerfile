@@ -11,7 +11,6 @@ COPY alembic /service/alembic
 COPY alembic.ini /service/alembic.ini
 COPY entrypoint.sh /service/entrypoint.sh
 
-# Forza Python a guardare dentro /service
 ENV PYTHONPATH=/service
 RUN dos2unix entrypoint.sh && chmod +x entrypoint.sh && chmod 755 entrypoint.sh
 

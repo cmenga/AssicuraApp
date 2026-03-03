@@ -4,7 +4,7 @@ from sqlalchemy import ForeignKey
 from sqlalchemy import Integer
 
 from sqlalchemy.dialects.postgresql import UUID
-from core.database import Base
+from app.core.database import Base
 
 contract_policies = Table(
     "contract_policies",

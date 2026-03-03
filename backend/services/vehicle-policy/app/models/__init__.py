@@ -1,4 +1,4 @@
-from core.database import Base
+from app.core.database import Base
 
 from .vehicle import Vehicle
 from .insurance_policy import InsurancePolicy

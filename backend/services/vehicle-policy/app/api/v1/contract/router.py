@@ -8,20 +8,20 @@ from typing import Literal
 from typing import Set
 from typing import List
 
-from core.dependencies import DbSession
-from core.dependencies import AuthenticatedUser
+from app.core.dependencies import DbSession
+from app.core.dependencies import AuthenticatedUser
 
-from core.exceptions import HTTPInternalServerError
-from core.exceptions import HTTPNotFound
-from core.exceptions import HTTPConflict
+from app.core.exceptions import HTTPInternalServerError
+from app.core.exceptions import HTTPNotFound
+from app.core.exceptions import HTTPConflict
 
 from sqlalchemy import select
 from sqlalchemy.orm import selectinload
-from models import InsurancePolicy
-from models import Contract
+from app.models import InsurancePolicy
+from app.models import Contract
 
 
-from api.v1.contract.utils import check_insurance
+from app.api.v1.contract.utils import check_insurance
 
 router = APIRouter(prefix="/contract", tags=["contract"])
 

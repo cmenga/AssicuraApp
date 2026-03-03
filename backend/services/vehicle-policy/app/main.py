@@ -9,12 +9,13 @@ from fastapi import FastAPI
 from fastapi import status
 from fastapi import Request
 from fastapi import HTTPException
-from core.config import settings
-from core.logging import logger
-from startup import startup
 from uuid import uuid4
 
-from api.router import router as api_router
+from app.core.config import settings
+from app.core.logging import logger
+from app.startup import startup
+
+from app.api.router import router as api_router
 
 
 # Create FastApi app
@@ -34,8 +35,8 @@ Adds application middleware:
     - LoggerMiddleware: Logs all incoming requests and their responses with structured logging.
 """
 from fastapi.middleware.cors import CORSMiddleware
-from core.middleware import LoggerMiddleware
-from core.middleware import CheckOriginMiddleware
+from app.core.middleware import LoggerMiddleware
+from app.core.middleware import CheckOriginMiddleware
 
 app.add_middleware(CheckOriginMiddleware)
 app.add_middleware(
