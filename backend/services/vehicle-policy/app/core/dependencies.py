@@ -5,6 +5,7 @@ from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from typing import Annotated
+from typing import Callable
 
 from app.core.database import get_db
 
@@ -75,3 +76,10 @@ async def get_access_token(
 
 
 AuthenticatedUser = Annotated[AccessToken, Depends(get_access_token)]
+
+
+def internal_call() -> Callable:
+    return call_internal_service
+
+
+InternalCallable = Annotated[Callable, Depends(internal_call)]

@@ -40,7 +40,7 @@ services:
     volumes:
       - ./backend/services/driver-license/app:/app
     ports:
-      - '8002:8001'
+      - '8002:8000'
     networks:
       - assicura-app
     depends_on:
@@ -73,7 +73,7 @@ services:
     volumes:
       - ./backend/services/vehicle-policy/app:/app
     ports:
-      - '8003:8001'
+      - '8003:8000'
     networks:
       - assicura-app
     depends_on:
