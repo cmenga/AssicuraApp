@@ -13,30 +13,30 @@ from datetime import datetime
 from datetime import timezone
 from datetime import timedelta
 
-from core.http_client import call_internal_service
-from core.security import decode_jwt
+from app.core.security import decode_jwt
 
-from core.dependencies import DbSession
-from core.dependencies import PasswordHasher
-from core.dependencies import JWTAccessToken
-from core.dependencies import JWTRefreshToken
-from core.dependencies import AuthenticatedUser
+from app.core.dependencies import DbSession
+from app.core.dependencies import PasswordHasher
+from app.core.dependencies import JWTAccessToken
+from app.core.dependencies import JWTRefreshToken
+from app.core.dependencies import AuthenticatedUser
+from app.core.dependencies import InternalCallable
 
-from core.exceptions import HTTPConflict
-from core.exceptions import HTTPInternalServerError
-from core.exceptions import HTTPForbidden
-from core.exceptions import HTTPUnauthorized
+from app.core.exceptions import HTTPConflict
+from app.core.exceptions import HTTPInternalServerError
+from app.core.exceptions import HTTPForbidden
+from app.core.exceptions import HTTPUnauthorized
 
-from api.v1.auth.schema import UserCreate
-from api.v1.auth.schema import AddressCreate
-from api.v1.auth.schema import DriverLicenseCreate
+from app.api.v1.auth.schema import UserCreate
+from app.api.v1.auth.schema import AddressCreate
+from app.api.v1.auth.schema import DriverLicenseCreate
 
-from api.v1.auth.utils import get_user
-from api.v1.auth.utils import get_token
+from app.api.v1.auth.utils import get_user
+from app.api.v1.auth.utils import get_token
 
-from models import User
-from models import Address
-from models import Token
+from app.models import User
+from app.models import Address
+from app.models import Token
 
 from sqlalchemy import select
 from jose import jwt
@@ -52,38 +52,11 @@ async def create_new_account(
     user: Annotated[UserCreate, Body()],
     address: Annotated[AddressCreate, Body()],
     license: Annotated[DriverLicenseCreate, Body()],
+    internal_call: InternalCallable,
 ):
-    """
-    The `create_new_account` function creates a new user account in a database, including handling
+    """The `create_new_account` function creates a new user account in a database, including handling
     password hashing, checking for existing users, and interacting with an internal service to add a
-    driver's license.
-
-    Args:
-      db (DbSession): The `db` parameter is an instance of the `DbSession` class, which is likely a
-    database session object used to interact with the database. It is used to query, add, and commit
-    data to the database within the `create_new_account` function.
-      hasher (PasswordHasher): The `hasher` parameter in the `create_new_account` function is an
-    instance of `PasswordHasher` class. This class is used to securely hash passwords before storing
-    them in the database. It provides methods for hashing passwords and verifying hashed passwords. In
-    the code snippet provided, the `hash
-      user (Annotated[UserCreate, Body()]): The `user` parameter in the `create_new_account`
-    function represents the user registration data that includes information such as username, email,
-    password, and other details required to create a new user account. This data is used to create a new
-    `User` object in the database after performing necessary operations like
-      address (Annotated[AddressCreate, Body()]): The `address` parameter in the
-    `create_new_account` function is of type `AddressCreate` and is annotated with
-    `Annotated[AddressCreate, Body()]`. This indicates that the `address` parameter is expected to
-    be provided in the request body when calling this function. The `AddressCreate
-      license (Annotated[DriverLicenseCreate, Body()]): The `license` parameter in the `create_new_account`
-    function is of type `Annotated[DriverLicenseCreate, Body()]`. This indicates that it is expected to
-    receive data in the request body that conforms to the `DriverLicenseCreate` model. The `license` data is
-    used to create
-
-    Returns:
-      The function `create_new_account` is returning the response from the internal service call if the
-    status code is less than 400 (indicating success). If the status code is 400 or higher, the response
-    is returned as is.
-    """
+    driver's license."""
     statement = select(User).filter(User.fiscal_id == user.fiscal_id)
     result = await db.execute(statement)
     existing_user = result.scalar()
@@ -97,26 +70,25 @@ async def create_new_account(
 
     new_user = User(hashed_password=hashed, **user.model_dump())
     cap = int(address.cap)
-    delattr(address,"cap")
-    new_address = Address(cap=cap,**address.model_dump())
+    delattr(address, "cap")
+    new_address = Address(cap=cap, **address.model_dump())
     new_user.addresses.append(new_address)
 
     try:
         db.add(new_user)
         await db.flush()
-        
         # Service to service for license
-        response = await call_internal_service(
+        response = await internal_call(
             f"http://driver-license-service:8001/v1/driver-license/internal/add/{new_user.id}",
             method="POST",
             json=license.model_dump(mode="json"),
-            correlation_id=request.state.correlation_id
+            correlation_id=request.state.correlation_id,
         )
         if response.status_code >= 400:
             await db.rollback()
             return response
-    except Exception:
-        raise HTTPInternalServerError("There was a problem saving data")
+    except Exception as ex:
+        raise HTTPInternalServerError(f"There was a problem saving data: {ex.__str__()}")
 
 
 @router.post("/sign-in", status_code=status.HTTP_204_NO_CONTENT)
@@ -275,7 +247,9 @@ async def verify_token(auth: AuthenticatedUser):
 
 
 # internal api call
-@router.post("/internal/refresh", status_code=status.HTTP_200_OK, include_in_schema=False)
+@router.post(
+    "/internal/refresh", status_code=status.HTTP_200_OK, include_in_schema=False
+)
 async def refresh_access_token(
     request: Request,
     db: DbSession,

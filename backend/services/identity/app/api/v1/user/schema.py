@@ -12,7 +12,7 @@ from pydantic import model_validator
 from typing import Literal
 from typing import Annotated
 
-from data.cities import ITALY_CITIES
+from app.data.cities import ITALY_CITIES
 
 def strip_string_value(value: str):
     array = value.split(" ")

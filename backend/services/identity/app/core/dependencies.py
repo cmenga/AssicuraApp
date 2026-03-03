@@ -6,19 +6,22 @@ from datetime import datetime
 from datetime import timezone
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
-from core.database import get_db
 
 from typing import Annotated
+from typing import Callable
 
-from core.security import IPasswordHasher
-from core.security import IJwtService
-from core.security import AccessToken
-from core.security import get_jwt_access_token
-from core.security import get_jwt_refresh_token
-from core.security import get_password_hasher
+from app.core.security import IPasswordHasher
+from app.core.security import IJwtService
+from app.core.security import AccessToken
+from app.core.security import get_jwt_access_token
+from app.core.security import get_jwt_refresh_token
+from app.core.security import get_password_hasher
+from app.core.database import get_db
 
-from core.exceptions import HTTPUnauthorized
-from models import Token
+from app.core.exceptions import HTTPUnauthorized
+from app.core.http_client import call_internal_service
+
+from app.models import Token
 
 DbSession = Annotated[AsyncSession, Depends(get_db)]
 PasswordHasher = Annotated[IPasswordHasher, Depends(get_password_hasher)]
@@ -80,3 +83,9 @@ def authenticated_user(
 
 
 AuthenticatedUser = Annotated[AccessToken, Depends(authenticated_user)]
+
+
+def internal_call() -> Callable:
+    return call_internal_service
+
+InternalCallable = Annotated[Callable, Depends(internal_call)]

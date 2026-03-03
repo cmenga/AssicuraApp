@@ -1,8 +1,8 @@
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
 
-from core.logging import logger
-from core.exceptions import HTTPServiceUnavailable
+from app.core.logging import logger
+from app.core.exceptions import HTTPServiceUnavailable
 
 @asynccontextmanager
 async def startup(app: FastAPI):

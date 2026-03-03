@@ -1,8 +1,6 @@
-from tests.conftest import app, override_get_db
-from app.database.session import get_db
+import pytest
 from fastapi import status
 
-app.dependency_overrides[get_db] = override_get_db
 
 VALID_USER = {
     "email": "test@example.com",
@@ -29,125 +27,85 @@ VALID_ADDRESS = {
     "type": "residence",
 }
 
+VALID_LICENSE = {
+    "date_of_birth": "1990-01-01",
+    "license_number": "B1234567B",
+    "license_code": "A",
+    "expiry_date": "2018-01-01",
+    "issue_date": "2028-01-01",
+}
 
-def test_signup_success(client):
-    """
-    The function `test_signup_success` sends a POST request to the "/auth/sign-up" endpoint with valid
-    user and address data and asserts that the response status code is 204.
 
-    Args:
-        client: The `client` parameter in the `test_signup_success` function is typically an instance of a
-            test client that is used to make requests to your API endpoints during testing. This client allows
-            you to simulate HTTP requests and test the responses from your API without actually making real
-            network requests. It is commonly used
-    """
-    response = client.post(
-        "/auth/sign-up",
+import json
+
+@pytest.mark.asyncio(loop_scope="session")
+async def test_signup_success(async_client):    
+
+    response = await async_client.post(
+        "v1/auth/sign-up",
         json={
             "user": VALID_USER,
             "address": VALID_ADDRESS,
+            "license": VALID_LICENSE
         },
     )
     assert response.status_code == status.HTTP_204_NO_CONTENT
 
 
-def test_signup_user_already_exists(client):
-    """
-    The function `test_signup_user_already_exists` tests signing up a user who already exists.
-
-    Args:
-        client: The `client` parameter in the `test_signup_user_already_exists` function is likely an
-            instance of a test client that is used to make HTTP requests to the application being tested. In
-            this case, it is being used to simulate a POST request to the "/auth/sign-up" endpoint with JSON
-            data
-    """
-    response = client.post(
-        "/auth/sign-up",
-        json={"user": VALID_USER, "address": VALID_ADDRESS},
+@pytest.mark.asyncio(loop_scope="session")
+async def test_signup_user_already_exists(async_client):
+    response = await async_client.post(
+        "v1/auth/sign-up",
+        json={"user": VALID_USER, "address": VALID_ADDRESS, "license": VALID_LICENSE},
     )
 
     assert response.status_code == status.HTTP_409_CONFLICT
 
 
-def test_signup_password_mismatch(client):
+@pytest.mark.asyncio(loop_scope="session")
+async def test_signup_password_mismatch(async_client):
     """
     The function `test_signup_password_mismatch` tests signing up with mismatched passwords.
-
-    Args:
-        client: The `client` parameter in the `test_signup_password_mismatch` function is likely an
-            instance of a test client that is used to make HTTP requests to your application during testing. It
-            is commonly used in testing frameworks like Flask's test client or Django's test client to simulate
-            requests to your API endpoints
     """
     bad_user = VALID_USER.copy()
     bad_user["confirm_password"] = "WrongPassword1!"
 
-    response = client.post(
-        "/auth/sign-up",
-        json={"user": bad_user, "address": VALID_ADDRESS},
+    response = await async_client.post(
+        "v1/auth/sign-up",
+        json={"user": bad_user, "address": VALID_ADDRESS, "license": VALID_LICENSE},
     )
 
     assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
 
 
-def test_sign_in_success(client):
-    """
-    The function `test_sign_in_success` tests the successful sign-in functionality by sending a POST
-    request with email and password, and asserts the expected response status code and content.
-
-    Args:
-        client: The `client` parameter in the `test_sign_in_success` function is typically an instance of
-            a test client that is used to make HTTP requests to your API endpoints during testing. This client
-            is usually provided by the testing framework you are using, such as Flask's test client or Django's
-            test client
-    """
-    response = client.post(
-        "/auth/sign-in",
+@pytest.mark.asyncio(loop_scope="session")
+async def test_sign_in_success(async_client):
+    response = await async_client.post(
+        "v1/auth/sign-in",
         data={"username": "test@example.com", "password": "Password1!"},
         headers={"Content-type": "application/x-www-form-urlencoded"},
     )
 
-    assert response.status_code == status.HTTP_200_OK
+    assert response.status_code == status.HTTP_204_NO_CONTENT
 
-    data = response.json()
-    assert "access_token" in data
-    assert "refresh_token" in data
-    assert "type" in data and data["type"] == "Bearer"
+    data = response.cookies
+    assert "assicurapp_token" in data
 
 
-def test_sign_in_not_success(client):
-    """
-    The function `test_sign_in_not_success` sends a POST request to the "/auth/sign-in" endpoint with
-    specific credentials and asserts that the response status code is 404 Not Found.
-
-    Args:
-        client: The `client` parameter in the `test_sign_in_not_success` function is likely an instance of
-            a client object that is used for making HTTP requests in a testing environment. It is commonly used
-            in testing frameworks like Flask's test client or Django's test client to simulate HTTP requests to
-            the application being
-    """
-    response = client.post(
-        "/auth/sign-in",
+@pytest.mark.asyncio(loop_scope="session")
+async def test_sign_in_not_success(async_client):
+    response = await async_client.post(
+        "v1/auth/sign-in",
         data={"username": "test@s.com", "password": "Password1!"},
         headers={"Content-type": "application/x-www-form-urlencoded"},
     )
 
     assert response.status_code == status.HTTP_404_NOT_FOUND
 
-
-def test_sign_in_unauthorized(client):
-    """
-    The function `test_sign_in_unauthorized` sends a POST request to the "/auth/sign-in" endpoint with a
-    specific email and password, and asserts that the response status code is 401 (Unauthorized).
-
-    Args:
-        client: The `client` parameter in the `test_sign_in_unauthorized` function is likely an instance
-            of a test client that is used to make HTTP requests to your application during testing. It is
-            commonly used in testing frameworks like Flask's `test_client` or Django's `Client` to simulate
-            requests to
-    """
-    response = client.post(
-        "/auth/sign-in",
+@pytest.mark.asyncio(loop_scope="session")
+async def test_sign_in_unauthorized(async_client):
+    response = await async_client.post(
+        "v1/auth/sign-in",
         data={"username": "test@example.com", "password": "Password1"},
         headers={"Content-type": "application/x-www-form-urlencoded"},
     )

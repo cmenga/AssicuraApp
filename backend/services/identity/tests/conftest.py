@@ -1,4 +1,5 @@
 import pytest_asyncio
+
 # Path configurtation for pytest, search app path and service path
 from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent
@@ -8,6 +9,7 @@ from pydantic import BaseModel
 from pydantic_settings import BaseSettings
 from pydantic_settings import SettingsConfigDict
 from typing import List
+
 
 class DBConfig(BaseModel):
     url: str
@@ -55,10 +57,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.ext.asyncio import async_sessionmaker
 from sqlalchemy.ext.asyncio import create_async_engine
 
+
 class AsyncDBSession:
     def __init__(self, factory) -> None:
         self.session_factory = factory
-        self.session: AsyncSession | None 
+        self.session: AsyncSession | None
 
     async def __aenter__(self):
         self.session = self.session_factory()
@@ -95,37 +98,58 @@ async def db_session_factory(engine):
     return async_sessionmaker(bind=engine, class_=AsyncSession, expire_on_commit=False)
 
 
-# async def reset_db(async_engine: AsyncEngine):
-#     async with async_engine.begin() as conn:
-#         await conn.run_sync(models.Base.metadata.drop_all)
-#         await conn.run_sync(models.Base.metadata.create_all)
-
-
 # App configuration
+import inspect
 from httpx import AsyncClient
 from httpx import ASGITransport
+from fastapi.responses import JSONResponse
+from functools import wraps
+from typing import Callable
 
 
-@pytest_asyncio.fixture(scope="session")
+def as_mock_for(original_func):
+    def decorator(mock_func):
+        mock_func.__signature__ = inspect.signature(original_func)
+
+        @wraps(original_func)
+        async def wrapper(*args, **kwargs):
+            return await mock_func(*args, **kwargs)
+
+        return wrapper
+    return decorator
+
+
+@pytest_asyncio.fixture(scope="session", autouse=True)
 async def setup_db(engine):
-    from app.models import Base
+    from app import models
+
     async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.drop_all)
-        await conn.run_sync(Base.metadata.create_all)
+        await conn.run_sync(models.Base.metadata.drop_all)
+        await conn.run_sync(models.Base.metadata.create_all)
 
 
 @pytest_asyncio.fixture(scope="session")
 async def async_client(db_session_factory):
-    
-    async def ovveride_get_db() -> AsyncGenerator[AsyncSession | None]:
-        async with AsyncDBSession(db_session_factory) as session:
-            yield session
     # Changing information to launch the application under test
     from app import main
     from app.core import dependencies
 
+    # Creation of functions for creating overrides
+    @as_mock_for(dependencies.call_internal_service)
+    async def call_internal_service(*args,**kwargs):
+        return  JSONResponse(status_code=200, content={"Mock": True})
+
+    # Create override fucntion
+    async def override_get_db() -> AsyncGenerator[AsyncSession | None]:
+        async with AsyncDBSession(db_session_factory) as session:
+            yield session
+
+    def override_internal_call() -> Callable:
+        return call_internal_service
+
     main.startup = lambda: NotImplemented
-    main.app.dependency_overrides[dependencies.get_db] = ovveride_get_db
+    main.app.dependency_overrides[dependencies.get_db] = override_get_db
+    main.app.dependency_overrides[dependencies.internal_call] = override_internal_call
 
     async with AsyncClient(
         transport=ASGITransport(app=main.app), base_url="http://test"

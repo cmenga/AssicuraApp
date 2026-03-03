@@ -8,25 +8,23 @@ from typing import List
 from typing import Annotated
 
 from sqlalchemy.exc import SQLAlchemyError
-from core.http_client import call_internal_service
 
-from core.dependencies import AuthenticatedUser
-from core.dependencies import DbSession
-from core.dependencies import PasswordHasher
+from app.core.dependencies import AuthenticatedUser
+from app.core.dependencies import DbSession
+from app.core.dependencies import PasswordHasher
+from app.core.exceptions import HTTPInternalServerError
+from app.core.exceptions import HTTPForbidden
+from app.core.http_client import call_internal_service
 
-from core.exceptions import HTTPInternalServerError
-from core.exceptions import HTTPNotFound
-from core.exceptions import HTTPForbidden
+from app.api.v1.user.utils import get_current_user
+from app.api.v1.user.utils import get_addresses
+from app.api.v1.user.utils import get_user_session_token
 
-from api.v1.user.utils import get_current_user
-from api.v1.user.utils import get_addresses
-from api.v1.user.utils import get_user_session_token
-
-from api.v1.user.schema import UserDetail
-from api.v1.user.schema import AddressDetail
-from api.v1.user.schema import ContactUpdate
-from api.v1.user.schema import AddressUpdate
-from api.v1.user.schema import PasswordUpdate
+from app.api.v1.user.schema import UserDetail
+from app.api.v1.user.schema import AddressDetail
+from app.api.v1.user.schema import ContactUpdate
+from app.api.v1.user.schema import AddressUpdate
+from app.api.v1.user.schema import PasswordUpdate
 
 
 router = APIRouter(tags=["user"], prefix="/user")

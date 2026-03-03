@@ -7,7 +7,7 @@ services:
     volumes:
       - ./backend/services/identity/app:/app
     ports:
-      - '8001:8001'
+      - '8001:8000'
     networks:
       - assicura-app
     depends_on:
@@ -89,8 +89,6 @@ services:
       - POSTGRES_DB=policy
       - POSTGRES_USER=policy_user
       - POSTGRES_PASSWORD=c2w;|=W692<>
-    ports:
-      - 5432:5432
     networks:
       - assicura-app
     healthcheck:

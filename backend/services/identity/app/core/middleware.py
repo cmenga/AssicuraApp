@@ -4,7 +4,7 @@ from fastapi import status
 from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
 
-from core.config import settings
+from app.core.config import settings
 from time import perf_counter
 
 class LoggerMiddleware(BaseHTTPMiddleware):

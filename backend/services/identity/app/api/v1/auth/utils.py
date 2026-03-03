@@ -1,13 +1,12 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
-from core.dependencies import IPasswordHasher
+from app.core.dependencies import IPasswordHasher
+from app.core.exceptions import HTTPNotFound
+from app.core.exceptions import HTTPUnauthorized
 
-from core.exceptions import HTTPNotFound
-from core.exceptions import HTTPUnauthorized
-
-from models import User
-from models import Token
+from app.models import User
+from app.models import Token
 
 async def get_user(db: AsyncSession, hasher: IPasswordHasher, email: str, password: str) -> User:
     """

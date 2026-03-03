@@ -1,5 +1,6 @@
 from pathlib import Path
 from logging import INFO
+from logging.handlers import RotatingFileHandler
 
 from structlog import configure
 from structlog import get_logger
@@ -21,8 +22,15 @@ def prod_configuration():
     The `prod_configuration` function sets up logging configuration for a Python application in
     production environment.
     """
-    log_path = Path("/var/log/assicurapp/app.log")
+    log_dir = Path("/var/log/assicurapp")
+    log_file = log_dir / "app.log"
 
+    log_dir.mkdir(parents=True, exist_ok=True)
+    
+    file_handler = RotatingFileHandler(
+        log_file, maxBytes=10*1024*1024, backupCount=5
+    )
+    
     configure(
         processors=[
             add_log_level,
@@ -31,7 +39,7 @@ def prod_configuration():
             EventRenamer("message"),
             JSONRenderer(),
         ],
-        logger_factory=WriteLoggerFactory(file=log_path.open("a")),
+        logger_factory=lambda: file_handler,
         wrapper_class=make_filtering_bound_logger(INFO),
     )
 

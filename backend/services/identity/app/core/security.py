@@ -16,9 +16,9 @@ from datetime import timedelta
 from fastapi import Request
 from fastapi import Depends
 
-from core.config import settings
-from core.exceptions import HTTPUnauthorized
-from core.exceptions import HTTPForbidden
+from app.core.config import settings
+from app.core.exceptions import HTTPUnauthorized
+from app.core.exceptions import HTTPForbidden
 
 
 # The `IPasswordHasher` class defines abstract methods for hashing and verifying passwords.

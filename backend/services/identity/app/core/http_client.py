@@ -2,8 +2,9 @@ from typing import Optional
 from typing import Dict
 from typing import Any
 from fastapi.responses import JSONResponse
-from core.security import create_service_token
-from core.exceptions import HTTPServiceUnavailable
+from app.core.security import create_service_token
+from app.core.exceptions import HTTPServiceUnavailable
+
 import httpx
 
 

@@ -2,11 +2,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from typing import Sequence
 
-from models import User
-from models import Address
-from models import Token
+from app.models import User
+from app.models import Address
+from app.models import Token
 
-from core.exceptions import HTTPNotFound
+from app.core.exceptions import HTTPNotFound
 
 
 async def get_current_user(db: AsyncSession, user_id: str) -> User:
