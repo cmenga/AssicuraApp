@@ -24,6 +24,7 @@ class LoggerMiddleware(BaseHTTPMiddleware):
         """
 
         logger = request.state.logger
+        print("", flush=True)
         logger.info("request_started")
         start = perf_counter()
         response = await call_next(request)
