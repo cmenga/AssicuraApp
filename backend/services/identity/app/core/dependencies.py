@@ -67,7 +67,6 @@ def authenticated_user(
     jwt: JWTAccessToken,
     token=Depends(refresh_token),
 ):
-
     if token["type"] == "access":
         return token
     new_access_token = jwt.encode(token["sub"], minutes=15)

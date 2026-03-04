@@ -54,9 +54,29 @@ async def create_new_account(
     license: Annotated[DriverLicenseCreate, Body()],
     internal_call: InternalCallable,
 ):
-    """The `create_new_account` function creates a new user account in a database, including handling
-    password hashing, checking for existing users, and interacting with an internal service to add a
-    driver's license."""
+    """
+    Registers a new user account along with their address and driver's license.
+
+    This endpoint performs the following actions:
+    1. Checks if a user with the given fiscal ID already exists.
+    2. Hashes the user's password.
+    3. Creates a new User record and associates the provided Address.
+    4. Calls the internal Driver License Service to register the license.
+    5. Commits the transaction if all steps succeed.
+
+    Args:
+        request (Request): The incoming HTTP request, used for tracing (correlation ID).
+        db (DbSession): The database session for executing queries.
+        hasher (PasswordHasher): The service used to hash passwords.
+        user (UserCreate): The payload containing user registration details.
+        address (AddressCreate): The payload containing the user's address.
+        license (DriverLicenseCreate): The payload containing driver's license details.
+        internal_call (InternalCallable): A callable for making internal microservice requests.
+
+    Raises:
+        HTTPConflict: If a user with the provided fiscal ID already exists.
+        HTTPInternalServerError: If an error occurs during database operations or the internal service call.
+    """
     statement = select(User).filter(User.fiscal_id == user.fiscal_id)
     result = await db.execute(statement)
     existing_user = result.scalar()
@@ -102,40 +122,25 @@ async def get_access_token(
     remember_me: Annotated[str, Form()] = "off",
 ):
     """
-    This Python function handles user sign-in, generates access and refresh tokens, and sets cookies
-    accordingly.
+    Authenticates a user and issues access and refresh tokens.
+
+    Verifies the user's credentials (username/email and password). If valid, it sets
+    an HTTP-only secure cookie containing the access token. If 'remember_me' is checked,
+    it also issues a long-lived refresh token stored in the database and set as a cookie.
 
     Args:
-      response (Response): The `response` parameter in the code snippet represents the HTTP response
-    object that will be returned to the client after the sign-in process. In this code, the `response`
-    object is used to set cookies with the access token and refresh token for authentication and
-    authorization purposes. It also specifies the status code
-      db (DbSession): The `db` parameter in the code snippet refers to a database session object. It is
-    used to interact with the database, perform queries, and commit transactions within the context of
-    the HTTP request being handled by the `get_access_token` endpoint.
-      hasher (PasswordHasher): The `hasher` parameter in the code snippet is likely an instance of a
-    `PasswordHasher` class or a similar utility that is used for securely hashing passwords. In this
-    context, it is used to hash the password provided by the user during the sign-in process before
-    comparing it with the hashed
-      jwt_access (JWTAccessToken): `jwt_access` is an instance of `JWTAccessToken` used for encoding
-    access tokens for user authentication and authorization. In the provided code snippet, it is used to
-    generate an access token for the authenticated user based on their user ID and set it as a cookie
-    named "assicurapp_token" with
-      jwt_refresh (JWTRefreshToken): The `jwt_refresh` parameter in the code snippet is an instance of
-    `JWTRefreshToken`. It is used to generate a refresh token for the user during the sign-in process.
-    The refresh token is then stored in the database along with its expiration time.
-      form_data (OAuth2PasswordRequestForm): The `form_data` parameter in the `get_access_token`
-    function is of type `OAuth2PasswordRequestForm`. It is used to extract the username and password
-    from the request body when a user is signing in. This data is then used to authenticate the user and
-    generate access and refresh tokens for
-      remember_me (Annotated[str, Form()]): The `remember_me` parameter in the `get_access_token`
-    function is used to determine whether the user wants to stay logged in or not. If the user chooses
-    to remember their login, a refresh token with a longer expiration time (7 days) is generated and
-    stored in the database. This allows. Defaults to off
+        response (Response): The HTTP response object, used to set cookies.
+        db (DbSession): The database session for executing queries.
+        hasher (PasswordHasher): The service used to verify passwords.
+        jwt_access (JWTAccessToken): The service used to generate access tokens.
+        jwt_refresh (JWTRefreshToken): The service used to generate refresh tokens.
+        form_data (OAuth2PasswordRequestForm): The form data containing username and password.
+        remember_me (str, optional): Form field indicating if the session should persist. Defaults to "off".
 
-    Returns:
-      In this code snippet, depending on the value of the `remember_me` variable, different actions are
-    taken:
+    Raises:
+        HTTPNotFound: If the user does not exist (raised by get_user).
+        HTTPUnauthorized: If the password is incorrect (raised by get_user).
+        HTTPInternalServerError: If there is an issue saving the refresh token.
     """
     user = await get_user(db, hasher, form_data.username, form_data.password)
 
@@ -195,30 +200,24 @@ async def logout(
     response: Response, db: DbSession, assicurapp_session: str = Cookie(None)
 ):
     """
-    The above functions handle user logout and token verification in a Python FastAPI application.
+    Logs out the user by invalidating their session.
+
+    Deletes the refresh token from the database (if present) and clears the
+    authentication cookies (access token and session) from the client.
 
     Args:
-      response (Response): The `response` parameter in the `logout` function is used to send a response
-    back to the client. In this case, it is an instance of the `Response` class from the FastAPI
-    framework. It allows you to set cookies, headers, status codes, and other response-related
-    properties that
-      db (DbSession): The `db` parameter in the code snippets you provided is likely an instance of a
-    database session object. It is used to interact with the database, perform queries, and commit
-    transactions. In this case, it seems to be an instance of `DbSession`, which is probably a custom
-    class or an
-      assicurapp_session (str): The `assicurapp_session` parameter in the `logout` endpoint is used to
-    retrieve the session token from the cookie. This token is then used to query the database for the
-    corresponding session entry and delete it to log the user out. Additionally, the session and token
-    cookies are cleared from the response
+        response (Response): The HTTP response object, used to clear cookies.
+        db (DbSession): The database session for executing queries.
+        assicurapp_session (str, optional): The session token (refresh token ID) from the cookie.
 
     Returns:
-      In the first function `/sign-out`, a message "Logout successfully" is being returned as a response
-    when the user successfully logs out. In the second function `/protected`, nothing is being
-    explicitly returned as the status code is set to `204 No Content`, indicating that there is no
-    content to return in the response body.
+        dict: A confirmation message {"message": "Logout successfully"}.
+
+    Raises:
+        HTTPInternalServerError: If an error occurs during the logout process.
     """
     if assicurapp_session:
-        fetched_session = get_token(db, token_id=assicurapp_session)
+        fetched_session = await get_token(db, token_id=assicurapp_session)
         await db.delete(fetched_session)
 
     try:
@@ -243,6 +242,15 @@ async def logout(
 
 @router.post("/protected", status_code=status.HTTP_204_NO_CONTENT)
 async def verify_token(auth: AuthenticatedUser):
+    """
+    Verifies the validity of the access token.
+
+    This endpoint is used by the frontend or other services to check if the
+    current user is authenticated.
+
+    Args:
+        auth (AuthenticatedUser): The authenticated user's token payload.
+    """
     return
 
 
@@ -258,32 +266,24 @@ async def refresh_access_token(
     access_token: str = Body(embed=True),
 ):
     """
-    This Python function handles refreshing access tokens for authenticated users.
+    Refreshes an access token using a valid refresh token (internal use only).
+
+    This endpoint is intended for internal calls to obtain a new short-lived access token
+    when the previous one has expired, provided the user has a valid session in the database.
 
     Args:
-      request (Request): The `request` parameter in the code snippet represents the incoming request
-    made to the `/refresh` endpoint. It allows you to access information about the request, such as
-    headers, cookies, and query parameters. You can use it to extract data from the request or to modify
-    the response that will be sent
-      db (DbSession): The `db` parameter in the code snippet refers to a database session object that is
-    used to interact with the database. It is likely an instance of a database session class that allows
-    you to query and manipulate data in the database. In this case, it is being used to query the
-    database for a
-      jwt_access (JWTAccessToken): The `jwt_access` parameter in the code snippet is an instance of a
-    class or object that is used to encode and decode JSON Web Tokens (JWTs) for access tokens. It is
-    likely a utility or helper class that provides methods for generating and validating JWTs used for
-    authentication and authorization purposes in
-      _: The underscore (_) in the function signature `_=Depends(decode_jwt)` is used to ignore the
-    return value of the `Depends` function. In FastAPI, when using dependencies with `Depends`, you can
-    assign the return value of the dependency to a variable. In this case, the
-      access_token (str): The `access_token` parameter in the code snippet represents the access token
-    that is passed in the request body. This access token is used to authenticate and authorize the user
-    making the request. The code decodes the access token to extract the payload and then checks if the
-    "sub" key is present in
+        request (Request): The incoming HTTP request, used for logging.
+        db (DbSession): The database session for executing queries.
+        jwt_access (JWTAccessToken): The service used to generate new access tokens.
+        _ (dict): The decoded JWT payload from the Authorization header (dependency injection).
+        access_token (str): The expired access token (used to identify the user).
 
     Returns:
-      The code is returning a new access token in the response body with the key "access_token"
-    containing the newly generated access token value.
+        dict: A dictionary containing the new access token {"access_token": "..."}.
+
+    Raises:
+        HTTPForbidden: If the provided token is missing the 'sub' claim.
+        HTTPUnauthorized: If the user's session (refresh token) is invalid or expired.
     """
     payload = jwt.get_unverified_claims(access_token)
 

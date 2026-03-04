@@ -152,6 +152,8 @@ async def async_client(db_session_factory):
     main.app.dependency_overrides[dependencies.internal_call] = override_internal_call
 
     async with AsyncClient(
-        transport=ASGITransport(app=main.app), base_url="http://test"
+        transport=ASGITransport(app=main.app),
+        base_url="https://test",
+        headers={"Access-Control-Allow-Credentials": "true"},
     ) as client:
         yield client
