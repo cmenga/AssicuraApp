@@ -9,7 +9,6 @@ from typing import List
 from typing import Annotated
 
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy import or_
 from sqlalchemy import select
 
 from app.core.security import decode_jwt
@@ -35,6 +34,17 @@ router = APIRouter(tags=["driver license"], prefix="/driver-license")
 async def get_licenses(
     request: Request, db: DbSession, auth: AuthenticatedUser
 ) -> List[DriverLicenseDetail] | None:
+    """
+    Retrieves all driver's licenses associated with the logged-in user.
+
+    Args:
+        request (Request): The incoming HTTP request, used for logging within utils.
+        db (DbSession): The database session for executing queries.
+        auth (AuthenticatedUser): The authenticated user's token payload containing the user ID.
+
+    Returns:
+        List[DriverLicenseDetail] | None: A list of Pydantic models representing the user's driver's licenses, or None if no licenses are found.
+    """
     fetched_licenses = await get_driver_licenses(request, db, auth["sub"])
 
     if not fetched_licenses:
@@ -60,17 +70,30 @@ async def add_new_driver_license(
     db: DbSession,
     item: Annotated[DriverLicenseCreate, Body()],
 ):
-    statement = select(DriverLicense).filter(
-        or_(
-            DriverLicense.code == item.license_code,
-            DriverLicense.number == item.license_number,
-        )
+    """
+    Adds a new driver's license for the currently authenticated user.
+
+    This endpoint checks if a license with the same code or number already exists
+    before creating a new record linked to the user.
+
+    Args:
+        auth (AuthenticatedUser): The authenticated user's token payload.
+        db (DbSession): The database session for executing queries.
+        item (DriverLicenseCreate): The payload with the new license details.
+
+    Raises:
+        HTTPConflict: If a license with the same code or number already exists.
+        HTTPInternalServerError: If the database save operation fails.
+    """
+    statement = select(DriverLicense).where(
+        (DriverLicense.code == item.license_code)
+        | (DriverLicense.number == item.license_number)
     )
     result = await db.execute(statement)
     fetched_license = result.scalar()
 
     if fetched_license:
-        raise HTTPConflict("La patente inserita risulta esistente")
+        raise HTTPConflict("The license entered appears to exist")
 
     new_license = DriverLicense(
         code=item.license_code,
@@ -90,7 +113,19 @@ async def add_new_driver_license(
 async def delete_driver_license(
     db: DbSession, auth: AuthenticatedUser, license_id: Annotated[str, Path()]
 ):
-    statement = select(DriverLicense).filter(DriverLicense.id == license_id)
+    """
+    Deletes a specific driver's license.
+
+    Args:
+        db (DbSession): The database session for executing queries.
+        auth (AuthenticatedUser): The authenticated user's token payload.
+        license_id (str): The ID of the license to be deleted.
+
+    Raises:
+        HTTPNotFound: If the license is not found.
+        HTTPInternalServerError: If the database delete operation fails.
+    """
+    statement = select(DriverLicense).where(DriverLicense.id == license_id)
     result = await db.execute(statement)
     fetched_license = result.scalar()
     if not fetched_license:
@@ -108,10 +143,21 @@ async def update_driver_license(
     license_id: Annotated[str, Path()],
     license: Annotated[DriverLicenseCreate, Body()],
 ):
-    statement = (
-        select(DriverLicense)
-        .filter(DriverLicense.id == license_id)
-        .filter(DriverLicense.user_id == auth["sub"])
+    """
+    Updates the details of a specific driver's license for the logged-in user.
+
+    Args:
+        auth (AuthenticatedUser): The authenticated user's token payload.
+        db (DbSession): The database session for executing queries.
+        license_id (str): The ID of the license to update.
+        license (DriverLicenseCreate): The payload with the updated license details.
+
+    Raises:
+        HTTPNotFound: If the license is not found for the current user.
+        HTTPInternalServerError: If the database update fails.
+    """
+    statement = select(DriverLicense).where(
+        DriverLicense.id == license_id, DriverLicense.user_id == auth["sub"]
     )
     result = await db.execute(statement)
     fetched_license = result.scalar()
@@ -136,27 +182,23 @@ async def update_driver_license(
 )
 async def delete_licenses(db: DbSession, _=Depends(decode_jwt), user_id: str = Path()):
     """
-    This Python function deletes driver licenses associated with a specific user ID from a database
-    session.
+    Deletes all driver's licenses associated with a specific user ID (internal use).
+
+    This endpoint is intended to be called by other microservices (e.g., Identity service
+    during user deletion).
 
     Args:
-      db (DbSession): The `db` parameter is an instance of a database session that is used to interact
-    with the database. It is typically used to query, insert, update, and delete records in the
-    database. In this case, it is being used to query and delete `DriverLicense` records associated with
-    a specific
-      _: The underscore (_) in the function signature is used as a placeholder variable name for the
-    dependency injection of the `decode_jwt` function. In this case, it is being used to indicate that
-    the result of the `decode_jwt` dependency is not being used within the function body.
-      user_id (str): The `user_id` parameter is a string that is expected to be provided as a path
-    parameter in the URL when calling the `delete_licenses` endpoint. This parameter is used to identify
-    the user whose driver licenses need to be deleted from the database.
+        db (DbSession): The database session for executing queries.
+        _ (dict): The decoded JWT payload from the `decode_jwt` dependency (unused).
+        user_id (str): The ID of the user whose licenses are to be deleted.
 
     Returns:
-      The function `delete_licenses` returns a dictionary with a key "deleted" indicating the number of
-    licenses that were deleted. If no licenses were found for the specified user_id, it returns
-    {"deleted": 0}.
+        dict: A dictionary confirming the number of deleted licenses, e.g., `{"deleted": 2}`.
+
+    Raises:
+        HTTPInternalServerError: If the database delete operation fails.
     """
-    statement = select(DriverLicense).filter(DriverLicense.user_id == user_id)
+    statement = select(DriverLicense).where(DriverLicense.user_id == user_id)
     result = await db.execute(statement)
     fetched_licenses = result.scalars().all()
 
@@ -184,31 +226,27 @@ async def add_new_license(
     _=Depends(decode_jwt),
 ):
     """
-    This Python function adds a new driver's license to a database if it does not already exist for a
-    given user ID.
+    Adds a new driver's license for a specific user ID (internal use).
+
+    This endpoint is called by the Identity service during user registration. It performs
+    checks before adding the license.
 
     Args:
-      db (DbSession): The `db` parameter is an instance of the `DbSession` class, which is used to
-    interact with the database. It is typically used to query, add, update, or delete records in the
-    database within the context of the current request. In this case, it is being used to query
-      license (Annotated[DriverLicenseIn, Body()]): The `license` parameter in the `add_new_license`
-    function represents the data of a driver's license that is being added to the database. It includes
-    the following fields:
-      user_id (Annotated[str, Path()]): The `user_id` parameter in the code snippet represents the user
-    ID that is passed in the URL path when making a POST request to add a new driver's license for a
-    specific user. This ID is used to associate the new driver's license with the corresponding user in
-    the database.
-      _: The underscore (_) in the function signature is used as a placeholder variable. In this case,
-    it is used to represent the result of the `decode_jwt` dependency, which is being used for
-    authentication or authorization purposes. The actual result of `decode_jwt` is not being used in the
-    function, so
+        db (DbSession): The database session for executing queries.
+        license (DriverLicenseCreate): The payload with the new license details.
+        user_id (str): The ID of the user to associate the license with.
+        _ (dict): The decoded JWT payload from the `decode_jwt` dependency (unused).
+
+    Raises:
+        HTTPConflict: If the license already exists for the user.
+        HTTPInternalServerError: If the database save operation fails.
     """
-    statement = (
-        select(DriverLicense)
-        .filter(DriverLicense.user_id == user_id)
-        .filter(DriverLicense.code == license.license_code)
-        .filter(DriverLicense.number == license.license_number)
+    statement = select(DriverLicense).where(
+        DriverLicense.user_id == user_id,
+        DriverLicense.code == license.license_code,
+        DriverLicense.number == license.license_number,
     )
+
     result = await db.execute(statement)
     fetched_license = result.scalar()
 

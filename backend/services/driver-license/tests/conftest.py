@@ -108,7 +108,6 @@ from httpx import AsyncClient
 from httpx import ASGITransport
 from functools import wraps
 from typing import Callable
-from contextlib import asynccontextmanager
 
 
 def as_mock_for(original_func):
@@ -166,6 +165,6 @@ async def async_client(db_session_factory):
     main.app.dependency_overrides[dependencies.internal_call] = override_internal_call
 
     async with AsyncClient(
-        transport=ASGITransport(app=main.app), base_url="http://test"
+        transport=ASGITransport(app=main.app), base_url="https://test"
     ) as client:
         yield client
