@@ -153,6 +153,16 @@ async def async_client(db_session_factory):
     def override_internal_call() -> Callable:
         return call_internal_service
 
+    @as_mock_for(dependencies.get_access_token)
+    async def override_get_access_token(*args, **kwargs):
+        return dependencies.AccessToken(
+            {
+                "sub": "6fc35532-18be-424e-96c6-16149dc72f1b",
+                "email": "mock_email",
+                "exp": "mock_exp",
+            }
+        )
+
     # Executes the functions declared in startup
     try:
         async with AsyncDBSession(db_session_factory) as session:
@@ -162,6 +172,7 @@ async def async_client(db_session_factory):
 
     main.startup = None
     main.app.dependency_overrides[dependencies.get_db] = override_get_db
+    main.app.dependency_overrides[dependencies.get_access_token] = override_get_access_token
     main.app.dependency_overrides[dependencies.internal_call] = override_internal_call
 
     async with AsyncClient(
