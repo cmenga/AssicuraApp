@@ -99,21 +99,19 @@ services:
 
 ######################################
 
-# web-service:
-#   build: 
-#     context: ./frontend
-#     target: dev
-#   image: web-service:dev
-#   volumes:
-#     - ./frontend:/app
-#     - /app/node_modules
-#   ports:
-#     - '3000:3000'
-#   networks:
-#     - assicura-app
-#   depends_on:
-#     - identity-service
-#     - driver-license-service
+  web-service:
+    build: 
+      context: ./frontend
+      target: dev
+    image: web-service:dev
+    ports:
+      - '3000:3000'
+    networks:
+      - assicura-app
+    depends_on:
+      - identity-service
+      - driver-license-service
+      - vehicle-policy-service
 
 ######################################
 networks:

@@ -206,7 +206,7 @@ async def delete_user(request: Request ,response: Response, auth: AuthenticatedU
 
     try:
         internal_response = await internal_call(
-            f"http://driver-license-service:8001/v1/driver-license/internal/delete-licenses/{user_id}",
+            f"http://driver-license-service:8000/v1/driver-license/internal/delete-licenses/{user_id}",
             method="DELETE",
             correlation_id=request.state.correlation_id,
         )

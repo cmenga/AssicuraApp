@@ -99,7 +99,7 @@ async def create_new_account(
         await db.flush()
         # Service to service for license
         response = await internal_call(
-            f"http://driver-license-service:8001/v1/driver-license/internal/add/{new_user.id}",
+            f"http://driver-license-service:8000/v1/driver-license/internal/add/{new_user.id}",
             method="POST",
             json=license.model_dump(mode="json"),
             correlation_id=request.state.correlation_id,
