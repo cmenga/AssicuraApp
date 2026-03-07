@@ -5,8 +5,8 @@ AssicuraApp è un app web, pensata per avere a portata di un click le assicurazi
 ## Avvertenze
 
 Il software è stato progettato seguendo le linee guida dell'università, quindi a scopo **ACCADEMICO**, al suo interno ci sono lacune e falle di sicurezza dovute alle richieste dell'università per l'elaborato della tesi. 
-Una tra le più grandi è la sicurezza su swaggerUI, in un caso reale le API non dovrebbero essere esposte fuori dai container docker, dovrebbero avere un **Api Gateway** per smistare le chiamate nei relativi micro servizi e infine
-servirebbe un sistema che blocchi le chiamate eccessive da parte di una fonte esterna non autorizzata (reperibile nel api gateway), almeno come inizio per la sicurezza, oltre ad attachi come il DDoS che bucherebbe in semplicità questa app.
+Una tra le più grandi è la sicurezza su swaggerUI, in un caso reale le API non dovrebbero essere esposte fuori dai container docker.
+Dovrebbe avere un **Api Gateway** per smistare le chiamate nei relativi micro servizi ed evitare che una risorsa effettui troppe chiamate al sistema, quindi evitare anche un attacco DDoS, che bucherebbe facilmente questa app.
 
 ## Come avviare il progetto
 Il progetto è stato pensato per essere fruibile con docker, quindi è richiesta l'istallazione di docker-desktop che trovate al seguente link [docker download](https://github.com/cmenga/AssicuraApp)
