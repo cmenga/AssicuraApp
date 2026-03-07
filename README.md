@@ -13,7 +13,7 @@ Considerata la natura accademica del progetto e i tempi limitati di sviluppo, al
 Il progetto deve pertanto essere considerato come un prototipo **dimostrativo**, finalizzato a mostrare la struttura generale dell’applicazione e l’integrazione tra le diverse tecnologie utilizzate.
 
 ## Come avviare il progetto
-Il progetto è stato pensato per essere fruibile con docker, quindi è richiesta l'istallazione di docker-desktop che trovate al seguente link [docker download](https://github.com/cmenga/AssicuraApp)
+Il progetto è stato configurato per essere eseguito tramite container Docker, quindi è richiesta l'istallazione di docker-desktop che trovate al seguente link [docker download](https://github.com/cmenga/AssicuraApp)
 
 Una volta eseguita la procedura di installazione vi basterà clonare il progetto e lanciare il compose nella cartella contenete il docker-compose.yml.
 
