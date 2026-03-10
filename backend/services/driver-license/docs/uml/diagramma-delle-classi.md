@@ -29,10 +29,10 @@ classDiagram
   class DriverLicenseController {
     +GET /v1/driver-license/licenses : DriverLicenseDetail[]|null
     +POST /v1/driver-license/add : 204
-    +PATCH /v1/driver-license/update/{license_id}
-    +DELETE /v1/driver-license/delete/{license_id}
+    +PATCH /v1/driver-license/update/(license_id)
+    +DELETE /v1/driver-license/delete/(license_id)
     +POST /v1/driver-license/internal/add/{user_id} : 204
-    +DELETE /v1/driver-license/internal/delete-licenses/{user_id}
+    +DELETE /v1/driver-license/internal/delete-licenses/(user_id)
   }
 
   DriverLicenseController ..> DriverLicenseCreate : request body
