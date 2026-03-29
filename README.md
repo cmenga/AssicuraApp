@@ -1,4 +1,4 @@
-# AssicuraApp
+# AssicuraFacile
 
 L’applicazione rappresenta un prototipo di piattaforma web per la consultazione e la sottoscrizione di polizze assicurative online, ispirato a servizi presenti sul mercato come Prima.it. L’obiettivo principale del progetto è stato quello di simulare il funzionamento di un sistema digitale per la gestione di polizze assicurative, senza la necessità di recarsi fisicamente presso una sede.
 
