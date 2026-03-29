@@ -12,6 +12,9 @@ Considerata la natura accademica del progetto e i tempi limitati di sviluppo, al
 
 Il progetto deve pertanto essere considerato come un prototipo **dimostrativo**, finalizzato a mostrare la struttura generale dell’applicazione e l’integrazione tra le diverse tecnologie utilizzate.
 
+P.S. il seguente progetto presenta una parte di design abbastanza errata per la refresh token, per semplicità ogni servizio chiama la identity-service per garantire un access_token valido, questo in una applicazione rale non **DOVREBBE ESSERE LO STANDARD** per motivi legati all'accopiamento dei microservizi e ai futuri problemi legati alla
+performance e alla singolarità dei microservizi.
+
 ## Come avviare il progetto
 Il progetto è stato configurato per essere eseguito tramite container Docker, quindi è richiesta l'istallazione di docker-desktop che trovate al seguente link [docker download](https://github.com/cmenga/AssicuraApp)
 
